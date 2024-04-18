@@ -13,6 +13,11 @@ export class VideoGamesService {
     private readonly videoGameRepository: Repository<VideoGame>,
   ) {}
 
+  /**
+   * Busca un video juego basado en el ID recibido
+   * @param id ID del videojuego a buscar
+   * @returns VideoJuego encontrado 
+   */
   async findById(id: number) {
     const videogame = await this.videoGameRepository.findOneBy({
       id,
@@ -25,10 +30,21 @@ export class VideoGamesService {
     return videogame;
   }
 
+  /**
+   * Crea un videojuego
+   * @param videogameFields Campos del VideoJuego a crear
+   * @returns VideoJuego creado
+   */
   async createVideoGame(videogameFields: CreateVideoGameDto) {
     return this.videoGameRepository.save(videogameFields);
   }
 
+  /**
+   * Actualiza un videojuego    
+   * @param id ID del videojuego a actualizar
+   * @param videogameFields Campos a actualizar     
+   * @returns Resultado de la actualización
+   */
   async updateVideoGame(id: number, videogameFields: UpdateVideoGameDto) {
     const resultado = await this.videoGameRepository.update(
       id,
@@ -44,6 +60,11 @@ export class VideoGamesService {
     return resultado;
   }
 
+  /**
+   * Elimina un videojuego
+   * @param id ID del videojuego a eliminar
+   * @returns Resultado de la Eliminación
+   */
   async deleteVideoGame(id: number) {
     const resultado = await this.videoGameRepository.delete(id);
     if (resultado.affected === 0) {
