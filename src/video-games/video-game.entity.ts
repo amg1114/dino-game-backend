@@ -9,12 +9,9 @@ export class VideoGame {
     precio: number;
 
     @Column()
-    genero: string;
-
-    @Column()
     titulo: string;
 
-    @Column()
+    @Column({ nullable: true })
     descripcion: string;
 
     @Column({type: 'date'})
