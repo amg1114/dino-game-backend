@@ -19,8 +19,9 @@ export class VideoGamesService {
    * @returns VideoJuego encontrado 
    */
   async findById(id: number) {
-    const videogame = await this.videoGameRepository.findOneBy({
-      id,
+    const videogame = await this.videoGameRepository.findOne({
+      where:{id},
+      relations: ['assets']
     });
 
     if (videogame === null) {
