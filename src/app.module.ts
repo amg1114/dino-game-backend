@@ -10,6 +10,7 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 
 import { VideoGamesModule } from './video-games/video-games.module';
+import { AssetsModule } from './assets/assets.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { VideoGamesModule } from './video-games/video-games.module';
     TypeOrmModule.forRoot(DataSourceConfig),
     UsersModule,
     VideoGamesModule,
+    AssetsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
