@@ -1,17 +1,28 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { CategoriasService } from './categorias.service';
 import { UpdateCategoriaDto } from './dto/update-categoria.dto';
 import { CreateCategoriaDto } from './dto/create-categoria.dto';
 import { Categoria } from './categoria.entity';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { CategoriaQueries } from './interfces/categoria-queries.interface';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Categorias')
 @Controller('categorias')
 export class CategoriasController {
   constructor(private readonly categoriasService: CategoriasService) {}
 
   /**
-   * Endpoint para obtener la lista de todas las categorias
+   * EndPoint para obtener la lista de todas las categorias
    * @returns {Promise<Categoria[]>}
    */
   @Get()
@@ -20,7 +31,7 @@ export class CategoriasController {
   }
 
   /**
-   * Endpoint para obtener una categoria por el parámetro ID
+   * EndPoint para obtener una categoria por el parámetro ID
    * @param id ID de la categoria a buscar
    * @returns {Promise<Categoria>}
    */
@@ -30,7 +41,7 @@ export class CategoriasController {
   }
 
   /**
-   * Endpoint para crear una Categoria
+   * EndPoint para crear una Categoria
    * @param categoriaFields Campos de la categoria a crear
    * @returns {Promise<Categoria>}
    */
@@ -40,18 +51,21 @@ export class CategoriasController {
   }
 
   /**
-   * Endpoint para actualizar una categoria
+   * EndPoint para actualizar una categoria
    * @param id ID de la categoria a actualizar
    * @param categoriaFields Campos de la Categoria a actualizar
    * @returns {Promise<UpdateResult>}
    */
   @Patch(':id')
-  update(@Param('id') id: number, @Body() categoriaFields: UpdateCategoriaDto): Promise<UpdateResult> {
+  update(
+    @Param('id') id: number,
+    @Body() categoriaFields: UpdateCategoriaDto,
+  ): Promise<UpdateResult> {
     return this.categoriasService.updateCategoria(id, categoriaFields);
   }
 
   /**
-   * Endpoint para eliminar una categoria
+   * EndPoint para eliminar una categoria
    * @param id ID de la categoria a eliminar
    * @returns {Promise<DeleteResult>}
    */

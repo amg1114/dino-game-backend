@@ -10,13 +10,15 @@ import {
 import { VideoGamesService } from './video-games.service';
 import { CreateVideoGameDto } from './dto/create-video-game.dto';
 import { UpdateVideoGameDto } from './dto/update-video-game.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('VideoGames')
 @Controller('video-games')
 export class VideoGamesController {
   constructor(private readonly videoGamesService: VideoGamesService) {}
 
   /**
-   * Busca un videojuego basado en el ID que recibe la función.
+   * EndPoint para buscar un videojuego basado en el ID parametro ID.
    * @param id ID del videojuego a
    * @returns Videojuego encontrado
    */
@@ -26,7 +28,7 @@ export class VideoGamesController {
   }
 
   /**
-   * Crea un videojuego basado en los campos recibidos por la función.
+   * EndPoint para crear un videojuego basado en los campos del body en la petición.
    * @param videoGameFields Campos del VideoJuego a crear.
    * @returns Videojuego creado
    */
@@ -36,7 +38,8 @@ export class VideoGamesController {
   }
 
   /**
-   * Actualiza los campos de un videojuego según el ID del videojuego recibido por la función.
+   * EndPoint para actualizar los campos de un videojuego especificados en el body de la petición para el
+   * videojuego especificado por el parámetro ID en la petición.
    * @param id ID del videojuego a actualizar
    * @param videoGameFields Campos del videojuego a actualizar
    * @returns Resultado de la actualización
@@ -48,9 +51,9 @@ export class VideoGamesController {
   ) {
     return this.videoGamesService.updateVideoGame(id, videoGameFields);
   }
-   
+
   /**
-   * Elimina un videojuego basado en el ID recibido
+   * EndPoint para eliminar un videojuego basado en el parámetro ID de la petición
    * @param id ID del video
    * @returns Resultado de la eliminación
    */

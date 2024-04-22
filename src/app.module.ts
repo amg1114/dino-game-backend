@@ -4,7 +4,6 @@ import { ConfigModule } from '@nestjs/config';
 
 import { DataSourceConfig } from './config/data.source';
 
-import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
 import { UsersModule } from './users/users.module';
@@ -24,7 +23,7 @@ import { CategoriasModule } from './categorias/categorias.module';
     AssetsModule,
     CategoriasModule,
   ],
-  controllers: [AppController],
+  controllers: [],
   providers: [AppService],
 })
 export class AppModule {}
