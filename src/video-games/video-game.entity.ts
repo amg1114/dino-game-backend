@@ -1,5 +1,12 @@
 import { Asset } from 'src/assets/asset.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Categoria } from 'src/categorias/categoria.entity';
+import {
+  Column,
+  Entity,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('videogames')
 export class VideoGame {
@@ -20,4 +27,7 @@ export class VideoGame {
 
   @OneToMany(() => Asset, (asset) => asset.videoGame)
   assets: Asset[];
+
+  @ManyToMany(() => Categoria, categoria=>categoria.videoGames)
+  categorias: Categoria[];
 }

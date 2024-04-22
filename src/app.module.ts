@@ -11,6 +11,7 @@ import { UsersModule } from './users/users.module';
 
 import { VideoGamesModule } from './video-games/video-games.module';
 import { AssetsModule } from './assets/assets.module';
+import { CategoriasModule } from './categorias/categorias.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { AssetsModule } from './assets/assets.module';
     UsersModule,
     VideoGamesModule,
     AssetsModule,
+    CategoriasModule,
   ],
   controllers: [AppController],
   providers: [AppService],
