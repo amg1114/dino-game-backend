@@ -6,11 +6,13 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { VideoGamesService } from './video-games.service';
 import { CreateVideoGameDto } from './dto/create-video-game.dto';
 import { UpdateVideoGameDto } from './dto/update-video-game.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { VideoGameQueries } from './dto/video-game-queries.dto';
 
 @ApiTags('VideoGames')
 @Controller('video-games')
@@ -25,6 +27,16 @@ export class VideoGamesController {
   @Get(':id')
   findOne(@Param('id') id: number) {
     return this.videoGamesService.findById(id);
+  }
+  
+  /**
+   * EndPoint para buscar un videojuego basado en el ID parametro ID.
+   * @param id ID del videojuego a
+   * @returns Videojuego encontrado
+   */
+  @Get()
+  findAll(@Query() queries: VideoGameQueries) {
+    return this.videoGamesService.findAll(queries);
   }
 
   /**

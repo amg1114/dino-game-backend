@@ -13,7 +13,7 @@ import { UpdateCategoriaDto } from './dto/update-categoria.dto';
 import { CreateCategoriaDto } from './dto/create-categoria.dto';
 import { Categoria } from './categoria.entity';
 import { DeleteResult, UpdateResult } from 'typeorm';
-import { CategoriaQueries } from './interfces/categoria-queries.interface';
+import { CategoriaQueries } from './dto/categoria-queries.dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Categorias')
