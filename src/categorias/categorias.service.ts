@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { FindOptionsUtils, Repository } from 'typeorm';
+import { FindOptionsUtils, FindOptionsWhere, Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { Categoria } from './categoria.entity';
@@ -8,7 +8,7 @@ import { VideoGamesService } from 'src/video-games/video-games.service';
 
 import { CreateCategoriaDto } from './dto/create-categoria.dto';
 import { UpdateCategoriaDto } from './dto/update-categoria.dto';
-import { CategoriaQueries } from './interfces/categoria-queries.interface';
+import { CategoriaQueries } from './dto/categoria-queries.dto';
 
 @Injectable()
 export class CategoriasService {
@@ -21,9 +21,13 @@ export class CategoriasService {
   findCategorias(urlQueries: CategoriaQueries) {
     const { limit, ...queries } = urlQueries;
 
+    if (queries.title) {
+      queries.title = Like(`%${queries.title}%`);
+    }
+    
     return this.categoriasRepository.find({
       take: limit,
-      where: queries,
+      where: queries as FindOptionsWhere<Categoria>,
     });
   }
 

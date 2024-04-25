@@ -1,10 +1,12 @@
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Like, Repository } from 'typeorm';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { VideoGame } from './video-game.entity';
 import { CreateVideoGameDto } from './dto/create-video-game.dto';
 import { UpdateVideoGameDto } from './dto/update-video-game.dto';
+import { VideoGameQueries } from './dto/video-game-queries.dto';
+import { WhereClause } from 'typeorm/query-builder/WhereClause';
 
 @Injectable()
 export class VideoGamesService {
@@ -16,12 +18,12 @@ export class VideoGamesService {
   /**
    * Busca un video juego basado en el ID recibido
    * @param id ID del videojuego a buscar
-   * @returns VideoJuego encontrado 
+   * @returns VideoJuego encontrado
    */
   async findById(id: number) {
     const videogame = await this.videoGameRepository.findOne({
-      where:{id},
-      relations: ['assets']
+      where: { id },
+      relations: ['assets'],
     });
 
     if (videogame === null) {
@@ -29,6 +31,32 @@ export class VideoGamesService {
     }
 
     return videogame;
+  }
+
+  async findAll(queries: VideoGameQueries) {
+    let whereConditions: FindOptionsWhere<VideoGame> = {};
+
+    if (queries.search) {
+      whereConditions.titulo = Like(`%${queries.search}%`);
+    }
+    
+    if (queries.categoria) {
+      whereConditions.categorias = {
+        id: queries.categoria,
+      };
+    }
+
+    const videoGames = await this.videoGameRepository.find({
+      where: whereConditions,
+      take: queries.limit,
+      relations: ['assets'],
+    });
+
+    if (videoGames.length === 0) {
+      throw new HttpException('Videogames was not found', HttpStatus.NOT_FOUND);
+    }
+
+    return videoGames;
   }
 
   /**
@@ -41,9 +69,9 @@ export class VideoGamesService {
   }
 
   /**
-   * Actualiza un videojuego    
+   * Actualiza un videojuego
    * @param id ID del videojuego a actualizar
-   * @param videogameFields Campos a actualizar     
+   * @param videogameFields Campos a actualizar
    * @returns Resultado de la actualización
    */
   async updateVideoGame(id: number, videogameFields: UpdateVideoGameDto) {
