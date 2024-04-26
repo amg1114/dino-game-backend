@@ -12,7 +12,6 @@ import { VideoGamesModule } from './video-games/video-games.module';
 import { AssetsModule } from './assets/assets.module';
 import { CategoriasModule } from './categorias/categorias.module';
 import { NoticiasModule } from './noticias/noticias.module';
-import { ControllerService } from './controller/controller.service';
 
 @Module({
   imports: [
@@ -27,6 +26,6 @@ import { ControllerService } from './controller/controller.service';
     NoticiasModule,
   ],
   controllers: [],
-  providers: [AppService, ControllerService],
+  providers: [AppService],
 })
 export class AppModule {}

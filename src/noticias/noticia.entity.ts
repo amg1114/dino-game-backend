@@ -1,6 +1,7 @@
 import { Asset } from 'src/assets/asset.entity';
-import { PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { PrimaryGeneratedColumn, Column, OneToMany, Entity } from 'typeorm';
 
+@Entity('noticias')
 export class Noticia {
   @PrimaryGeneratedColumn()
   id: number;
