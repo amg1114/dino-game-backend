@@ -1,4 +1,4 @@
-import { IsOptional, IsString } from 'class-validator';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 import { FindOperator } from 'typeorm';
 
 export class CategoriaQueries {
@@ -6,7 +6,7 @@ export class CategoriaQueries {
   @IsOptional()
   title?: string | FindOperator<string>;
 
-  @IsString()
+  @IsNumber()
   @IsOptional()
   limit?: number;
 }
