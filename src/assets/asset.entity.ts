@@ -1,3 +1,4 @@
+import { Noticia } from 'src/noticias/noticia.entity';
 import { VideoGame } from 'src/video-games/video-game.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -14,4 +15,7 @@ export class Asset {
   
   @ManyToOne(() => VideoGame, (videoGame) => videoGame.assets)
   videoGame: VideoGame;
+ 
+  @ManyToOne(() => Noticia, (noticia) => noticia.assets)
+  noticia: Noticia;
 }

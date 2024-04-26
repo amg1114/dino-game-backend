@@ -11,6 +11,7 @@ import { UsersModule } from './users/users.module';
 import { VideoGamesModule } from './video-games/video-games.module';
 import { AssetsModule } from './assets/assets.module';
 import { CategoriasModule } from './categorias/categorias.module';
+import { NoticiasModule } from './noticias/noticias.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { CategoriasModule } from './categorias/categorias.module';
     VideoGamesModule,
     AssetsModule,
     CategoriasModule,
+    NoticiasModule,
   ],
   controllers: [],
   providers: [AppService],
