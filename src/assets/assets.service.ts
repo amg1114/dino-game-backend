@@ -16,7 +16,6 @@ export class AssetsService {
   ) {}
 
   async create(assetFields: RegisterAssetDto) {
-    if (assetFields.videoGameId) {
       const { videoGameId, noticiaId, ...fields } = assetFields;
       const asset = this.assetsRepository.create(fields);
 
@@ -27,9 +26,8 @@ export class AssetsService {
         const noticia = await this.noticiasService.findOne(noticiaId);
         asset.noticia = noticia;
       }
-
+      
       return this.assetsRepository.save(asset);
-    }
   }
 
   async getVideoGameAssets(video_game: number) {
