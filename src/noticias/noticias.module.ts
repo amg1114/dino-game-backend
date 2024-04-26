@@ -7,6 +7,7 @@ import { Noticia } from './noticia.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([Noticia])],
   providers: [NoticiasService],
+  exports: [TypeOrmModule],
   controllers: [NoticiasController]
 })
 export class NoticiasModule {}

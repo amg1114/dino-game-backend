@@ -12,4 +12,8 @@ export class RegisterAssetDto {
     @IsNumber()
     @IsOptional()
     videoGameId?: number;
+   
+    @IsNumber()
+    @IsOptional()
+    noticiaId?: number;
 }
