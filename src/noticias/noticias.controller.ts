@@ -2,7 +2,9 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestj
 import { NoticiasService } from './noticias.service';
 import { CreateNoticiaDto } from './dto/create-noticia.dto';
 import { UpdateNoticiaDto } from './dto/update-noticia.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Noticias')
 @Controller('noticias')
 export class NoticiasController {
     constructor(private noticiasService: NoticiasService) {}
