@@ -32,6 +32,9 @@ export class NoticiasService {
     return this.noticiasRepository.find({
       take: limit,
       relations: ['assets'],
+      order: {
+        fecha: 'DESC',
+      },
     });
   }
 

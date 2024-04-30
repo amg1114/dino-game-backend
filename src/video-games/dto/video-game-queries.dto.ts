@@ -12,7 +12,11 @@ export class VideoGameQueries {
   
   @IsString()
   @IsOptional()
-  search?: string | FindOperator<string>;
+  search?: string;
+
+  @IsNumber()
+  @IsOptional()
+  precio?: number;
 
   categorias?: object;
 }

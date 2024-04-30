@@ -1,4 +1,4 @@
-import { FindOptionsWhere, Like, Repository } from 'typeorm';
+import { FindOptionsWhere, LessThanOrEqual, Like, Repository } from 'typeorm';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -39,17 +39,25 @@ export class VideoGamesService {
     if (queries.search) {
       whereConditions.titulo = Like(`%${queries.search}%`);
     }
-    
+
     if (queries.categoria) {
-      whereConditions.categorias = {
+      const category = {
         id: queries.categoria,
       };
+      whereConditions.categorias = category;
+    }
+
+    if (queries.precio) {
+      whereConditions.precio = LessThanOrEqual(queries.precio);
     }
 
     const videoGames = await this.videoGameRepository.find({
       where: whereConditions,
       take: queries.limit,
       relations: ['assets'],
+      order: {
+        titulo: 'ASC',
+      }
     });
 
     if (videoGames.length === 0) {

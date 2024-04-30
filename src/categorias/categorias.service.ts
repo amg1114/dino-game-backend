@@ -28,6 +28,10 @@ export class CategoriasService {
     return this.categoriasRepository.find({
       take: limit,
       where: queries as FindOptionsWhere<Categoria>,
+      relations: ['videoGames', 'videoGames.assets'],
+      order: {
+        titulo: 'ASC',
+      },
     });
   }
 
