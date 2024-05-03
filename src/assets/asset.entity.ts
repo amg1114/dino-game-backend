@@ -13,7 +13,7 @@ export class Asset {
   @Column()
   url: string;
   
-  @ManyToOne(() => VideoGame, (videoGame) => videoGame.assets)
+  @ManyToOne(() => VideoGame, (videoGame) => videoGame.assets, {onDelete: 'CASCADE'})
   videoGame: VideoGame;
  
   @ManyToOne(() => Noticia, (noticia) => noticia.assets)

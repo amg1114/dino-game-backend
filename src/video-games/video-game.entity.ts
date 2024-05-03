@@ -1,9 +1,11 @@
 import { Asset } from 'src/assets/asset.entity';
 import { Categoria } from 'src/categorias/categoria.entity';
+import { Developer } from 'src/users/user.entity';
 import {
   Column,
   Entity,
   ManyToMany,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -28,6 +30,9 @@ export class VideoGame {
   @OneToMany(() => Asset, (asset) => asset.videoGame)
   assets: Asset[];
 
-  @ManyToMany(() => Categoria, categoria=>categoria.videoGames)
+  @ManyToMany(() => Categoria, categoria=>categoria.videoGames, {onDelete: 'CASCADE'})
   categorias: Categoria[];
+
+  @ManyToOne(()=>Developer, developer=>developer.videoGames, {onDelete: 'CASCADE'})
+  developer: Developer;
 }
