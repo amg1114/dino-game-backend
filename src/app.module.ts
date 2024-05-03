@@ -4,12 +4,14 @@ import { ConfigModule } from '@nestjs/config';
 
 import { DataSourceConfig } from './config/data.source';
 
-import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
 import { UsersModule } from './users/users.module';
 
 import { VideoGamesModule } from './video-games/video-games.module';
+import { AssetsModule } from './assets/assets.module';
+import { CategoriasModule } from './categorias/categorias.module';
+import { NoticiasModule } from './noticias/noticias.module';
 
 @Module({
   imports: [
@@ -19,8 +21,11 @@ import { VideoGamesModule } from './video-games/video-games.module';
     TypeOrmModule.forRoot(DataSourceConfig),
     UsersModule,
     VideoGamesModule,
+    AssetsModule,
+    CategoriasModule,
+    NoticiasModule,
   ],
-  controllers: [AppController],
+  controllers: [],
   providers: [AppService],
 })
 export class AppModule {}
