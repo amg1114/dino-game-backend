@@ -23,7 +23,7 @@ export class VideoGamesService {
   async findById(id: number) {
     const videogame = await this.videoGameRepository.findOne({
       where: { id },
-      relations: ['assets'],
+      relations: ['assets', 'categorias'],
     });
 
     if (videogame === null) {
@@ -54,7 +54,7 @@ export class VideoGamesService {
     const videoGames = await this.videoGameRepository.find({
       where: whereConditions,
       take: queries.limit,
-      relations: ['assets'],
+      relations: ['assets', 'categorias'],
       order: {
         titulo: 'ASC',
       }
