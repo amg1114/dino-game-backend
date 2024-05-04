@@ -1,6 +1,7 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Sexo } from "src/config/enums/sexo.enum";
 import { VideoGame } from "src/video-games/video-game.entity";
+import { Exclude } from "class-transformer";
 
 @Entity('users')
 export class User {
@@ -21,6 +22,10 @@ export class User {
 
     @Column({ unique: true })
     correo: string;
+
+    @Exclude()
+    @Column()
+    password: string;
 
 }
 

@@ -4,6 +4,8 @@ import { Administrator, Developer, User } from './user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import * as bcrypt from "bcrypt";
+import { SALT_ROUNDS } from 'src/config/constants/bycript.constants';
 
 @Injectable()
 export class UsersService {
@@ -31,12 +33,23 @@ export class UsersService {
     return user;
   }
 
+  async findByCorreo(correo: string) {
+    const user = await this.userRepository.findOne({ where:{ correo } });
+
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    return user;
+  }
+
   /**
    * crea un usuario
    * @param userFields campos del usuario a crear
    * @returns usuario creado
    */
   async createUser(userFields: CreateUserDto) {
+    userFields.password = bcrypt.hashSync(userFields.password, SALT_ROUNDS);
     const user = await this.userRepository.save(userFields);
 
     return user;
@@ -49,6 +62,9 @@ export class UsersService {
    * @returns usuario actualizado
    */
   async updateUser(id: number, userFields: UpdateUserDto) {
+    if (userFields.password) {
+      userFields.password = await bcrypt.hash(userFields.password, SALT_ROUNDS);
+    }
     const resultado = await this.userRepository.update(id, userFields);
 
     if (resultado.affected === 0) {
