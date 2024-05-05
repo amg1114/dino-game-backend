@@ -4,7 +4,7 @@ import { Administrator, Developer, User } from './user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import * as bcrypt from "bcrypt";
+import * as bcrypt from 'bcrypt';
 import { SALT_ROUNDS } from 'src/config/constants/bycript.constants';
 
 @Injectable()
@@ -34,7 +34,7 @@ export class UsersService {
   }
 
   async findByCorreo(correo: string) {
-    const user = await this.userRepository.findOne({ where:{ correo } });
+    const user = await this.userRepository.findOne({ where: { correo } });
 
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -89,11 +89,14 @@ export class UsersService {
     return resultado;
   }
 
-  async getRole(id: number) {
+  /**
+   * Retorna el rol de un usuario segun el ID recibido por la función
+   * @param id ID del usuario a buscar
+   * @returns rol del usuario
+   */
+  async getRole(id: number): Promise<'DEVELOPER' | 'ADMINISTRATOR' | 'USER'> {
     const user = await this.findById(id);
     if (user) {
-      
-
       const isDeveloper = await this.developersRepository.exists({
         where: { user: { id } },
       });

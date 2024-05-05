@@ -4,7 +4,6 @@ import { LoginDto } from './dto/login.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import { log } from 'console';
 
 @Injectable()
 export class AuthService {
@@ -13,6 +12,12 @@ export class AuthService {
     private readonly JwtService: JwtService,
   ) {}
 
+  /**
+   * Loguea a un usuario
+   * @param correo Correo del usuario
+   * @param password Contraseña del usuario
+   * @returns Token de acceso
+   */
   async login({ correo, password }: LoginDto) {
     const user = await this.usersService.findByCorreo(correo);
 
@@ -30,6 +35,11 @@ export class AuthService {
     };
   }
 
+  /**
+   * Crea un usuario y lo loguea
+   * @param userFields Campos del usuario a crear
+   * @returns Token de acceso
+   */
   async register(userFields: CreateUserDto) {
     const login: LoginDto = {
       correo: userFields.correo,
