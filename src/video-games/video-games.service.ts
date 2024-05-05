@@ -2,7 +2,7 @@ import { FindOptionsWhere, LessThanOrEqual, Like, Repository } from 'typeorm';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { VideoGame } from './video-game.entity';
+import { VideoGame } from './entities/video-game.entity';
 import { CreateVideoGameDto } from './dto/create-video-game.dto';
 import { UpdateVideoGameDto } from './dto/update-video-game.dto';
 import { VideoGameQueries } from './dto/video-game-queries.dto';

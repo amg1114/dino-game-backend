@@ -73,4 +73,31 @@ export class VideoGamesController {
   deleteVideoGame(@Param('id') id: number) {
     return this.videoGamesService.deleteVideoGame(id);
   }
+
+  /* ---------- ENDPOINTS PARA VIDEOGAMES & USERS ---------- */
+  @Get('user/:id')
+  getVideoGamesByUser(){
+    return "Videojuegos del usuario"
+  }
+
+  @Post(':id/user/:user')
+  addVideoGameToUser(){
+    return "Videojuego añadido al usuario"
+  }
+
+  /* ---------- ENDPOINTS PARA DESCUENTOS ---------- */
+  @Get(':id/descuentos')
+  getDescuentos(){
+    return "Descuentos del videojuego"
+  }
+
+  @Post(':id/descuentos')
+  createDescuento(){
+    return "Descuento creado"
+  }
+
+  @Patch(':id/descuentos/:descuento')
+  updateDescuento(){
+    return "Descuento actualizado"
+  }
 }
