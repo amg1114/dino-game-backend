@@ -95,7 +95,7 @@ export class UsersService {
       
 
       const isDeveloper = await this.developersRepository.exists({
-        where: { id },
+        where: { user: { id } },
       });
 
       if (isDeveloper) {
@@ -103,7 +103,7 @@ export class UsersService {
       }
 
       const isAdmin = await this.administratorsRepository.exists({
-        where: { id },
+        where: { user: { id } },
       });
 
       if (isAdmin) {
