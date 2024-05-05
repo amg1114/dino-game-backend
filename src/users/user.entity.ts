@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Sexo } from "src/config/enums/sexo.enum";
 import { VideoGame } from "src/video-games/video-game.entity";
 import { Exclude } from "class-transformer";
@@ -31,13 +31,21 @@ export class User {
 
 @Entity('administrators')
 export class Administrator {
-    @OneToOne(() => User, user => user.id)
+    @PrimaryGeneratedColumn()
+    id: number;
+
+    @OneToOne(() => User, user => user.id, ) 
+    @JoinColumn()
     user: User;
 }
 
 @Entity('developers')
 export class Developer {
+    @PrimaryGeneratedColumn()
+    id: number;
+    
     @OneToOne(() => User, user => user.id)
+    @JoinColumn()
     user: User;
 
     @OneToMany(() => VideoGame, videoGame => videoGame.developer)
