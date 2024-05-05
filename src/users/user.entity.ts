@@ -1,4 +1,7 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Sexo } from "src/config/enums/sexo.enum";
+import { VideoGame } from "src/video-games/video-game.entity";
+import { Exclude } from "class-transformer";
 
 @Entity('users')
 export class User {
@@ -8,16 +11,35 @@ export class User {
     @Column()
     nombre: string;
 
-    @Column({type: 'date'})
+    @Column({ type: 'date' })
     fechaNacimiento: Date;
 
-    @Column()
-    sexo: string;
+    @Column({ type: 'enum', enum: Sexo, default: Sexo.Dinosaurio })
+    sexo: Sexo;
 
     @Column()
     pais: string;
 
-    @Column()
+    @Column({ unique: true })
     correo: string;
 
+    @Exclude()
+    @Column()
+    password: string;
+
+}
+
+@Entity('administrators')
+export class Administrator {
+    @OneToOne(() => User, user => user.id)
+    user: User;
+}
+
+@Entity('developers')
+export class Developer {
+    @OneToOne(() => User, user => user.id)
+    user: User;
+
+    @OneToMany(() => VideoGame, videoGame => videoGame.developer)
+    videoGames: VideoGame[];
 }
