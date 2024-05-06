@@ -1,7 +1,8 @@
 import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Sexo } from "src/config/enums/sexo.enum";
-import { VideoGame } from "src/video-games/video-game.entity";
+import { VideoGame } from "src/video-games/entities/video-game.entity";
 import { Exclude } from "class-transformer";
+import { UserVideoGame } from "src/video-games/entities/user-videogames.entity";
 
 @Entity('users')
 export class User {
@@ -27,6 +28,8 @@ export class User {
     @Column()
     password: string;
 
+    @OneToMany(() => UserVideoGame, userVideoGame => userVideoGame.user)
+    userVideoGames: UserVideoGame[]
 }
 
 @Entity('administrators')

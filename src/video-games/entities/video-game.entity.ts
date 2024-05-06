@@ -9,6 +9,10 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Descuento } from './descuento.entity';
+import { Version } from './version.entity';
+import { UserVideoGame } from './user-videogames.entity';
+
 
 @Entity('videogames')
 export class VideoGame {
@@ -35,4 +39,13 @@ export class VideoGame {
 
   @ManyToOne(()=>Developer, developer=>developer.videoGames, {onDelete: 'CASCADE'})
   developer: Developer;
+
+  @OneToMany(() => Version, version => version.videoGame)
+  versions: Version[];
+
+  @OneToMany(() => Descuento, descuento => descuento.videoGame)
+  descuentos: Descuento[];
+
+  @OneToMany(() => UserVideoGame, userVideoGame => userVideoGame.videoGame)
+  userVideoGames: UserVideoGame[];
 }
