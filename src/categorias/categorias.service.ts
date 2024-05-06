@@ -15,7 +15,6 @@ export class CategoriasService {
   constructor(
     @InjectRepository(Categoria)
     private readonly categoriasRepository: Repository<Categoria>,
-    private readonly videoGamesService: VideoGamesService,
   ) {}
 
   findCategorias(urlQueries: CategoriaQueries) {
