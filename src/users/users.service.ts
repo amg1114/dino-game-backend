@@ -1,11 +1,13 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Administrator, Developer, User } from './user.entity';
-import { Repository } from 'typeorm';
+import { Administrator, Developer, User } from './entities/user.entity';
+import { In, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
 import { SALT_ROUNDS } from 'src/config/constants/bycript.constants';
+import { SolicitudDesarrollador } from './entities/solicitud-desarrollador.entity';
+import { CreateSolicitudDesarrolladorDto } from './dto/create-solicitud-desarrollador.dto';
 
 @Injectable()
 export class UsersService {
@@ -16,6 +18,8 @@ export class UsersService {
     private readonly developersRepository: Repository<Developer>,
     @InjectRepository(Administrator)
     private readonly administratorsRepository: Repository<Administrator>,
+    @InjectRepository(SolicitudDesarrollador)
+    private readonly solicitudDesarrolladorRepository: Repository<SolicitudDesarrollador>,
   ) {}
 
   /**
@@ -115,5 +119,49 @@ export class UsersService {
 
       return 'USER';
     }
+  }
+
+  /**
+   * Crea una solicitud de desarrollador para un usuario
+   * @param id ID del usuario a crear la solicitud
+   * @param solicitudFields campos de la solicitud a crear
+   * @returns solicitud creada
+   */
+  async createSolicitudDesarrollador(
+    id: number,
+    solicitudFields: CreateSolicitudDesarrolladorDto,
+  ) {
+    const user = await this.findById(id);
+    const solicitudExists = await this.solicitudDesarrolladorRepository.findOne(
+      {
+        where: { user: { id } },
+      },
+    );
+
+    if (solicitudExists) {
+      throw new HttpException('Solicitud already exists', HttpStatus.CONFLICT);
+    }
+
+    return this.solicitudDesarrolladorRepository.save({
+      ...solicitudFields,
+      user,
+    });
+  }
+
+  /**
+   * Retorna la solicitud de desarrollador de un usuario
+   * @param id ID del usuario a buscar la solicitud
+   * @returns solicitud encontrada
+   */
+  async getSolicitudDesarrollador(id: number) {
+    const solicitud = await this.solicitudDesarrolladorRepository.findOne({
+      where: { user: { id } },
+    });
+
+    if (!solicitud) {
+      throw new HttpException('Solicitud not found', HttpStatus.NOT_FOUND);
+    }
+
+    return solicitud;
   }
 }

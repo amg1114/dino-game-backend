@@ -1,6 +1,6 @@
 import { Asset } from 'src/assets/asset.entity';
 import { Categoria } from 'src/categorias/categoria.entity';
-import { Developer } from 'src/users/user.entity';
+import { Developer } from 'src/users/entities/user.entity';
 import {
   Column,
   Entity,

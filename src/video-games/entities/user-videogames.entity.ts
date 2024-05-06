@@ -1,4 +1,4 @@
-import { User } from "src/users/user.entity";
+import { User } from "src/users/entities/user.entity";
 import { PrimaryGeneratedColumn, Column, ManyToOne, Entity } from "typeorm";
 import { VideoGame } from "./video-game.entity";
 
