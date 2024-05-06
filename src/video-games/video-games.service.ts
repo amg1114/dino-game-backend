@@ -12,6 +12,7 @@ import { Descuento } from './entities/descuento.entity';
 import { UserVideoGame } from './entities/user-videogames.entity';
 import { CreateDescuentoDto } from './dto/descuentos/create-descuento.dto';
 import { UpdateDescuentoDto } from './dto/descuentos/update-descuento.dto';
+import { Version } from './entities/version.entity';
 
 @Injectable()
 export class VideoGamesService {
@@ -20,6 +21,8 @@ export class VideoGamesService {
     private readonly videoGameRepository: Repository<VideoGame>,
     @InjectRepository(Descuento)
     private readonly descuentoRepository: Repository<Descuento>,
+    @InjectRepository(Version)
+    private readonly versionRepository: Repository<Version>,
     @InjectRepository(UserVideoGame)
     private readonly userVideoGameRepository: Repository<UserVideoGame>,
     private readonly usersService: UsersService,
