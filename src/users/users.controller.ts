@@ -65,4 +65,14 @@ export class UsersController {
   deleteUser(@Param('id') id: number) {
     return this.userService.deleteUser(id);
   }
+
+  @Post(':id/solicitud-desarrollador')
+  createSolicitudDesarrollador(@Param('id') id: number) {
+   // return this.userService.createSolicitudDesarrollador(id);
+  }
+
+  @Get(':id/solicitud-desarrollador')
+  getSolicitudDesarrollador(@Param('id') id: number) {
+   // return this.userService.getSolicitudDesarrollador(id);
+  }
 }
