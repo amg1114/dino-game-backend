@@ -10,6 +10,7 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateSolicitudDesarrolladorDto } from './dto/create-solicitud-desarrollador.dto';
 
 @Controller('users')
 export class UsersController {
@@ -67,12 +68,12 @@ export class UsersController {
   }
 
   @Post(':id/solicitud-desarrollador')
-  createSolicitudDesarrollador(@Param('id') id: number) {
-   // return this.userService.createSolicitudDesarrollador(id);
+  createSolicitudDesarrollador(@Param('id') id: number, @Body() solicitudFields: CreateSolicitudDesarrolladorDto) {
+   return this.userService.createSolicitudDesarrollador(id, solicitudFields);
   }
 
   @Get(':id/solicitud-desarrollador')
   getSolicitudDesarrollador(@Param('id') id: number) {
-   // return this.userService.getSolicitudDesarrollador(id);
+   return this.userService.getSolicitudDesarrollador(id);
   }
 }
