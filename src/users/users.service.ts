@@ -1,11 +1,18 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+
+import { Repository } from 'typeorm';
+
+import * as bcrypt from 'bcrypt';
+
+import { SALT_ROUNDS } from 'src/config/constants/bycript.constants';
+
+import { Role } from 'src/config/enums/roles.enum';
+
 import { Administrator, Developer, User } from './entities/user.entity';
-import { In, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import * as bcrypt from 'bcrypt';
-import { SALT_ROUNDS } from 'src/config/constants/bycript.constants';
+
 import { SolicitudDesarrollador } from './entities/solicitud-desarrollador.entity';
 import { CreateSolicitudDesarrolladorDto } from './dto/create-solicitud-desarrollador.dto';
 
@@ -98,7 +105,7 @@ export class UsersService {
    * @param id ID del usuario a buscar
    * @returns rol del usuario
    */
-  async getRole(id: number): Promise<'DEVELOPER' | 'ADMINISTRATOR' | 'USER'> {
+  async getRole(id: number): Promise<Role> {
     const user = await this.findById(id);
     if (user) {
       const isDeveloper = await this.developersRepository.exists({
@@ -106,7 +113,7 @@ export class UsersService {
       });
 
       if (isDeveloper) {
-        return 'DEVELOPER';
+        return Role.DEVELOPER;
       }
 
       const isAdmin = await this.administratorsRepository.exists({
@@ -114,10 +121,10 @@ export class UsersService {
       });
 
       if (isAdmin) {
-        return 'ADMINISTRATOR';
+        return Role.ADMINISTRATOR;
       }
 
-      return 'USER';
+      return Role.USER;
     }
   }
 

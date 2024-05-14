@@ -1,10 +1,10 @@
-import { IsDate, IsDecimal, IsOptional } from "class-validator";
+import { IsDate, IsDecimal, IsNumber, IsOptional } from "class-validator";
 
 export class UpdateDescuentoDto {
     /**
      * Porcentaje de descuento
      */
-    @IsDecimal()
+    @IsNumber()
     @IsOptional()
     porcentaje?: number;
 
