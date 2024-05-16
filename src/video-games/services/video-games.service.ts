@@ -81,7 +81,6 @@ export class VideoGamesService {
 
     const videoGames = await this.videoGameRepository.find({
       where: whereConditions,
-      take: queries.limit,
       relations: ['assets', 'categorias'],
       order: {
         titulo: 'ASC',
@@ -89,6 +88,7 @@ export class VideoGamesService {
           index: 'ASC',
         },
       },
+      take: queries.limit,
     });
 
     if (videoGames.length === 0) {
