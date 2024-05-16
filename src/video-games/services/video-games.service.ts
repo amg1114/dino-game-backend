@@ -1,5 +1,6 @@
 import {
   FindOptionsWhere,
+  ILike,
   LessThanOrEqual,
   Like,
   MoreThanOrEqual,
@@ -64,7 +65,7 @@ export class VideoGamesService {
     let whereConditions: FindOptionsWhere<VideoGame> = {};
 
     if (queries.search) {
-      whereConditions.titulo = Like(`%${queries.search}%`);
+      whereConditions.titulo = ILike(`%${queries.search}%`);
     }
 
     if (queries.categoria) {
