@@ -14,8 +14,6 @@ import { CreateVideoGameDto } from '../dto/video-games/create-video-game.dto';
 import { UpdateVideoGameDto } from '../dto/video-games/update-video-game.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { VideoGameQueries } from '../dto/queries/video-game-queries.dto';
-import { CreateDescuentoDto } from '../dto/descuentos/create-descuento.dto';
-import { UpdateDescuentoDto } from '../dto/descuentos/update-descuento.dto';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Role } from 'src/config/enums/roles.enum';
@@ -87,6 +85,25 @@ export class VideoGamesController {
   deleteVideoGame(@Param('videogame') videogame: number) {
     return this.videoGamesService.deleteVideoGame(videogame);
   }
-
   
+  /**
+   * EndPoint para buscar los videojuegos de un usuario basado en el ID del usuario.
+   * @param id ID del usuario
+   * @returns Videojuegos del usuario
+   */
+  @Get('user/:user')
+  getVideoGamesByUser(@Param('user') user: number) {
+    return this.videoGamesService.findByUser(user);
+  }
+
+  /**
+   * EndPoint para agregar un videojuego a un usuario basado en los parámetros ID del videojuego y del usuario.
+   * @param id ID del videojuego
+   * @param user ID del usuario
+   * @returns Resultado de la operación
+   */
+  @Post(':videogame/user/:user')
+  addVideoGameToUser(@Param('videogame') videogame: number, @Param('user') user: number){
+    return this.videoGamesService.addVideoGameToUser(videogame, user);
+  }
 }
