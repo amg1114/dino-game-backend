@@ -1,11 +1,18 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { NoticiasService } from './noticias.service';
 import { CreateNoticiaDto } from './dto/create-noticia.dto';
 import { UpdateNoticiaDto } from './dto/update-noticia.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { User } from 'src/users/entities/user.entity';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Public } from 'src/auth/decorators/public.decorator';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { Role } from 'src/config/enums/roles.enum';
 
 @ApiTags('Noticias')
 @Controller('noticias')
+@UseGuards(AuthGuard, RolesGuard)
 export class NoticiasController {
     constructor(private noticiasService: NoticiasService) {}
 
@@ -15,6 +22,7 @@ export class NoticiasController {
      * @returns La lista de noticias
      */
     @Get()
+    @Public()
     findAll(@Query('limit') limit = 100){
         return this.noticiasService.findAll(+limit);
     }
@@ -25,6 +33,7 @@ export class NoticiasController {
      * @returns La noticia con el id dado
      */
     @Get(':id')
+    @Public()
     findOne(@Param('id') id: string){
         return this.noticiasService.findOne(+id);
     }
@@ -35,6 +44,7 @@ export class NoticiasController {
      * @returns La noticia recién creada
      */
     @Post()
+    @Roles(Role.ADMINISTRATOR, Role.DEVELOPER)
     create(@Body() noticiaFields: CreateNoticiaDto){
         return this.noticiasService.create(noticiaFields);
     }
@@ -46,6 +56,7 @@ export class NoticiasController {
      * @returns El resultado de la actualización
      */
     @Patch(':id')
+    @Roles(Role.ADMINISTRATOR, Role.DEVELOPER)
     update(@Param('id') id: string, @Body() noticiaFields: UpdateNoticiaDto){
         return this.noticiasService.update(+id, noticiaFields);
     }
@@ -56,6 +67,7 @@ export class NoticiasController {
      * @returns El resultado de la eliminación
      */
     @Delete(':id')
+    @Roles(Role.ADMINISTRATOR, Role.DEVELOPER)
     remove(@Param('id') id: string) {
         return this.noticiasService.remove(+id);
     }

@@ -1,4 +1,10 @@
-import { FindOptionsWhere, LessThanOrEqual, Like, MoreThanOrEqual, Repository } from 'typeorm';
+import {
+  FindOptionsWhere,
+  LessThanOrEqual,
+  Like,
+  MoreThanOrEqual,
+  Repository,
+} from 'typeorm';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -35,6 +41,11 @@ export class VideoGamesService {
     const videogame = await this.videoGameRepository.findOne({
       where: { id },
       relations: ['assets', 'categorias', 'developer'],
+      order: {
+        assets: {
+          index: 'ASC',
+        },
+      },
     });
 
     if (videogame === null) {
@@ -73,6 +84,9 @@ export class VideoGamesService {
       relations: ['assets', 'categorias'],
       order: {
         titulo: 'ASC',
+        assets: {
+          index: 'ASC',
+        },
       },
     });
 
@@ -93,6 +107,14 @@ export class VideoGamesService {
     const userVideoGames = await this.userVideoGameRepository.find({
       where: { user },
       relations: ['videoGame', 'videoGame.assets'],
+      order: {
+        fechaCompra: 'ASC',
+        videoGame: {
+          assets: {
+            index: 'ASC',
+          },
+        }
+      },
     });
 
     if (userVideoGames.length === 0) {

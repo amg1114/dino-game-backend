@@ -1,5 +1,6 @@
 import { Asset } from 'src/assets/asset.entity';
-import { PrimaryGeneratedColumn, Column, OneToMany, Entity } from 'typeorm';
+import { User } from 'src/users/entities/user.entity';
+import { PrimaryGeneratedColumn, Column, OneToMany, Entity, ManyToOne } from 'typeorm';
 
 @Entity('noticias')
 export class Noticia {
@@ -17,4 +18,7 @@ export class Noticia {
 
   @OneToMany(() => Asset, (asset) => asset.noticia)
   assets: Asset[];
+
+  @ManyToOne(() => User, (user) => user.noticias)
+  user: User;
 }

@@ -3,6 +3,7 @@ import { Sexo } from "src/config/enums/sexo.enum";
 import { VideoGame } from "src/video-games/entities/video-game.entity";
 import { Exclude } from "class-transformer";
 import { UserVideoGame } from "src/video-games/entities/user-videogames.entity";
+import { Noticia } from "src/noticias/noticia.entity";
 
 @Entity('users')
 export class User {
@@ -30,6 +31,9 @@ export class User {
 
     @OneToMany(() => UserVideoGame, userVideoGame => userVideoGame.user)
     userVideoGames: UserVideoGame[]
+
+    @OneToMany(()=> Noticia, noticia => noticia.user)
+    noticias: Noticia[];
 }
 
 @Entity('administrators')
