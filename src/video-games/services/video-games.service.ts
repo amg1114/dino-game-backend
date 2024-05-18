@@ -79,12 +79,16 @@ export class VideoGamesService {
       whereConditions.precio = LessThanOrEqual(queries.precio);
     }
 
+    console.log("Test queries", queries);
+
     const videoGames = await this.videoGameRepository.createQueryBuilder('videoGame')
       .leftJoinAndSelect('videoGame.assets', 'assets')
+      .leftJoinAndSelect('videoGame.categorias', 'categorias')
       .addOrderBy('assets.index', 'ASC')
+      .addOrderBy('categorias.titulo', 'ASC')
+      .addOrderBy('videoGame.titulo', 'ASC')
       .where(whereConditions)
       .take(queries.limit)
-      .orderBy('videoGame.titulo', 'ASC')
       .getMany();
 
     if (videoGames.length === 0) {
