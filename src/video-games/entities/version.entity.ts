@@ -17,6 +17,9 @@ export class Version {
   version: string;
 
   @Column()
+  size: string;
+
+  @Column()
   releaseDate: Date;
 
   @ManyToOne(() => VideoGame, (videoGame) => videoGame.versions, {
