@@ -2,8 +2,6 @@ import {
   FindOptionsWhere,
   ILike,
   LessThanOrEqual,
-  Like,
-  MoreThanOrEqual,
   Repository,
 } from 'typeorm';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
@@ -41,12 +39,20 @@ export class VideoGamesService {
   async findById(id: number) {
     const videogame = await this.videoGameRepository.findOne({
       where: { id },
-      relations: ['assets', 'categorias', 'developer'],
+      relations: [
+        'assets',
+        'categorias',
+        'developer',
+        'developer.user',
+        'versions',
+        'versions.requisitos',
+        'descuentos'
+      ],
       order: {
-        assets: {
-          index: 'ASC',
-        },
-      },
+        versions: {
+          releaseDate: 'DESC',
+        }
+      }
     });
 
     if (videogame === null) {
