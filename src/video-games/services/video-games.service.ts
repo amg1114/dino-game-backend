@@ -11,7 +11,6 @@ import { VideoGame } from '../entities/video-game.entity';
 import { CreateVideoGameDto } from '../dto/video-games/create-video-game.dto';
 import { UpdateVideoGameDto } from '../dto/video-games/update-video-game.dto';
 import { VideoGameQueries } from '../dto/queries/video-game-queries.dto';
-import { WhereClause } from 'typeorm/query-builder/WhereClause';
 import { UsersService } from 'src/users/services/users.service';
 import { Descuento } from '../entities/descuento.entity';
 import { UserVideoGame } from '../entities/user-videogames.entity';
@@ -47,12 +46,7 @@ export class VideoGamesService {
         'versions',
         'versions.requisitos',
         'descuentos'
-      ],
-      order: {
-        versions: {
-          releaseDate: 'DESC',
-        }
-      }
+      ]
     });
 
     if (videogame === null) {
@@ -85,17 +79,17 @@ export class VideoGamesService {
       whereConditions.precio = LessThanOrEqual(queries.precio);
     }
 
-    const videoGames = await this.videoGameRepository.find({
-      where: whereConditions,
-      relations: ['assets', 'categorias'],
-      order: {
-        titulo: 'ASC',
-        assets: {
-          index: 'ASC',
-        },
-      },
-      take: queries.limit,
-    });
+    console.log("Test queries", queries);
+
+    const videoGames = await this.videoGameRepository.createQueryBuilder('videoGame')
+      .leftJoinAndSelect('videoGame.assets', 'assets')
+      .leftJoinAndSelect('videoGame.categorias', 'categorias')
+      .addOrderBy('assets.index', 'ASC')
+      .addOrderBy('categorias.titulo', 'ASC')
+      .addOrderBy('videoGame.titulo', 'ASC')
+      .where(whereConditions)
+      .take(queries.limit)
+      .getMany();
 
     if (videoGames.length === 0) {
       throw new HttpException('Videogames was not found', HttpStatus.NOT_FOUND);
