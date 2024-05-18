@@ -2,7 +2,10 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 
-import { EstadoSolicitud,  SolicitudDesarrollador } from '../entities/solicitud-desarrollador.entity';
+import {
+  EstadoSolicitud,
+  SolicitudDesarrollador,
+} from '../entities/solicitud-desarrollador.entity';
 import { Developer, Administrator } from '../entities/user.entity';
 
 import { UsersService } from '../services/users.service';
@@ -28,6 +31,7 @@ export class DevelopersService {
    */
   async getSolicitudes(): Promise<SolicitudDesarrollador[]> {
     return this.solicitudDesarrolladorRepository.find({
+      relations: ['user'],
       order: {
         estado: 'ASC',
       },
@@ -123,9 +127,8 @@ export class DevelopersService {
    * @returns {Promise<Developer>} Desarrollador creado
    */
   async createDeveloper(user_id: number): Promise<Developer> {
-    console.log('Create developer', user_id);
     const user = await this.userService.findById(user_id);
-    return this.developersRepository.save({ user });
+    return this.developersRepository.save({ id: user.id, user });
   }
 
   /**
@@ -135,7 +138,7 @@ export class DevelopersService {
    */
   async deleteDeveloper(id: number): Promise<DeleteResult> {
     const developer = await this.developersRepository.findOne({
-      where: { user: { id } },
+      where: { id },
     });
 
     if (!developer) {
@@ -161,7 +164,14 @@ export class DevelopersService {
    * @returns Lista de desarrolladores
    */
   async getDevelopers(): Promise<Developer[]> {
-    const developers = await this.developersRepository.find();
+    const developers = await this.developersRepository.find({
+      relations: ['user'],
+      order: {
+        user: {
+          nombre: 'ASC',
+        },
+      },
+    });
 
     if (!developers)
       throw new HttpException(
