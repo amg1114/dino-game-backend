@@ -16,7 +16,9 @@ import { Role } from 'src/config/enums/roles.enum';
 import { DevelopersService } from '../services/developers.service';
 import { CreateSolicitudDesarrolladorDto } from '../dto/create-solicitud-desarrollador.dto';
 import { UpdateSolicitudDesarrolladorDto } from '../dto/update-solicitud-desarrollador.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags ('Desarrolladores')
 @Controller('users/developers')
 @UseGuards(AuthGuard, RolesGuard)
 export class DevelopersController {
