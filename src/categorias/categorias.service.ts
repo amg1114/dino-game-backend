@@ -23,13 +23,19 @@ export class CategoriasService {
     if (queries.title) {
       queries.title = Like(`%${queries.title}%`);
     }
-    
+
     return this.categoriasRepository.find({
       take: limit,
       where: queries as FindOptionsWhere<Categoria>,
       relations: ['videoGames', 'videoGames.assets'],
       order: {
         titulo: 'ASC',
+        videoGames: {
+          assets: {
+            index: 'ASC',
+          },
+          titulo: 'ASC',
+        },
       },
     });
   }
@@ -38,6 +44,15 @@ export class CategoriasService {
     const categoria = await this.categoriasRepository.findOne({
       where: { id },
       relations: ['videoGames', 'videoGames.assets'],
+      order: {
+        videoGames: {
+          assets: {
+            index: 'ASC',
+          },
+          titulo: 'ASC',
+        },
+        titulo: 'ASC',
+      },
     });
 
     if (!categoria) {
