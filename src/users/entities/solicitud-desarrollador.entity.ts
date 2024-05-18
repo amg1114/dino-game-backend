@@ -2,9 +2,9 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from "ty
 import { User } from "./user.entity";
 
 export enum EstadoSolicitud {
-    Pendiente = 'Pendiente',
-    Aceptada = 'Aceptada',
-    Rechazada = 'Rechazada',
+    Pendiente = 0,
+    Aceptada = 1,
+    Rechazada = 2,
 }
 
 @Entity('solicitudes-desarrollador')

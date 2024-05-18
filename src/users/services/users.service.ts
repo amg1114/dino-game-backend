@@ -9,12 +9,12 @@ import { SALT_ROUNDS } from 'src/config/constants/bycript.constants';
 
 import { Role } from 'src/config/enums/roles.enum';
 
-import { Administrator, Developer, User } from './entities/user.entity';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { Administrator, Developer, User } from '../entities/user.entity';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
 
-import { SolicitudDesarrollador } from './entities/solicitud-desarrollador.entity';
-import { CreateSolicitudDesarrolladorDto } from './dto/create-solicitud-desarrollador.dto';
+import { SolicitudDesarrollador } from '../entities/solicitud-desarrollador.entity';
+import { CreateSolicitudDesarrolladorDto } from '../dto/create-solicitud-desarrollador.dto';
 
 @Injectable()
 export class UsersService {
@@ -108,20 +108,20 @@ export class UsersService {
   async getRole(id: number): Promise<Role> {
     const user = await this.findById(id);
     if (user) {
-      const isDeveloper = await this.developersRepository.exists({
-        where: { user: { id } },
-      });
-
-      if (isDeveloper) {
-        return Role.DEVELOPER;
-      }
-
       const isAdmin = await this.administratorsRepository.exists({
         where: { user: { id } },
       });
 
       if (isAdmin) {
         return Role.ADMINISTRATOR;
+      }
+
+      const isDeveloper = await this.developersRepository.exists({
+        where: { user: { id } },
+      });
+
+      if (isDeveloper) {
+        return Role.DEVELOPER;
       }
 
       return Role.USER;

@@ -13,6 +13,9 @@ export class Asset {
   @Column()
   url: string;
   
+  @Column({default: 0})
+  index: number;
+
   @ManyToOne(() => VideoGame, (videoGame) => videoGame.assets, {onDelete: 'CASCADE'})
   videoGame: VideoGame;
  

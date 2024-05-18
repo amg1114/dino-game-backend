@@ -12,7 +12,7 @@ import { VideoGamesService } from './services/video-games.service';
 import { VideoGamesController } from './controllers/video-games.controller';
 import { UsersModule } from 'src/users/users.module';
 
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from 'src/users/services/users.service';
 import { DescuentosService } from './services/descuentos.service';
 
 @Module({
