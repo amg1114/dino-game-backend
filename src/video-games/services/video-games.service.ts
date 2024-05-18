@@ -1,8 +1,7 @@
 import {
   FindOptionsWhere,
+  ILike,
   LessThanOrEqual,
-  Like,
-  MoreThanOrEqual,
   Repository,
 } from 'typeorm';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
@@ -13,7 +12,7 @@ import { CreateVideoGameDto } from '../dto/video-games/create-video-game.dto';
 import { UpdateVideoGameDto } from '../dto/video-games/update-video-game.dto';
 import { VideoGameQueries } from '../dto/queries/video-game-queries.dto';
 import { WhereClause } from 'typeorm/query-builder/WhereClause';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from 'src/users/services/users.service';
 import { Descuento } from '../entities/descuento.entity';
 import { UserVideoGame } from '../entities/user-videogames.entity';
 import { CreateDescuentoDto } from '../dto/descuentos/create-descuento.dto';
@@ -47,6 +46,7 @@ export class VideoGamesService {
         'developer.user',
         'versions',
         'versions.requisitos',
+        'descuentos'
       ],
       order: {
         versions: {
@@ -71,7 +71,7 @@ export class VideoGamesService {
     let whereConditions: FindOptionsWhere<VideoGame> = {};
 
     if (queries.search) {
-      whereConditions.titulo = Like(`%${queries.search}%`);
+      whereConditions.titulo = ILike(`%${queries.search}%`);
     }
 
     if (queries.categoria) {
@@ -87,20 +87,14 @@ export class VideoGamesService {
 
     const videoGames = await this.videoGameRepository.find({
       where: whereConditions,
-      take: queries.limit,
-      relations: [
-        'assets',
-        'categorias',
-        'developer',
-        'developer.user',
-        'versions',
-        'versions.requisitos',
-      ],
+      relations: ['assets', 'categorias'],
       order: {
-        versions: {
-          releaseDate: 'DESC',
-        }
-      }
+        titulo: 'ASC',
+        assets: {
+          index: 'ASC',
+        },
+      },
+      take: queries.limit,
     });
 
     if (videoGames.length === 0) {
@@ -120,6 +114,14 @@ export class VideoGamesService {
     const userVideoGames = await this.userVideoGameRepository.find({
       where: { user },
       relations: ['videoGame', 'videoGame.assets'],
+      order: {
+        fechaCompra: 'ASC',
+        videoGame: {
+          assets: {
+            index: 'ASC',
+          },
+        }
+      },
     });
 
     if (userVideoGames.length === 0) {
