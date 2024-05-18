@@ -84,6 +84,7 @@ export class VideoGamesService {
       .addOrderBy('assets.index', 'ASC')
       .where(whereConditions)
       .take(queries.limit)
+      .orderBy('videoGame.titulo', 'ASC')
       .getMany();
 
     if (videoGames.length === 0) {
