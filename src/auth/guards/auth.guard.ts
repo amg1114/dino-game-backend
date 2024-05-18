@@ -5,19 +5,34 @@ import {
   HttpStatus,
   Injectable,
 } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { jwtConstants } from 'src/config/constants/jwt.constants';
 import { UsersService } from 'src/users/users.service';
+import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
+    private readonly reflector: Reflector,
     private readonly jwtService: JwtService,
     private readonly usersService: UsersService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+
+    if (isPublic) {
+      return true;
+    }
+
     const request = context.switchToHttp().getRequest();
+    if (request.headers.authorization === undefined) {
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+    }
     const token = request.headers.authorization.split(' ')[1];
 
     try {
@@ -26,10 +41,8 @@ export class AuthGuard implements CanActivate {
       });
       const user = this.usersService.findByCorreo(decoded.correo);
       request.user = user;
-      
     } catch (error) {
-      console.log(error);
-      throw new HttpException('Unauthorizeddd', HttpStatus.UNAUTHORIZED);
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     }
 
     return true;

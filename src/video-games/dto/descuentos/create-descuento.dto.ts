@@ -1,10 +1,10 @@
-import { IsDate, IsDecimal, IsNotEmpty } from "class-validator";
+import { IsDate, IsDecimal, IsNotEmpty, IsNumber } from "class-validator";
 
 export class CreateDescuentoDto {
     /**
      * Porcentaje de descuento
      */
-    @IsDecimal()
+    @IsNumber()
     @IsNotEmpty()
     porcentaje: number;
 
