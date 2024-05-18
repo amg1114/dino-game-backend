@@ -89,10 +89,10 @@ export class VideoGamesService {
       where: whereConditions,
       relations: ['assets', 'categorias'],
       order: {
-        titulo: 'ASC',
-        assets: {
-          index: 'ASC',
+          assets: {
+          index: 'asc',
         },
+        titulo: 'ASC',
       },
       take: queries.limit,
     });

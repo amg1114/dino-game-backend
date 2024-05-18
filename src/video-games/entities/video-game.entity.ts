@@ -34,16 +34,16 @@ export class VideoGame {
   @OneToMany(() => Asset, (asset) => asset.videoGame)
   assets: Asset[];
 
-  @ManyToMany(() => Categoria, categoria=>categoria.videoGames, {onDelete: 'CASCADE', eager: true})
+  @ManyToMany(() => Categoria, categoria=>categoria.videoGames)
   categorias: Categoria[];
 
-  @ManyToOne(()=>Developer, developer=>developer.videoGames, {onDelete: 'CASCADE', eager: true})
+  @ManyToOne(()=>Developer, developer=>developer.videoGames)
   developer: Developer;
 
-  @OneToMany(() => Version, version => version.videoGame, {eager: true})
+  @OneToMany(() => Version, version => version.videoGame)
   versions: Version[];
 
-  @OneToMany(() => Descuento, descuento => descuento.videoGame, {eager: true})
+  @OneToMany(() => Descuento, descuento => descuento.videoGame)
   descuentos: Descuento[];
 
   @OneToMany(() => UserVideoGame, userVideoGame => userVideoGame.videoGame,)
