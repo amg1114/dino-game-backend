@@ -1,4 +1,9 @@
-import { FindOptionsWhere, ILike, LessThanOrEqual, Repository } from 'typeorm';
+import {
+  FindOptionsWhere,
+  ILike,
+  LessThanOrEqual,
+  Repository,
+} from 'typeorm';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -6,14 +11,12 @@ import { VideoGame } from '../entities/video-game.entity';
 import { CreateVideoGameDto } from '../dto/video-games/create-video-game.dto';
 import { UpdateVideoGameDto } from '../dto/video-games/update-video-game.dto';
 import { VideoGameQueries } from '../dto/queries/video-game-queries.dto';
-import { WhereClause } from 'typeorm/query-builder/WhereClause';
 import { UsersService } from 'src/users/services/users.service';
 import { Descuento } from '../entities/descuento.entity';
 import { UserVideoGame } from '../entities/user-videogames.entity';
 import { CreateDescuentoDto } from '../dto/descuentos/create-descuento.dto';
 import { UpdateDescuentoDto } from '../dto/descuentos/update-descuento.dto';
 import { Version } from '../entities/version.entity';
-import { VideoGameOrder } from 'src/config/constants/entity-order.constants';
 
 @Injectable()
 export class VideoGamesService {
@@ -33,17 +36,18 @@ export class VideoGamesService {
    * @returns VideoJuego encontrado
    */
   async findById(id: number) {
-    const videogame = await this.videoGameRepository.createQueryBuilder('videoGame')
-      .leftJoinAndSelect('videoGame.categorias', 'categorias')
-      .leftJoinAndSelect('videoGame.developer', 'developer')
-      .leftJoinAndSelect('developer.user', 'user')
-      .leftJoinAndSelect('videoGame.versions', 'versions')
-      .leftJoinAndSelect('videoGame.descuentos', 'descuentos')
-      .leftJoinAndSelect('videoGame.assets', 'assets')
-      .where('videoGame.id = :id', { id })
-      .addOrderBy('assets.index', 'ASC')
-      .addOrderBy('categorias.titulo', 'ASC')
-      .getOne();
+    const videogame = await this.videoGameRepository.findOne({
+      where: { id },
+      relations: [
+        'assets',
+        'categorias',
+        'developer',
+        'developer.user',
+        'versions',
+        'versions.requisitos',
+        'descuentos'
+      ]
+    });
 
     if (videogame === null) {
       throw new HttpException('Videogame was not found', HttpStatus.NOT_FOUND);
@@ -75,12 +79,10 @@ export class VideoGamesService {
       whereConditions.precio = LessThanOrEqual(queries.precio);
     }
 
-    const videoGames = await this.videoGameRepository
-      .createQueryBuilder('videoGame')
+    const videoGames = await this.videoGameRepository.createQueryBuilder('videoGame')
       .leftJoinAndSelect('videoGame.assets', 'assets')
-      .where(whereConditions)
       .addOrderBy('assets.index', 'ASC')
-      .orderBy('videoGame.titulo', 'ASC')
+      .where(whereConditions)
       .take(queries.limit)
       .getMany();
 
@@ -98,13 +100,18 @@ export class VideoGamesService {
    */
   async findByUser(userId: number) {
     const user = await this.usersService.findById(userId);
-    const userVideoGames = await this.userVideoGameRepository.createQueryBuilder('userVideoGame')
-      .leftJoinAndSelect('userVideoGame.videoGame', 'videoGame')
-      .leftJoinAndSelect('videoGame.assets', 'assets')
-      .where('userVideoGame.user = :user', { user })
-      .addOrderBy('assets.index', 'ASC')
-      .orderBy('userVideoGame.fechaCompra', 'DESC')
-      .getMany();
+    const userVideoGames = await this.userVideoGameRepository.find({
+      where: { user },
+      relations: ['videoGame', 'videoGame.assets'],
+      order: {
+        fechaCompra: 'ASC',
+        videoGame: {
+          assets: {
+            index: 'ASC',
+          },
+        }
+      },
+    });
 
     if (userVideoGames.length === 0) {
       throw new HttpException('Videogames was not found', HttpStatus.NOT_FOUND);
