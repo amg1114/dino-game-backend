@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   Query,
+  Request,
   UseGuards,
 } from '@nestjs/common';
 import { VideoGamesService } from '../services/video-games.service';
@@ -25,7 +26,7 @@ import { Public } from 'src/auth/decorators/public.decorator';
 @UseGuards(AuthGuard, RolesGuard)
 export class VideoGamesController {
   constructor(private readonly videoGamesService: VideoGamesService) {}
-  
+
   /**
    * EndPoint para buscar un videojuego basado en el ID parametro ID.
    * @param id ID del videojuego a
@@ -84,26 +85,5 @@ export class VideoGamesController {
   @Roles(Role.ADMINISTRATOR, Role.DEVELOPER)
   deleteVideoGame(@Param('videogame') videogame: number) {
     return this.videoGamesService.deleteVideoGame(videogame);
-  }
-  
-  /**
-   * EndPoint para buscar los videojuegos de un usuario basado en el ID del usuario.
-   * @param id ID del usuario
-   * @returns Videojuegos del usuario
-   */
-  @Get('user/:user')
-  getVideoGamesByUser(@Param('user') user: number) {
-    return this.videoGamesService.findByUser(user);
-  }
-
-  /**
-   * EndPoint para agregar un videojuego a un usuario basado en los parámetros ID del videojuego y del usuario.
-   * @param id ID del videojuego
-   * @param user ID del usuario
-   * @returns Resultado de la operación
-   */
-  @Post(':videogame/user/:user')
-  addVideoGameToUser(@Param('videogame') videogame: number, @Param('user') user: number){
-    return this.videoGamesService.addVideoGameToUser(videogame, user);
   }
 }
