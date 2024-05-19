@@ -4,10 +4,12 @@ import { UpdateNoticiaDto } from './dto/update-noticia.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Noticia } from './noticia.entity';
 import { Repository } from 'typeorm';
+import { UsersService } from 'src/users/services/users.service';
 
 @Injectable()
 export class NoticiasService {
   constructor(
+    private readonly usersService: UsersService,
     @InjectRepository(Noticia)
     private readonly noticiasRepository: Repository<Noticia>,
   ) {}
@@ -18,7 +20,11 @@ export class NoticiasService {
    * @returns The newly created noticia
    * @throws {HttpException} if the noticia is not created
    */
-  create(createNoticiaDto: CreateNoticiaDto) {
+  async create(autorId: number, createNoticiaDto: CreateNoticiaDto) {
+    const author = await this.usersService.findById(autorId);
+    const noticia = this.noticiasRepository.create(createNoticiaDto);
+    noticia.autor = author;
+    
     return this.noticiasRepository.save(createNoticiaDto);
   }
 
