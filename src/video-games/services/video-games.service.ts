@@ -13,16 +13,16 @@ import { CreateDescuentoDto } from '../dto/descuentos/create-descuento.dto';
 import { UpdateDescuentoDto } from '../dto/descuentos/update-descuento.dto';
 import { Version } from '../entities/version.entity';
 import { AddVideoGameToUserDto } from '../dto/video-games/add-videogame-to-user.dto';
+import { CategoriasService } from 'src/categorias/categorias.service';
 
 @Injectable()
 export class VideoGamesService {
   constructor(
     @InjectRepository(VideoGame)
     private readonly videoGameRepository: Repository<VideoGame>,
-    @InjectRepository(Version)
-    private readonly versionRepository: Repository<Version>,
     @InjectRepository(UserVideoGame)
     private readonly userVideoGameRepository: Repository<UserVideoGame>,
+    private readonly categoriasService: CategoriasService,
     private readonly usersService: UsersService,
   ) {}
 
@@ -178,7 +178,17 @@ export class VideoGamesService {
    * @returns VideoJuego creado
    */
   async createVideoGame(videogameFields: CreateVideoGameDto) {
-    return this.videoGameRepository.save(videogameFields);
+    let categorias = [];
+    if (videogameFields.categorias) {
+      categorias = videogameFields.categorias.map((id) => {
+        return { id };
+      });
+    }
+    const videoGame = this.videoGameRepository.create({
+      ...videogameFields,
+      categorias,
+    });
+    return this.videoGameRepository.save(videoGame);
   }
 
   /**
@@ -187,16 +197,29 @@ export class VideoGamesService {
    * @param videogameFields Campos a actualizar
    * @returns Resultado de la actualización
    */
-  async updateVideoGame(id: number, videogameFields: UpdateVideoGameDto) {
+  async updateVideoGame(
+    id: number,
+    { categorias, ...videogameFields }: UpdateVideoGameDto,
+  ) {
     const resultado = await this.videoGameRepository.update(
       id,
       videogameFields,
     );
+
     if (resultado.affected === 0) {
       throw new HttpException(
         'Videogame could not updated',
         HttpStatus.CONFLICT,
       );
+    }
+
+    if (categorias) {
+      const videoGame = await this.findById(id);
+
+       videoGame.categorias = await Promise.all(
+        categorias.map((id) => this.categoriasService.findCategoriaById(id))
+      );
+      await this.videoGameRepository.save(videoGame);
     }
 
     return resultado;
