@@ -1,9 +1,4 @@
-import {
-  FindOptionsWhere,
-  ILike,
-  LessThanOrEqual,
-  Repository,
-} from 'typeorm';
+import { FindOptionsWhere, ILike, LessThanOrEqual, Repository } from 'typeorm';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -17,6 +12,7 @@ import { UserVideoGame } from '../entities/user-videogames.entity';
 import { CreateDescuentoDto } from '../dto/descuentos/create-descuento.dto';
 import { UpdateDescuentoDto } from '../dto/descuentos/update-descuento.dto';
 import { Version } from '../entities/version.entity';
+import { AddVideoGameToUserDto } from '../dto/video-games/add-videogame-to-user.dto';
 
 @Injectable()
 export class VideoGamesService {
@@ -45,8 +41,8 @@ export class VideoGamesService {
         'developer.user',
         'versions',
         'versions.requisitos',
-        'descuentos'
-      ]
+        'descuentos',
+      ],
     });
 
     if (videogame === null) {
@@ -79,9 +75,10 @@ export class VideoGamesService {
       whereConditions.precio = LessThanOrEqual(queries.precio);
     }
 
-    console.log("Test queries", queries);
+    console.log('Test queries', queries);
 
-    const videoGames = await this.videoGameRepository.createQueryBuilder('videoGame')
+    const videoGames = await this.videoGameRepository
+      .createQueryBuilder('videoGame')
       .leftJoinAndSelect('videoGame.assets', 'assets')
       .leftJoinAndSelect('videoGame.categorias', 'categorias')
       .addOrderBy('assets.index', 'ASC')
@@ -103,7 +100,7 @@ export class VideoGamesService {
    * @param userId ID del usuario
    * @returns Videojuegos del usuario
    */
-  async findByUser(userId: number) {
+  async findUserVideoGames(userId: number) {
     const user = await this.usersService.findById(userId);
     const userVideoGames = await this.userVideoGameRepository.find({
       where: { user },
@@ -114,7 +111,7 @@ export class VideoGamesService {
           assets: {
             index: 'ASC',
           },
-        }
+        },
       },
     });
 
@@ -123,6 +120,56 @@ export class VideoGamesService {
     }
 
     return userVideoGames;
+  }
+
+  /**
+   * Busca un videojuego de un usuario
+   * @param userId ID del usuario
+   * @param videoGameId ID del videojuego
+   * @returns Videojuego del usuario
+   */
+  async findUserVideoGame(userId: number, videoGameId: number) {
+    const user = await this.usersService.findById(userId);
+    const videoGame = await this.findById(videoGameId);
+
+    const userVideoGame = await this.userVideoGameRepository.findOne({
+      where: { user, videoGame },
+      relations: ['videoGame', 'videoGame.assets'],
+      order: {
+        videoGame: {
+          assets: {
+            index: 'ASC',
+          },
+        },
+      },
+    });
+
+    if (userVideoGame === null) {
+      throw new HttpException('Videogame was not found', HttpStatus.NOT_FOUND);
+    }
+
+    return userVideoGame;
+  }
+
+  /**
+   * Elimina un videojuego de un usuario
+   * @param userId ID del usuario
+   * @param videoGameId ID del videojuego
+   * @returns Resultado de la eliminación
+   */
+  async deleteUserVideoGame(userId: number, videoGameId: number) {
+    const user = await this.usersService.findById(userId);
+    const videoGame = await this.findById(videoGameId);
+
+    const userVideoGame = await this.userVideoGameRepository.findOne({
+      where: { user, videoGame },
+    });
+
+    if (userVideoGame === null) {
+      throw new HttpException('Videogame was not found', HttpStatus.NOT_FOUND);
+    }
+
+    return this.userVideoGameRepository.delete(userVideoGame);
   }
 
   /**
@@ -178,11 +225,16 @@ export class VideoGamesService {
    * @param userId ID del usuario
    * @returns Relación creada
    */
-  async addVideoGameToUser(videoGameId: number, userId: number) {
+  async addVideoGameToUser(
+    videoGameId: number,
+    userId: number,
+    compraFields: AddVideoGameToUserDto,
+  ) {
     const user = await this.usersService.findById(userId);
     const videoGame = await this.findById(videoGameId);
 
     return this.userVideoGameRepository.save({
+      precio: compraFields.precio,
       fechaCompra: new Date(),
       user,
       videoGame,

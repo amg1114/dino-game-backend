@@ -10,6 +10,9 @@ export class UserVideoGame {
     @Column({ type: 'date' })
     fechaCompra: Date;
 
+    @Column({default: 0, type: 'float'})
+    precio: number;
+
     @ManyToOne(() => User, user => user.userVideoGames, { onDelete: 'CASCADE' })
     user: User;
 

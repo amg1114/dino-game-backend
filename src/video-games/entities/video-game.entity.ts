@@ -13,13 +13,12 @@ import { Descuento } from './descuento.entity';
 import { Version } from './version.entity';
 import { UserVideoGame } from './user-videogames.entity';
 
-
 @Entity('videogames')
 export class VideoGame {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ type: 'float' })
   precio: number;
 
   @Column()
@@ -34,18 +33,18 @@ export class VideoGame {
   @OneToMany(() => Asset, (asset) => asset.videoGame)
   assets: Asset[];
 
-  @ManyToMany(() => Categoria, categoria=>categoria.videoGames)
+  @ManyToMany(() => Categoria, (categoria) => categoria.videoGames)
   categorias: Categoria[];
 
-  @ManyToOne(()=>Developer, developer=>developer.videoGames)
+  @ManyToOne(() => Developer, (developer) => developer.videoGames)
   developer: Developer;
 
-  @OneToMany(() => Version, version => version.videoGame)
+  @OneToMany(() => Version, (version) => version.videoGame)
   versions: Version[];
 
-  @OneToMany(() => Descuento, descuento => descuento.videoGame)
+  @OneToMany(() => Descuento, (descuento) => descuento.videoGame)
   descuentos: Descuento[];
 
-  @OneToMany(() => UserVideoGame, userVideoGame => userVideoGame.videoGame,)
+  @OneToMany(() => UserVideoGame, (userVideoGame) => userVideoGame.videoGame)
   userVideoGames: UserVideoGame[];
 }
