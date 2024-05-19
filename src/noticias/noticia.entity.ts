@@ -20,5 +20,5 @@ export class Noticia {
   assets: Asset[];
 
   @ManyToOne(() => User, (user) => user.noticias)
-  user: User;
+  autor: User;
 }

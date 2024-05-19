@@ -32,7 +32,7 @@ export class User {
     @OneToMany(() => UserVideoGame, userVideoGame => userVideoGame.user)
     userVideoGames: UserVideoGame[]
 
-    @OneToMany(()=> Noticia, noticia => noticia.user)
+    @OneToMany(()=> Noticia, noticia => noticia.autor)
     noticias: Noticia[];
 }
 
