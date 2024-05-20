@@ -4,8 +4,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import { Categoria } from './categoria.entity';
 
-import { VideoGamesService } from 'src/video-games/services/video-games.service';
-
 import { CreateCategoriaDto } from './dto/create-categoria.dto';
 import { UpdateCategoriaDto } from './dto/update-categoria.dto';
 import { CategoriaQueries } from './dto/categoria-queries.dto';

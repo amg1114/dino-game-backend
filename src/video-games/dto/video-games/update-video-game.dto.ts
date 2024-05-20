@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsDate, IsNumber } from "class-validator";
+import { IsOptional, IsString, IsDate, IsNumber, IsArray } from "class-validator";
 
 export class UpdateVideoGameDto {
     @IsString()
@@ -16,4 +16,8 @@ export class UpdateVideoGameDto {
     @IsDate()
     @IsOptional()
     fechaLanzamiento?: Date;
+
+    @IsArray()
+    @IsOptional()
+    categorias?: number[]; 
 }

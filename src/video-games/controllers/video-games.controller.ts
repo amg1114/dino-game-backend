@@ -44,7 +44,7 @@ export class VideoGamesController {
    * @returns Videojuego creado
    */
   @Post()
-  @Roles(Role.DEVELOPER)
+  @Roles(Role.ADMINISTRATOR, Role.DEVELOPER)
   createVideoGame(@Body() videoGameFields: CreateVideoGameDto) {
     return this.videoGamesService.createVideoGame(videoGameFields);
   }
@@ -68,7 +68,7 @@ export class VideoGamesController {
    * @returns Resultado de la actualización
    */
   @Patch(':videogame')
-  @Roles(Role.DEVELOPER)
+  @Roles(Role.ADMINISTRATOR, Role.DEVELOPER)
   updateVideoGame(
     @Param('videogame') videogame: number,
     @Body() videoGameFields: UpdateVideoGameDto,

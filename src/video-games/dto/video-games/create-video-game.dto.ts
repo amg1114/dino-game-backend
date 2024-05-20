@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString, IsDate, IsNumber } from "class-validator";
+import { IsNotEmpty, IsOptional, IsString, IsDate, IsNumber, IsArray } from "class-validator";
 
 export class CreateVideoGameDto {
     @IsString()
@@ -16,4 +16,8 @@ export class CreateVideoGameDto {
     @IsDate()
     @IsNotEmpty()
     fechaLanzamiento: Date;
+
+    @IsArray()
+    @IsOptional()
+    categorias?: number[]; 
 }
