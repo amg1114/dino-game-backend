@@ -19,6 +19,6 @@ export class Asset {
   @ManyToOne(() => VideoGame, (videoGame) => videoGame.assets, {onDelete: 'CASCADE'})
   videoGame: VideoGame;
  
-  @ManyToOne(() => Noticia, (noticia) => noticia.assets)
+  @ManyToOne(() => Noticia, (noticia) => noticia.assets,  {onDelete: 'CASCADE'})
   noticia: Noticia;
 }
