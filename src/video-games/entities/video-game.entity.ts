@@ -33,10 +33,10 @@ export class VideoGame {
   @OneToMany(() => Asset, (asset) => asset.videoGame)
   assets: Asset[];
 
-  @ManyToMany(() => Categoria, (categoria) => categoria.videoGames)
+  @ManyToMany(() => Categoria, (categoria) => categoria.videoGames, {onDelete: 'CASCADE'})
   categorias: Categoria[];
 
-  @ManyToOne(() => Developer, (developer) => developer.videoGames)
+  @ManyToOne(() => Developer, (developer) => developer.videoGames, {onDelete: 'CASCADE'})
   developer: Developer;
 
   @OneToMany(() => Version, (version) => version.videoGame)
