@@ -105,6 +105,10 @@ export class DevelopersService {
       relations: ['user'],
     });
 
+    if (!solicitud) {
+      throw new HttpException('Solicitud no encontrada', HttpStatus.NOT_FOUND);
+    }
+
     const resultado = await this.solicitudDesarrolladorRepository.update(
       solicitud.id,
       solicitudFields,
