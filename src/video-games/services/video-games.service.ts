@@ -81,6 +81,8 @@ export class VideoGamesService {
       .createQueryBuilder('videoGame')
       .leftJoinAndSelect('videoGame.assets', 'assets')
       .leftJoinAndSelect('videoGame.categorias', 'categorias')
+      .leftJoinAndSelect('videoGame.developer', 'developer')
+      .leftJoinAndSelect('developer.user', 'user')
       .addOrderBy('assets.index', 'ASC')
       .addOrderBy('categorias.titulo', 'ASC')
       .addOrderBy('videoGame.titulo', 'ASC')
