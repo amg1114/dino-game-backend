@@ -78,10 +78,11 @@ export class VideoGamesService {
     const videoGames = await this.videoGameRepository
       .createQueryBuilder('videoGame')
       .leftJoinAndSelect('videoGame.assets', 'assets')
+      .leftJoinAndSelect('assets.asset', 'asset')
       .leftJoinAndSelect('videoGame.categorias', 'categorias')
       .leftJoinAndSelect('videoGame.developer', 'developer')
       .leftJoinAndSelect('developer.user', 'user')
-      .addOrderBy('assets.index', 'ASC')
+      .addOrderBy('asset.index', 'ASC')
       .addOrderBy('categorias.titulo', 'ASC')
       .addOrderBy('videoGame.titulo', 'ASC')
       .where(whereConditions)
@@ -102,18 +103,14 @@ export class VideoGamesService {
    */
   async findUserVideoGames(userId: number) {
     const user = await this.usersService.findById(userId);
-    const userVideoGames = await this.userVideoGameRepository.find({
-      where: { user },
-      relations: ['videoGame', 'videoGame.assets'],
-      order: {
-        fechaCompra: 'ASC',
-        videoGame: {
-          assets: {
-            index: 'ASC',
-          },
-        },
-      },
-    });
+    const userVideoGames = await this.userVideoGameRepository.createQueryBuilder('userVideoGame')
+      .leftJoinAndSelect('userVideoGame.videoGame', 'videoGame')
+      .leftJoinAndSelect('videoGame.assets', 'assets')
+      .leftJoinAndSelect('assets.asset', 'asset')
+      .leftJoinAndSelect('videoGame.descuentos', 'descuentos')
+      .where('userVideoGame.user = :user', { user })
+      .addOrderBy('asset.index', 'ASC')
+      .getMany();
 
     if (userVideoGames.length === 0) {
       throw new HttpException('Videogames was not found', HttpStatus.NOT_FOUND);
@@ -132,17 +129,19 @@ export class VideoGamesService {
     const user = await this.usersService.findById(userId);
     const videoGame = await this.findById(videoGameId);
 
-    const userVideoGame = await this.userVideoGameRepository.findOne({
-      where: { user, videoGame },
-      relations: ['videoGame', 'videoGame.assets'],
-      order: {
-        videoGame: {
-          assets: {
-            index: 'ASC',
-          },
-        },
-      },
-    });
+    const userVideoGame = await this.userVideoGameRepository.createQueryBuilder('userVideoGame')
+      .leftJoinAndSelect('userVideoGame.videoGame', 'videoGame')
+      .leftJoinAndSelect('videoGame.assets', 'assets')
+      .leftJoinAndSelect('assets.asset', 'asset')
+      .leftJoinAndSelect('videoGame.versions', 'versions')
+      .leftJoinAndSelect('versions.requisitos', 'requisitos')
+      .leftJoinAndSelect('videoGame.descuentos', 'descuentos')
+      .leftJoinAndSelect('videoGame.categorias', 'categorias')
+      .leftJoinAndSelect('videoGame.developer', 'developer')
+      .leftJoinAndSelect('developer.user', 'user')
+      .where('userVideoGame.user = :user', { user })
+      .andWhere('userVideoGame.videoGame = :videoGame', { videoGame })
+      .getOne();
 
     if (userVideoGame === null) {
       throw new HttpException('Videogame was not found', HttpStatus.NOT_FOUND);
