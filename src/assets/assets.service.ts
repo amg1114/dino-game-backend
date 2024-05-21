@@ -29,6 +29,7 @@ export class AssetsService {
     const videoGame = await this.videoGamesService.findById(owner);
     const asset = this.assetsRepository.create(assetFields);
     const assetVideoGame = this.assetsVideoGameRepository.create({
+      assetID: asset.id,
       asset,
       videoGame,
     });
@@ -46,6 +47,7 @@ export class AssetsService {
     const noticia = await this.noticiasService.findOne(owner);
     const asset = this.assetsRepository.create(assetFields);
     const assetNoticia = this.assetsNoticiaRepository.create({
+      assetID: asset.id,
       asset,
       noticia,
     });
