@@ -22,36 +22,25 @@ export class CategoriasService {
       queries.title = Like(`%${queries.title}%`);
     }
 
-    return this.categoriasRepository.find({
-      take: limit,
-      where: queries as FindOptionsWhere<Categoria>,
-      relations: ['videoGames', 'videoGames.assets'],
-      order: {
-        titulo: 'ASC',
-        videoGames: {
-          assets: {
-            index: 'ASC',
-          },
-          titulo: 'ASC',
-        },
-      },
-    });
+    return this.categoriasRepository.createQueryBuilder('categoria')
+      .leftJoinAndSelect('categoria.videoGames', 'videoGames')
+      .leftJoinAndSelect('videoGames.assets', 'assets')
+      .leftJoinAndSelect('assets.asset', 'assets')
+      .leftJoinAndSelect('videoGames.descuentos', 'descuentos')
+      .where(queries)
+      .take(limit)
+      .addOrderBy('asset.index', 'ASC')
+      .addOrderBy('categoria.titulo', 'ASC')
+      .getMany();
   }
 
   async findCategoriaById(id: number) {
-    const categoria = await this.categoriasRepository.findOne({
-      where: { id },
-      relations: ['videoGames', 'videoGames.assets'],
-      order: {
-        videoGames: {
-          assets: {
-            index: 'ASC',
-          },
-          titulo: 'ASC',
-        },
-        titulo: 'ASC',
-      },
-    });
+    const categoria = await this.categoriasRepository.createQueryBuilder('categoria')
+      .leftJoinAndSelect('categoria.videoGames', 'videoGames')
+      .leftJoinAndSelect('videoGames.assets', 'assets')
+      .leftJoinAndSelect('videoGames.descuentos', 'descuentos')
+      .where('categoria.id = :id', { id })
+      .getOne();
 
     if (!categoria) {
       throw new HttpException('Categoria was not found', HttpStatus.NOT_FOUND);
