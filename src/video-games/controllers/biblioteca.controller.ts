@@ -8,7 +8,7 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { AuthGuard } from '../../auth/guards/auth.guard';
 import { VideoGamesService } from '../services/video-games.service';
 import { AddVideoGameToUserDto } from '../dto/video-games/add-videogame-to-user.dto';
 

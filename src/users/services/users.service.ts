@@ -5,9 +5,9 @@ import { Repository } from 'typeorm';
 
 import * as bcrypt from 'bcrypt';
 
-import { SALT_ROUNDS } from 'src/config/constants/bycript.constants';
+import { SALT_ROUNDS } from '../../config/constants/bycript.constants';
 
-import { Role } from 'src/config/enums/roles.enum';
+import { Role } from '../../config/enums/roles.enum';
 
 import { Administrator, Developer, User } from '../entities/user.entity';
 import { CreateUserDto } from '../dto/create-user.dto';

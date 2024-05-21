@@ -14,12 +14,12 @@ import { NoticiasService } from './noticias.service';
 import { CreateNoticiaDto } from './dto/create-noticia.dto';
 import { UpdateNoticiaDto } from './dto/update-noticia.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { User } from 'src/users/entities/user.entity';
-import { AuthGuard } from 'src/auth/guards/auth.guard';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { Public } from 'src/auth/decorators/public.decorator';
-import { Roles } from 'src/auth/decorators/roles.decorator';
-import { Role } from 'src/config/enums/roles.enum';
+import { User } from '../users/entities/user.entity';
+import { AuthGuard } from '../auth/guards/auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Public } from '../auth/decorators/public.decorator';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { Role } from '../config/enums/roles.enum';
 
 @ApiTags('Noticias')
 @Controller('noticias')

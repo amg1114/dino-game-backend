@@ -1,5 +1,5 @@
-import { Noticia } from 'src/noticias/noticia.entity';
-import { VideoGame } from 'src/video-games/entities/video-game.entity';
+import { Noticia } from '../noticias/noticia.entity';
+import { VideoGame } from '..//video-games/entities/video-game.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('assets')
