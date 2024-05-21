@@ -2,12 +2,12 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@n
 import { ApiTags } from '@nestjs/swagger';
 
 // Importaciones propias
-import { Role } from 'src/config/enums/roles.enum';
+import { Role } from '../../config/enums/roles.enum';
 
-import { AuthGuard } from 'src/auth/guards/auth.guard';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { Public } from 'src/auth/decorators/public.decorator';
-import { Roles } from 'src/auth/decorators/roles.decorator';
+import { AuthGuard } from '../../auth/guards/auth.guard';
+import { RolesGuard } from '../../auth/guards/roles.guard';
+import { Public } from '../../auth/decorators/public.decorator';
+import { Roles } from '../../auth/decorators/roles.decorator';
 
 import { CreateDescuentoDto } from '../dto/descuentos/create-descuento.dto';
 import { UpdateDescuentoDto } from '../dto/descuentos/update-descuento.dto';

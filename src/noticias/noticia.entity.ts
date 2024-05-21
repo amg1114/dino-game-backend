@@ -1,5 +1,5 @@
-import { Asset } from 'src/assets/asset.entity';
-import { User } from 'src/users/entities/user.entity';
+import { Asset } from '../assets/asset.entity';
+import { User } from '../users/entities/user.entity';
 import { PrimaryGeneratedColumn, Column, OneToMany, Entity, ManyToOne } from 'typeorm';
 
 @Entity('noticias')
