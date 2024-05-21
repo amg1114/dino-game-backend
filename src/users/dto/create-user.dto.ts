@@ -1,5 +1,5 @@
 import { IsDate, IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator'
-import { Sexo } from 'src/config/enums/sexo.enum'
+import { Sexo } from '../../config/enums/sexo.enum'
 
 export class CreateUserDto {
 

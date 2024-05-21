@@ -3,8 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Asset } from './asset.entity';
 import { Repository } from 'typeorm';
 import { RegisterAssetDto } from './dto/register-asset.dto';
-import { VideoGamesService } from 'src/video-games/services/video-games.service';
-import { NoticiasService } from 'src/noticias/noticias.service';
+import { VideoGamesService } from '../video-games/services/video-games.service';
+import { NoticiasService } from '../noticias/noticias.service';
 
 @Injectable()
 export class AssetsService {

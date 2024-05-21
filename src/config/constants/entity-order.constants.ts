@@ -1,5 +1,5 @@
-import { Categoria } from "src/categorias/categoria.entity";
-import { VideoGame } from "src/video-games/entities/video-game.entity";
+import { Categoria } from "../../categorias/categoria.entity";
+import { VideoGame } from "../../video-games/entities/video-game.entity";
 import { FindOptionsOrder } from "typeorm";
 
 export const VideoGameOrder: FindOptionsOrder<VideoGame> = {

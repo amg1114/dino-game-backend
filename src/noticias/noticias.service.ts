@@ -4,7 +4,7 @@ import { UpdateNoticiaDto } from './dto/update-noticia.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Noticia } from './noticia.entity';
 import { Repository } from 'typeorm';
-import { UsersService } from 'src/users/services/users.service';
+import { UsersService } from '../users/services/users.service';
 
 @Injectable()
 export class NoticiasService {

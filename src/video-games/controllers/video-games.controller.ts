@@ -15,11 +15,11 @@ import { CreateVideoGameDto } from '../dto/video-games/create-video-game.dto';
 import { UpdateVideoGameDto } from '../dto/video-games/update-video-game.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { VideoGameQueries } from '../dto/queries/video-game-queries.dto';
-import { AuthGuard } from 'src/auth/guards/auth.guard';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { Role } from 'src/config/enums/roles.enum';
-import { Roles } from 'src/auth/decorators/roles.decorator';
-import { Public } from 'src/auth/decorators/public.decorator';
+import { AuthGuard } from '../../auth/guards/auth.guard';
+import { RolesGuard } from '../../auth/guards/roles.guard';
+import { Role } from '../../config/enums/roles.enum';
+import { Roles } from '../../auth/decorators/roles.decorator';
+import { Public } from '../../auth/decorators/public.decorator';
 
 @ApiTags('VideoGames')
 @Controller('video-games')

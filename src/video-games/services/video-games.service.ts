@@ -6,14 +6,14 @@ import { VideoGame } from '../entities/video-game.entity';
 import { CreateVideoGameDto } from '../dto/video-games/create-video-game.dto';
 import { UpdateVideoGameDto } from '../dto/video-games/update-video-game.dto';
 import { VideoGameQueries } from '../dto/queries/video-game-queries.dto';
-import { UsersService } from 'src/users/services/users.service';
+import { UsersService } from '../../users/services/users.service';
 import { Descuento } from '../entities/descuento.entity';
 import { UserVideoGame } from '../entities/user-videogames.entity';
 import { CreateDescuentoDto } from '../dto/descuentos/create-descuento.dto';
 import { UpdateDescuentoDto } from '../dto/descuentos/update-descuento.dto';
 import { Version } from '../entities/version.entity';
 import { AddVideoGameToUserDto } from '../dto/video-games/add-videogame-to-user.dto';
-import { CategoriasService } from 'src/categorias/categorias.service';
+import { CategoriasService } from '../../categorias/categorias.service';
 
 @Injectable()
 export class VideoGamesService {
@@ -74,8 +74,6 @@ export class VideoGamesService {
     if (queries.precio) {
       whereConditions.precio = LessThanOrEqual(queries.precio);
     }
-
-    console.log('Test queries', queries);
 
     const videoGames = await this.videoGameRepository
       .createQueryBuilder('videoGame')

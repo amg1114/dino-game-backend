@@ -1,9 +1,9 @@
 import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, PrimaryColumn } from "typeorm";
-import { Sexo } from "src/config/enums/sexo.enum";
-import { VideoGame } from "src/video-games/entities/video-game.entity";
+import { Sexo } from "../../config/enums/sexo.enum";
+import { VideoGame } from "../../video-games/entities/video-game.entity";
 import { Exclude } from "class-transformer";
-import { UserVideoGame } from "src/video-games/entities/user-videogames.entity";
-import { Noticia } from "src/noticias/noticia.entity";
+import { UserVideoGame } from "../../video-games/entities/user-videogames.entity";
+import { Noticia } from "../../noticias/noticia.entity";
 
 @Entity('users')
 export class User {
@@ -41,7 +41,7 @@ export class Administrator {
     @PrimaryColumn()
     id: number;
 
-    @OneToOne(() => User, user => user.id, ) 
+    @OneToOne(() => User, user => user.id, { onDelete: "CASCADE" } ) 
     @JoinColumn({ name: 'id'})
     user: User;
 }
@@ -51,7 +51,7 @@ export class Developer {
     @PrimaryColumn()
     id: number;
     
-    @OneToOne(() => User, user => user.id)
+    @OneToOne(() => User, user => user.id, { onDelete: "CASCADE" } )
     @JoinColumn({ name: 'id'})
     user: User;
 

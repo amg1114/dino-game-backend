@@ -18,7 +18,7 @@ export class SolicitudDesarrollador {
     @Column()
     mensaje: string;
 
-    @OneToOne(() => User, user => user.id)
+    @OneToOne(() => User, user => user.id, { onDelete: "CASCADE" })
     @JoinColumn()
     user: User;
 
