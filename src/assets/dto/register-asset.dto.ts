@@ -10,10 +10,6 @@ export class RegisterAssetDto {
     url: string;
    
     @IsNumber()
-    @IsOptional()
-    videoGameId?: number;
-   
-    @IsNumber()
-    @IsOptional()
-    noticiaId?: number;
+    @IsNotEmpty()
+    index: number;
 }

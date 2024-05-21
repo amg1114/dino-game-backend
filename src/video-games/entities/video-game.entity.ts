@@ -1,4 +1,4 @@
-import { Asset } from '../../assets/asset.entity';
+import { AssetVideoGame } from '../../assets/asset.entity';
 import { Categoria } from '../../categorias/categoria.entity';
 import { Developer } from '../../users/entities/user.entity';
 import {
@@ -30,8 +30,8 @@ export class VideoGame {
   @Column({ type: 'date' })
   fechaLanzamiento: Date;
 
-  @OneToMany(() => Asset, (asset) => asset.videoGame)
-  assets: Asset[];
+  @OneToMany(() => AssetVideoGame, (asset) => asset.videoGame)
+  assets: AssetVideoGame[];
 
   @ManyToMany(() => Categoria, (categoria) => categoria.videoGames, {onDelete: 'CASCADE'})
   categorias: Categoria[];

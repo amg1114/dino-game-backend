@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Asset } from './asset.entity';
+import { Asset, AssetNoticia, AssetVideoGame } from './asset.entity';
 import { Repository } from 'typeorm';
 import { RegisterAssetDto } from './dto/register-asset.dto';
 import { VideoGamesService } from '../video-games/services/video-games.service';
@@ -11,41 +11,45 @@ export class AssetsService {
   constructor(
     @InjectRepository(Asset)
     private readonly assetsRepository: Repository<Asset>,
+    @InjectRepository(AssetVideoGame)
+    private readonly assetsVideoGameRepository: Repository<AssetVideoGame>,
+    @InjectRepository(AssetNoticia)
+    private readonly assetsNoticiaRepository: Repository<AssetNoticia>,
     private readonly videoGamesService: VideoGamesService,
-    private readonly noticiasService: NoticiasService
+    private readonly noticiasService: NoticiasService,
   ) {}
 
-  async create(assetFields: RegisterAssetDto) {
-      const { videoGameId, noticiaId, ...fields } = assetFields;
-      const asset = this.assetsRepository.create(fields);
-
-      if (videoGameId) {
-        const videoGame = await this.videoGamesService.findById(videoGameId);
-        asset.videoGame = videoGame;
-      }else if (noticiaId) {
-        const noticia = await this.noticiasService.findOne(noticiaId);
-        asset.noticia = noticia;
-      }
-      
-      return this.assetsRepository.save(asset);
-  }
-
-  async getVideoGameAssets(video_game: number) {
-    const videoGame = await this.videoGamesService.findById(video_game);
-    return this.assetsRepository.find({
-      where: {
-        videoGame,
-      },
+  /**
+   * Crear un asset para un videojuego
+   * @param owner ID del videojuego al que pertenece el asset
+   * @param assetFields Datos del asset
+   * @returns El asset creado
+   */
+  async createVideoGameAsset(owner: number, assetFields: RegisterAssetDto) {
+    const videoGame = await this.videoGamesService.findById(owner);
+    const asset = this.assetsRepository.create(assetFields);
+    const assetVideoGame = this.assetsVideoGameRepository.create({
+      asset,
+      videoGame,
     });
+
+    return this.assetsVideoGameRepository.save(assetVideoGame);
   }
 
-  async deleteAsset(id: number) {
-    const result = await this.assetsRepository.delete(id);
+  /**
+   * Crear un asset para una noticia
+   * @param owner ID de la noticia a la que pertenece el asset
+   * @param assetFields Datos del asset
+   * @returns El asset creado
+   */
+  async createNoticiaAsset(owner: number, assetFields: RegisterAssetDto) {
+    const noticia = await this.noticiasService.findOne(owner);
+    const asset = this.assetsRepository.create(assetFields);
+    const assetNoticia = this.assetsNoticiaRepository.create({
+      asset,
+      noticia,
+    });
 
-    if (result.affected === 0) {
-      throw new HttpException('The asset was not deleted', HttpStatus.CONFLICT);
-    }
-    
-    return result;
+    return this.assetsNoticiaRepository.save(assetNoticia);
   }
 }

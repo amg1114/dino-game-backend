@@ -1,4 +1,4 @@
-import { Asset } from '../assets/asset.entity';
+import { AssetNoticia } from '../assets/asset.entity';
 import { User } from '../users/entities/user.entity';
 import { PrimaryGeneratedColumn, Column, OneToMany, Entity, ManyToOne } from 'typeorm';
 
@@ -16,8 +16,8 @@ export class Noticia {
   @Column()
   fecha: Date;
 
-  @OneToMany(() => Asset, (asset) => asset.noticia)
-  assets: Asset[];
+  @OneToMany(() => AssetNoticia, (asset) => asset.noticia)
+  assets: AssetNoticia[];
 
   @ManyToOne(() => User, (user) => user.noticias)
   autor: User;
