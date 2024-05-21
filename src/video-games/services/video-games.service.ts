@@ -75,8 +75,6 @@ export class VideoGamesService {
       whereConditions.precio = LessThanOrEqual(queries.precio);
     }
 
-    console.log('Test queries', queries);
-
     const videoGames = await this.videoGameRepository
       .createQueryBuilder('videoGame')
       .leftJoinAndSelect('videoGame.assets', 'assets')
