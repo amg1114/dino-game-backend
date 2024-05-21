@@ -53,7 +53,6 @@ export class AuthService {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
-    console.log('Created user to login', user);
 
     return this.login(login);
   }

@@ -41,7 +41,7 @@ export class Administrator {
     @PrimaryColumn()
     id: number;
 
-    @OneToOne(() => User, user => user.id, ) 
+    @OneToOne(() => User, user => user.id, { onDelete: "CASCADE" } ) 
     @JoinColumn({ name: 'id'})
     user: User;
 }
@@ -51,7 +51,7 @@ export class Developer {
     @PrimaryColumn()
     id: number;
     
-    @OneToOne(() => User, user => user.id)
+    @OneToOne(() => User, user => user.id, { onDelete: "CASCADE" } )
     @JoinColumn({ name: 'id'})
     user: User;
 
