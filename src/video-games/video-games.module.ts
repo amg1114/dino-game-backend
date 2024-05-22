@@ -17,6 +17,7 @@ import { DescuentosService } from './services/descuentos.service';
 import { BibliotecaController } from './controllers/biblioteca.controller';
 import { CategoriasModule } from '../categorias/categorias.module';
 import { CategoriasService } from '../categorias/categorias.service';
+import { VersionsController } from './controllers/versions.controller';
 
 @Module({
   imports: [
@@ -31,7 +32,7 @@ import { CategoriasService } from '../categorias/categorias.service';
     CategoriasModule
   ],
   providers: [VideoGamesService, UsersService, DescuentosService, CategoriasService],
-  controllers: [BibliotecaController, VideoGamesController, DescuentosController],
+  controllers: [BibliotecaController, VideoGamesController, DescuentosController, VersionsController],
   exports: [TypeOrmModule, VideoGamesService, UsersService, CategoriasModule],
 })
 export class VideoGamesModule {}
