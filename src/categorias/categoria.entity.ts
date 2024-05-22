@@ -15,7 +15,7 @@ export class Categoria {
 
     @ManyToMany(()=>VideoGame, videoGame=>videoGame.categorias)
     @JoinTable({
-        name: 'categorias_video-games'
+        name: 'categorias_videogames'
     })
     videoGames: VideoGame[]
 }

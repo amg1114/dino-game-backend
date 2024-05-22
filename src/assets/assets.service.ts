@@ -27,7 +27,7 @@ export class AssetsService {
    */
   async createVideoGameAsset(owner: number, assetFields: RegisterAssetDto) {
     const videoGame = await this.videoGamesService.findById(owner);
-    const asset = this.assetsRepository.create(assetFields);
+    const asset = await this.assetsRepository.save(assetFields);
     const assetVideoGame = this.assetsVideoGameRepository.create({
       assetID: asset.id,
       asset,
@@ -45,7 +45,7 @@ export class AssetsService {
    */
   async createNoticiaAsset(owner: number, assetFields: RegisterAssetDto) {
     const noticia = await this.noticiasService.findOne(owner);
-    const asset = this.assetsRepository.create(assetFields);
+    const asset = await this.assetsRepository.save(assetFields);
     const assetNoticia = this.assetsNoticiaRepository.create({
       assetID: asset.id,
       asset,
