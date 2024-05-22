@@ -18,6 +18,7 @@ import { BibliotecaController } from './controllers/biblioteca.controller';
 import { CategoriasModule } from '../categorias/categorias.module';
 import { CategoriasService } from '../categorias/categorias.service';
 import { VersionsController } from './controllers/versions.controller';
+import { DevelopersService } from 'src/users/services/developers.service';
 
 @Module({
   imports: [
@@ -31,8 +32,8 @@ import { VersionsController } from './controllers/versions.controller';
     UsersModule,
     CategoriasModule
   ],
-  providers: [VideoGamesService, UsersService, DescuentosService, CategoriasService],
+  providers: [VideoGamesService, UsersService, DevelopersService, DescuentosService, CategoriasService],
   controllers: [BibliotecaController, VideoGamesController, DescuentosController, VersionsController],
-  exports: [TypeOrmModule, VideoGamesService, UsersService, CategoriasModule],
+  exports: [TypeOrmModule, VideoGamesService, UsersService, DevelopersService, CategoriasModule],
 })
 export class VideoGamesModule {}

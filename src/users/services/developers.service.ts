@@ -185,4 +185,24 @@ export class DevelopersService {
 
     return developers;
   }
+
+  /**
+   * Buscar un desarrollador por su id
+   * @param id Id del desarrollador
+   * @returns Desarrollador encontrado
+   */
+  async getDeveloperById(id: number): Promise<Developer> {
+    const developer = await this.developersRepository.findOne({
+      where: { id },
+      relations: ['user'],
+    });
+
+    if (!developer)
+      throw new HttpException(
+        'Desarrollador no encontrado',
+        HttpStatus.NOT_FOUND,
+      );
+
+    return developer;
+  }
 }

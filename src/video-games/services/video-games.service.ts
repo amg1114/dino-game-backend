@@ -19,6 +19,7 @@ import { Version } from '../entities/version.entity';
 import { AddVideoGameToUserDto } from '../dto/video-games/add-videogame-to-user.dto';
 import { CategoriasService } from '../../categorias/categorias.service';
 import { CreateVersionDto } from '../dto/versions/create-version.dto';
+import { DevelopersService } from 'src/users/services/developers.service';
 
 @Injectable()
 export class VideoGamesService {
@@ -31,6 +32,7 @@ export class VideoGamesService {
     private readonly versionRepository: Repository<Version>,
     private readonly categoriasService: CategoriasService,
     private readonly usersService: UsersService,
+    private readonly developersService: DevelopersService,
   ) {}
 
   /**
@@ -180,17 +182,20 @@ export class VideoGamesService {
    * @param videogameFields Campos del VideoJuego a crear
    * @returns VideoJuego creado
    */
-  async createVideoGame(videogameFields: CreateVideoGameDto) {
+  async createVideoGame(idDeveloper: number, videogameFields: CreateVideoGameDto) {
     let categorias = [];
+    const developer = await this.developersService.getDeveloperById(idDeveloper);
     if (videogameFields.categorias) {
       categorias = videogameFields.categorias.map((id) => {
         return { id };
       });
     }
+
     const videoGame = this.videoGameRepository.create({
       ...videogameFields,
       categorias,
-    });
+      developer
+    }); 
     return this.videoGameRepository.save(videoGame);
   }
 
