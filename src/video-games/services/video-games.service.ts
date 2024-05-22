@@ -32,18 +32,17 @@ export class VideoGamesService {
    * @returns VideoJuego encontrado
    */
   async findById(id: number) {
-    const videogame = await this.videoGameRepository.findOne({
-      where: { id },
-      relations: [
-        'assets',
-        'categorias',
-        'developer',
-        'developer.user',
-        'versions',
-        'versions.requisitos',
-        'descuentos',
-      ],
-    });
+    const videogame = await this.videoGameRepository.createQueryBuilder('videoGame')
+      .leftJoinAndSelect('videoGame.assets', 'assets')
+      .leftJoinAndSelect('assets.asset', 'asset')
+      .leftJoinAndSelect('videoGame.versions', 'versions')
+      .leftJoinAndSelect('versions.requisitos', 'requisitos')
+      .leftJoinAndSelect('videoGame.descuentos', 'descuentos')
+      .leftJoinAndSelect('videoGame.categorias', 'categorias')
+      .leftJoinAndSelect('videoGame.developer', 'developer')
+      .leftJoinAndSelect('developer.user', 'user')
+      .where('videoGame.id = :id', { id })
+      .getOne();
 
     if (videogame === null) {
       throw new HttpException('Videogame was not found', HttpStatus.NOT_FOUND);
