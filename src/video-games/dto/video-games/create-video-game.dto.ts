@@ -11,7 +11,7 @@ export class CreateVideoGameDto {
 
     @IsString()
     @IsOptional()
-    descripcion?: string;
+    descripcion: string;
     
     @IsDate()
     @IsNotEmpty()
@@ -19,5 +19,5 @@ export class CreateVideoGameDto {
 
     @IsArray()
     @IsOptional()
-    categorias?: number[]; 
+    categorias?: number[];
 }

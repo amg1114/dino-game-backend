@@ -45,8 +45,8 @@ export class VideoGamesController {
    */
   @Post()
   @Roles(Role.ADMINISTRATOR, Role.DEVELOPER)
-  createVideoGame(@Body() videoGameFields: CreateVideoGameDto) {
-    return this.videoGamesService.createVideoGame(videoGameFields);
+  createVideoGame(@Request() req: any, @Body() videoGameFields: CreateVideoGameDto) {
+    return this.videoGamesService.createVideoGame(req.user.id, videoGameFields);
   }
 
   /**
