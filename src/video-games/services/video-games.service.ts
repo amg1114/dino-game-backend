@@ -13,10 +13,8 @@ import { CreateVideoGameDto } from '../dto/video-games/create-video-game.dto';
 import { UpdateVideoGameDto } from '../dto/video-games/update-video-game.dto';
 import { VideoGameQueries } from '../dto/queries/video-game-queries.dto';
 import { UsersService } from '../../users/services/users.service';
-import { Descuento } from '../entities/descuento.entity';
 import { UserVideoGame } from '../entities/user-videogames.entity';
-import { CreateDescuentoDto } from '../dto/descuentos/create-descuento.dto';
-import { UpdateDescuentoDto } from '../dto/descuentos/update-descuento.dto';
+
 import { Version } from '../entities/version.entity';
 import { AddVideoGameToUserDto } from '../dto/video-games/add-videogame-to-user.dto';
 import { CategoriasService } from '../../categorias/categorias.service';
@@ -67,42 +65,37 @@ export class VideoGamesService {
    * @returns Videojuegos encontrados
    */
   async findAll(queries: VideoGameQueries) {
-    let whereConditions: FindOptionsWhere<VideoGame> = {};
-
-    if (queries.search) {
-      whereConditions.titulo = ILike(`%${queries.search}%`);
-    }
-
-    if (queries.categoria) {
-      const category = {
-        id: queries.categoria,
-      };
-      whereConditions.categorias = category;
-    }
-
-    if (queries.precio) {
-      whereConditions.precio = LessThanOrEqual(queries.precio);
-    }
-
-    const videoGames = await this.videoGameRepository
+    let videoGames = this.videoGameRepository
       .createQueryBuilder('videoGame')
       .leftJoinAndSelect('videoGame.assets', 'assets')
       .leftJoinAndSelect('assets.asset', 'asset')
       .leftJoinAndSelect('videoGame.categorias', 'categorias')
       .leftJoinAndSelect('videoGame.developer', 'developer')
-      .leftJoinAndSelect('developer.user', 'user')
-      .addOrderBy('asset.index', 'ASC')
-      .addOrderBy('categorias.titulo', 'ASC')
-      .addOrderBy('videoGame.titulo', 'ASC')
-      .where(whereConditions)
-      .take(queries.limit)
-      .getMany();
+      .leftJoinAndSelect('developer.user', 'user');
 
-    if (videoGames.length === 0) {
+    if (queries.search) {
+      videoGames = videoGames.where('videoGame.titulo ILIKE :search', {
+        search: `%${queries.search}%`,
+      });
+    }
+
+    if (queries.categoria) {
+      videoGames = videoGames.andWhere('categorias.id = :categoria', {
+        categoria: queries.categoria,
+      });
+    }
+
+    if (queries.precio) {
+      videoGames = videoGames.andWhere('videoGame.precio <= :precio', {
+        precio: queries.precio,
+      });
+    }
+
+    if (await videoGames.getCount() === 0) {
       throw new HttpException('Videogames was not found', HttpStatus.NOT_FOUND);
     }
 
-    return videoGames;
+    return videoGames.getMany();
   }
 
   /**
@@ -226,9 +219,10 @@ export class VideoGamesService {
     if (categorias) {
       const videoGame = await this.findById(id);
 
-      videoGame.categorias = await this.categoriasService.findCategoriesById(categorias);
+      videoGame.categorias =
+        await this.categoriasService.findCategoriesById(categorias);
       await this.videoGameRepository.save(videoGame);
-      
+
       resultado.affected = 1;
     }
 
