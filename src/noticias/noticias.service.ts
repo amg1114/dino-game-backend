@@ -25,7 +25,7 @@ export class NoticiasService {
     const noticia = this.noticiasRepository.create(createNoticiaDto);
     noticia.autor = author;
 
-    return this.noticiasRepository.save(createNoticiaDto);
+    return this.noticiasRepository.save(noticia);
   }
 
   /**
