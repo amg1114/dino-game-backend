@@ -15,7 +15,7 @@ import { VideoGameQueries } from '../dto/queries/video-game-queries.dto';
 import { UsersService } from '../../users/services/users.service';
 import { UserVideoGame } from '../entities/user-videogames.entity';
 
-import { Version } from '../entities/version.entity';
+import { Requisito, Version } from '../entities/version.entity';
 import { AddVideoGameToUserDto } from '../dto/video-games/add-videogame-to-user.dto';
 import { CategoriasService } from '../../categorias/categorias.service';
 import { CreateVersionDto } from '../dto/versions/create-version.dto';
@@ -30,6 +30,8 @@ export class VideoGamesService {
     private readonly userVideoGameRepository: Repository<UserVideoGame>,
     @InjectRepository(Version)
     private readonly versionRepository: Repository<Version>,
+    @InjectRepository(Requisito)
+    private readonly requisitosRepository: Repository<Requisito>,
     private readonly categoriasService: CategoriasService,
     private readonly usersService: UsersService,
     private readonly developersService: DevelopersService,
@@ -93,7 +95,7 @@ export class VideoGamesService {
       });
     }
 
-    if (await videoGames.getCount() === 0) {
+    if ((await videoGames.getCount()) === 0) {
       throw new HttpException('Videogames was not found', HttpStatus.NOT_FOUND);
     }
 
@@ -182,9 +184,13 @@ export class VideoGamesService {
    * @param videogameFields Campos del VideoJuego a crear
    * @returns VideoJuego creado
    */
-  async createVideoGame(idDeveloper: number, videogameFields: CreateVideoGameDto) {
+  async createVideoGame(
+    idDeveloper: number,
+    videogameFields: CreateVideoGameDto,
+  ) {
     let categorias = [];
-    const developer = await this.developersService.getDeveloperById(idDeveloper);
+    const developer =
+      await this.developersService.getDeveloperById(idDeveloper);
     if (videogameFields.categorias) {
       categorias = videogameFields.categorias.map((id) => {
         return { id };
@@ -194,8 +200,8 @@ export class VideoGamesService {
     const videoGame = this.videoGameRepository.create({
       ...videogameFields,
       categorias,
-      developer
-    }); 
+      developer,
+    });
     return this.videoGameRepository.save(videoGame);
   }
 
@@ -259,14 +265,24 @@ export class VideoGamesService {
    */
   async createVideoGameVersion(
     videoGameId: number,
-    versionFields: CreateVersionDto,
+    { requisitos, ...versionFields }: CreateVersionDto,
   ) {
     const videoGame = await this.findById(videoGameId);
-    const version = this.versionRepository.create({
+    const version = await this.versionRepository.save({
       ...versionFields,
       videoGame,
     });
-    return this.versionRepository.save(version);
+
+    if (requisitos) {
+      requisitos.forEach(async (requisito) => {
+        await this.requisitosRepository.save({
+          requisito,
+          version,
+        });
+      });
+    }
+
+    return videoGame;
   }
 
   /**
