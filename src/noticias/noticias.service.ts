@@ -24,8 +24,8 @@ export class NoticiasService {
     const author = await this.usersService.findById(autorId);
     const noticia = this.noticiasRepository.create(createNoticiaDto);
     noticia.autor = author;
-    
-    return this.noticiasRepository.save(createNoticiaDto);
+
+    return this.noticiasRepository.save(noticia);
   }
 
   /**
@@ -34,14 +34,21 @@ export class NoticiasService {
    * @returns The list of noticias
    * @throws {HttpException} if there are no noticias
    */
-  findAll(limit: number | undefined) {
-    return this.noticiasRepository.find({
-      take: limit,
-      relations: ['assets'],
-      order: {
-        fecha: 'DESC',
-      },
-    });
+  async findAll(limit: number | undefined) {
+    const noticias = await this.noticiasRepository
+      .createQueryBuilder('noticia')
+      .leftJoinAndSelect('noticia.assets', 'assets')
+      .leftJoinAndSelect('assets.asset', 'asset')
+      .addOrderBy('asset.index', 'ASC')
+      .addOrderBy('noticia.fecha', 'DESC')
+      .take(limit)
+      .getMany();
+
+    if (!noticias.length) {
+      throw new HttpException('No noticias found', HttpStatus.NOT_FOUND);
+    }
+
+    return noticias;
   }
 
   /**
@@ -53,7 +60,7 @@ export class NoticiasService {
   async findOne(id: number) {
     const noticia = await this.noticiasRepository.findOne({
       where: { id },
-      relations: ['assets'],
+      relations: ['assets', 'assets.asset'],
     });
 
     if (!noticia) {

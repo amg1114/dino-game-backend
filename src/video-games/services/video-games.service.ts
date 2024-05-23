@@ -1,4 +1,10 @@
-import { FindOptionsWhere, ILike, LessThanOrEqual, Repository } from 'typeorm';
+import {
+  FindOptionsWhere,
+  ILike,
+  LessThanOrEqual,
+  Repository,
+  UpdateResult,
+} from 'typeorm';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -7,13 +13,13 @@ import { CreateVideoGameDto } from '../dto/video-games/create-video-game.dto';
 import { UpdateVideoGameDto } from '../dto/video-games/update-video-game.dto';
 import { VideoGameQueries } from '../dto/queries/video-game-queries.dto';
 import { UsersService } from '../../users/services/users.service';
-import { Descuento } from '../entities/descuento.entity';
 import { UserVideoGame } from '../entities/user-videogames.entity';
-import { CreateDescuentoDto } from '../dto/descuentos/create-descuento.dto';
-import { UpdateDescuentoDto } from '../dto/descuentos/update-descuento.dto';
-import { Version } from '../entities/version.entity';
+
+import { Requisito, Version } from '../entities/version.entity';
 import { AddVideoGameToUserDto } from '../dto/video-games/add-videogame-to-user.dto';
 import { CategoriasService } from '../../categorias/categorias.service';
+import { CreateVersionDto } from '../dto/versions/create-version.dto';
+import { DevelopersService } from 'src/users/services/developers.service';
 
 @Injectable()
 export class VideoGamesService {
@@ -22,8 +28,13 @@ export class VideoGamesService {
     private readonly videoGameRepository: Repository<VideoGame>,
     @InjectRepository(UserVideoGame)
     private readonly userVideoGameRepository: Repository<UserVideoGame>,
+    @InjectRepository(Version)
+    private readonly versionRepository: Repository<Version>,
+    @InjectRepository(Requisito)
+    private readonly requisitosRepository: Repository<Requisito>,
     private readonly categoriasService: CategoriasService,
     private readonly usersService: UsersService,
+    private readonly developersService: DevelopersService,
   ) {}
 
   /**
@@ -32,18 +43,18 @@ export class VideoGamesService {
    * @returns VideoJuego encontrado
    */
   async findById(id: number) {
-    const videogame = await this.videoGameRepository.findOne({
-      where: { id },
-      relations: [
-        'assets',
-        'categorias',
-        'developer',
-        'developer.user',
-        'versions',
-        'versions.requisitos',
-        'descuentos',
-      ],
-    });
+    const videogame = await this.videoGameRepository
+      .createQueryBuilder('videoGame')
+      .leftJoinAndSelect('videoGame.assets', 'assets')
+      .leftJoinAndSelect('assets.asset', 'asset')
+      .leftJoinAndSelect('videoGame.versions', 'versions')
+      .leftJoinAndSelect('versions.requisitos', 'requisitos')
+      .leftJoinAndSelect('videoGame.descuentos', 'descuentos')
+      .leftJoinAndSelect('videoGame.categorias', 'categorias')
+      .leftJoinAndSelect('videoGame.developer', 'developer')
+      .leftJoinAndSelect('developer.user', 'user')
+      .where('videoGame.id = :id', { id })
+      .getOne();
 
     if (videogame === null) {
       throw new HttpException('Videogame was not found', HttpStatus.NOT_FOUND);
@@ -58,42 +69,37 @@ export class VideoGamesService {
    * @returns Videojuegos encontrados
    */
   async findAll(queries: VideoGameQueries) {
-    let whereConditions: FindOptionsWhere<VideoGame> = {};
-
-    if (queries.search) {
-      whereConditions.titulo = ILike(`%${queries.search}%`);
-    }
-
-    if (queries.categoria) {
-      const category = {
-        id: queries.categoria,
-      };
-      whereConditions.categorias = category;
-    }
-
-    if (queries.precio) {
-      whereConditions.precio = LessThanOrEqual(queries.precio);
-    }
-
-    const videoGames = await this.videoGameRepository
+    let videoGames = this.videoGameRepository
       .createQueryBuilder('videoGame')
       .leftJoinAndSelect('videoGame.assets', 'assets')
       .leftJoinAndSelect('assets.asset', 'asset')
       .leftJoinAndSelect('videoGame.categorias', 'categorias')
       .leftJoinAndSelect('videoGame.developer', 'developer')
-      .leftJoinAndSelect('developer.user', 'user')
-      .addOrderBy('asset.index', 'ASC')
-      .addOrderBy('categorias.titulo', 'ASC')
-      .addOrderBy('videoGame.titulo', 'ASC')
-      .where(whereConditions)
-      .take(queries.limit)
-      .getMany();
+      .leftJoinAndSelect('developer.user', 'user');
 
-    if (videoGames.length === 0) {
+    if (queries.search) {
+      videoGames = videoGames.where('videoGame.titulo ILIKE :search', {
+        search: `%${queries.search}%`,
+      });
+    }
+
+    if (queries.categoria) {
+      videoGames = videoGames.andWhere('categorias.id = :categoria', {
+        categoria: queries.categoria,
+      });
+    }
+
+    if (queries.precio) {
+      videoGames = videoGames.andWhere('videoGame.precio <= :precio', {
+        precio: queries.precio,
+      });
+    }
+
+    if ((await videoGames.getCount()) === 0) {
       throw new HttpException('Videogames was not found', HttpStatus.NOT_FOUND);
     }
 
-    return videoGames;
+    return videoGames.getMany();
   }
 
   /**
@@ -103,7 +109,8 @@ export class VideoGamesService {
    */
   async findUserVideoGames(userId: number) {
     const user = await this.usersService.findById(userId);
-    const userVideoGames = await this.userVideoGameRepository.createQueryBuilder('userVideoGame')
+    const userVideoGames = await this.userVideoGameRepository
+      .createQueryBuilder('userVideoGame')
       .leftJoinAndSelect('userVideoGame.videoGame', 'videoGame')
       .leftJoinAndSelect('videoGame.assets', 'assets')
       .leftJoinAndSelect('assets.asset', 'asset')
@@ -129,7 +136,8 @@ export class VideoGamesService {
     const user = await this.usersService.findById(userId);
     const videoGame = await this.findById(videoGameId);
 
-    const userVideoGame = await this.userVideoGameRepository.createQueryBuilder('userVideoGame')
+    const userVideoGame = await this.userVideoGameRepository
+      .createQueryBuilder('userVideoGame')
       .leftJoinAndSelect('userVideoGame.videoGame', 'videoGame')
       .leftJoinAndSelect('videoGame.assets', 'assets')
       .leftJoinAndSelect('assets.asset', 'asset')
@@ -176,16 +184,23 @@ export class VideoGamesService {
    * @param videogameFields Campos del VideoJuego a crear
    * @returns VideoJuego creado
    */
-  async createVideoGame(videogameFields: CreateVideoGameDto) {
+  async createVideoGame(
+    idDeveloper: number,
+    videogameFields: CreateVideoGameDto,
+  ) {
     let categorias = [];
+    const developer =
+      await this.developersService.getDeveloperById(idDeveloper);
     if (videogameFields.categorias) {
       categorias = videogameFields.categorias.map((id) => {
         return { id };
       });
     }
+
     const videoGame = this.videoGameRepository.create({
       ...videogameFields,
       categorias,
+      developer,
     });
     return this.videoGameRepository.save(videoGame);
   }
@@ -200,25 +215,26 @@ export class VideoGamesService {
     id: number,
     { categorias, ...videogameFields }: UpdateVideoGameDto,
   ) {
-    const resultado = await this.videoGameRepository.update(
-      id,
-      videogameFields,
-    );
+    let resultado = new UpdateResult();
 
-    if (resultado.affected === 0) {
-      throw new HttpException(
-        'Videogame could not updated',
-        HttpStatus.CONFLICT,
-      );
+    if (Object.keys(videogameFields).length > 0) {
+      resultado = await this.videoGameRepository.update(id, videogameFields);
+      if (resultado.affected === 0) {
+        throw new HttpException(
+          'Videogame could not updated',
+          HttpStatus.CONFLICT,
+        );
+      }
     }
 
     if (categorias) {
       const videoGame = await this.findById(id);
 
-       videoGame.categorias = await Promise.all(
-        categorias.map((id) => this.categoriasService.findCategoriaById(id))
-      );
+      videoGame.categorias =
+        await this.categoriasService.findCategoriesById(categorias);
       await this.videoGameRepository.save(videoGame);
+
+      resultado.affected = 1;
     }
 
     return resultado;
@@ -239,6 +255,34 @@ export class VideoGamesService {
     }
 
     return resultado;
+  }
+
+  /**
+   * Crea un descuento para un videojuego
+   * @param videoGameId ID del videojuego
+   * @param descuentoFields Campos del descuento
+   * @returns Descuento creado
+   */
+  async createVideoGameVersion(
+    videoGameId: number,
+    { requisitos, ...versionFields }: CreateVersionDto,
+  ) {
+    const videoGame = await this.findById(videoGameId);
+    const version = await this.versionRepository.save({
+      ...versionFields,
+      videoGame,
+    });
+
+    if (requisitos) {
+      requisitos.forEach(async (requisito) => {
+        await this.requisitosRepository.save({
+          requisito,
+          version,
+        });
+      });
+    }
+
+    return videoGame;
   }
 
   /**

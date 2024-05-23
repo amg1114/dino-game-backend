@@ -17,6 +17,9 @@ export class Version {
   version: string;
 
   @Column()
+  descripcion: string;
+
+  @Column()
   size: string;
 
   @Column()

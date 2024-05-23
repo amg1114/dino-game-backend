@@ -60,7 +60,7 @@ export class NoticiasController {
     @Body() noticiaFields: CreateNoticiaDto,
     @Request() req: any,
   ) {
-    const autor = req.user as User;
+    const autor = req.user;
     return this.noticiasService.create(autor.id, noticiaFields);
   }
 
