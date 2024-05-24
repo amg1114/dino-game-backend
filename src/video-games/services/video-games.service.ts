@@ -99,6 +99,10 @@ export class VideoGamesService {
       throw new HttpException('Videogames was not found', HttpStatus.NOT_FOUND);
     }
 
+    if (queries.limit) {
+      videoGames = videoGames.limit(queries.limit);
+    }
+
     return videoGames.getMany();
   }
 
