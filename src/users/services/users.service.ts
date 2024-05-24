@@ -61,6 +61,14 @@ export class UsersService {
    */
   async createUser(userFields: CreateUserDto) {
     userFields.password = bcrypt.hashSync(userFields.password, SALT_ROUNDS);
+    const exists = await this.userRepository.findOne({
+      where: { correo: userFields.correo },
+    });
+
+    if (exists) {
+      throw new HttpException('User already exists', HttpStatus.CONFLICT);
+    }
+
     const user = await this.userRepository.save(userFields);
 
     return user;
