@@ -107,6 +107,30 @@ export class VideoGamesService {
   }
 
   /**
+   * Busca los videojuegos de un desarrollador
+   * @param developerId ID del desarrollador
+   * @returns Videojuegos del desarrollador
+   */
+  async findDeveloperVideoGames(developerId: number) {
+    const videoGames = await this.videoGameRepository.createQueryBuilder('videoGame')
+      .leftJoinAndSelect('videoGame.assets', 'assets')
+      .leftJoinAndSelect('assets.asset', 'asset')
+      .leftJoinAndSelect('videoGame.descuentos', 'descuentos')
+      .leftJoinAndSelect('videoGame.categorias', 'categorias')
+      .leftJoinAndSelect('videoGame.developer', 'developer')
+      .leftJoinAndSelect('developer.user', 'user')
+      .where('developer.id = :developer', { developer: developerId })
+      .addOrderBy('asset.index', 'ASC')
+      .getMany();
+
+    if (videoGames.length === 0) {
+      throw new HttpException('VideoGames was not found', HttpStatus.NOT_FOUND);
+    }
+
+    return videoGames;
+  }
+
+  /**
    * Busca los videojuegos de un usuario
    * @param userId ID del usuario
    * @returns Videojuegos del usuario
