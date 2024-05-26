@@ -54,6 +54,9 @@ export class VideoGamesService {
       .leftJoinAndSelect('videoGame.developer', 'developer')
       .leftJoinAndSelect('developer.user', 'user')
       .where('videoGame.id = :id', { id })
+      .andWhere('descuentos.fechaFin >= :currentDate', {
+        currentDate: new Date(),
+      })
       .getOne();
 
     if (videogame === null) {
@@ -95,13 +98,17 @@ export class VideoGamesService {
       });
     }
 
+    if (queries.limit) {
+      videoGames = videoGames.take(queries.limit);
+    }
+
     if ((await videoGames.getCount()) === 0) {
       throw new HttpException('Videogames was not found', HttpStatus.NOT_FOUND);
     }
 
-    if (queries.limit) {
-      videoGames = videoGames.take(queries.limit);
-    }
+    videoGames = videoGames
+      .addOrderBy('videoGame.titulo', 'ASC')
+      .addOrderBy('asset.index', 'ASC');
 
     return videoGames.getMany();
   }
@@ -349,7 +356,9 @@ export class VideoGamesService {
       .leftJoin('userVideoGame.videoGame', 'videoGame')
       .leftJoin('videoGame.developer', 'developer')
       .addSelect('COUNT(userVideoGame.id) as cant_ventas')
-      .addSelect('SUM(userVideoGame.precio - userVideoGame.precio * 0.1) as ganancias')
+      .addSelect(
+        'SUM(userVideoGame.precio - userVideoGame.precio * 0.1) as ganancias',
+      )
       .where('userVideoGame.videoGame = :id', { id })
       .andWhere('developer.id = :developer', { developer: developerId })
       .andWhere('userVideoGame.fechaCompra between :start and :end', {
