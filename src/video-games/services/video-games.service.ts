@@ -97,6 +97,10 @@ export class VideoGamesService {
         precio: queries.precio,
       });
     }
+    
+    videoGames = videoGames
+      .addOrderBy('asset.index', 'ASC')
+      .orderBy('videoGame.titulo', 'ASC');
 
     if (queries.limit) {
       videoGames = videoGames.take(queries.limit);
@@ -105,10 +109,6 @@ export class VideoGamesService {
     if ((await videoGames.getCount()) === 0) {
       throw new HttpException('Videogames was not found', HttpStatus.NOT_FOUND);
     }
-
-    videoGames = videoGames
-      .addOrderBy('videoGame.titulo', 'ASC')
-      .addOrderBy('asset.index', 'ASC');
 
     return videoGames.getMany();
   }
