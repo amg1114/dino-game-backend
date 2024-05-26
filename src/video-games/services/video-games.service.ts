@@ -49,14 +49,22 @@ export class VideoGamesService {
       .leftJoinAndSelect('assets.asset', 'asset')
       .leftJoinAndSelect('videoGame.versions', 'versions')
       .leftJoinAndSelect('versions.requisitos', 'requisitos')
-      .leftJoinAndSelect('videoGame.descuentos', 'descuentos')
+      .leftJoinAndSelect(
+        'videoGame.descuentos',
+        'descuentos',
+        'descuentos.fechaFin >= :currentDate',
+        {
+          currentDate: new Date(),
+        },
+      )
       .leftJoinAndSelect('videoGame.categorias', 'categorias')
       .leftJoinAndSelect('videoGame.developer', 'developer')
       .leftJoinAndSelect('developer.user', 'user')
       .where('videoGame.id = :id', { id })
-      .andWhere('descuentos.fechaFin >= :currentDate', {
-        currentDate: new Date(),
-      })
+      .addOrderBy('asset.index', 'ASC')
+      .addOrderBy('versions.releaseDate', 'DESC')
+      .addOrderBy('descuentos.fechaFin', 'DESC')
+      .addOrderBy('categorias.titulo', 'ASC')
       .getOne();
 
     if (videogame === null) {
@@ -97,7 +105,7 @@ export class VideoGamesService {
         precio: queries.precio,
       });
     }
-    
+
     videoGames = videoGames
       .addOrderBy('asset.index', 'ASC')
       .orderBy('videoGame.titulo', 'ASC');
