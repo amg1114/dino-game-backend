@@ -342,13 +342,16 @@ export class VideoGamesService {
    * @param month Mes a buscar (Index entre 0 y 11)
    * @returns Ventas del videojuego
    */
-  async getSalesByMonth(id: number, month: number) {
+  async getSalesByMonth(id: number, month: number, developerId: number) {
     const sales = await this.userVideoGameRepository
       .createQueryBuilder('userVideoGame')
       .select('EXTRACT(MONTH FROM userVideoGame.fechaCompra) as month')
+      .leftJoin('userVideoGame.videoGame', 'videoGame')
+      .leftJoin('videoGame.developer', 'developer')
       .addSelect('COUNT(userVideoGame.id) as cant_ventas')
       .addSelect('SUM(userVideoGame.precio - userVideoGame.precio * 0.1) as ganancias')
       .where('userVideoGame.videoGame = :id', { id })
+      .andWhere('developer.id = :developer', { developer: developerId })
       .andWhere('userVideoGame.fechaCompra between :start and :end', {
         start: new Date(new Date().getFullYear(), month, 1),
         end: new Date(new Date().getFullYear(), month, 31),
