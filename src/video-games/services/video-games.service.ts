@@ -108,7 +108,7 @@ export class VideoGamesService {
 
     videoGames = videoGames
       .addOrderBy('asset.index', 'ASC')
-      .orderBy('videoGame.titulo', 'ASC');
+      .addOrderBy('videoGame.titulo', 'ASC');
 
     if (queries.limit) {
       videoGames = videoGames.take(queries.limit);
@@ -131,12 +131,19 @@ export class VideoGamesService {
       .createQueryBuilder('videoGame')
       .leftJoinAndSelect('videoGame.assets', 'assets')
       .leftJoinAndSelect('assets.asset', 'asset')
-      .leftJoinAndSelect('videoGame.descuentos', 'descuentos')
-      .leftJoinAndSelect('videoGame.categorias', 'categorias')
+      .leftJoinAndSelect(
+        'videoGame.descuentos',
+        'descuentos',
+        'descuentos.fechaFin >= :currentDate',
+        {
+          currentDate: new Date(),
+        },
+      )
       .leftJoinAndSelect('videoGame.developer', 'developer')
       .leftJoinAndSelect('developer.user', 'user')
       .where('developer.id = :developer', { developer: developerId })
       .addOrderBy('asset.index', 'ASC')
+      .addOrderBy('videoGame.titulo', 'ASC')
       .getMany();
 
     if (videoGames.length === 0) {
@@ -161,6 +168,7 @@ export class VideoGamesService {
       .leftJoinAndSelect('videoGame.descuentos', 'descuentos')
       .where('userVideoGame.user = :user', { user: user.id })
       .addOrderBy('asset.index', 'ASC')
+      .addOrderBy('videoGame.titulo', 'ASC')
       .getMany();
 
     if (userVideoGames.length === 0) {
@@ -185,14 +193,9 @@ export class VideoGamesService {
       .leftJoinAndSelect('userVideoGame.videoGame', 'videoGame')
       .leftJoinAndSelect('videoGame.assets', 'assets')
       .leftJoinAndSelect('assets.asset', 'asset')
-      .leftJoinAndSelect('videoGame.versions', 'versions')
-      .leftJoinAndSelect('versions.requisitos', 'requisitos')
-      .leftJoinAndSelect('videoGame.descuentos', 'descuentos')
-      .leftJoinAndSelect('videoGame.categorias', 'categorias')
-      .leftJoinAndSelect('videoGame.developer', 'developer')
-      .leftJoinAndSelect('developer.user', 'user')
       .where('userVideoGame.user = :user', { user })
       .andWhere('userVideoGame.videoGame = :videoGame', { videoGame })
+      .addOrderBy('asset.index', 'ASC')
       .getOne();
 
     if (userVideoGame === null) {
