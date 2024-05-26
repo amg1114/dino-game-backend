@@ -97,4 +97,17 @@ export class VideoGamesController {
   deleteVideoGame(@Param('videogame') videogame: number) {
     return this.videoGamesService.deleteVideoGame(videogame);
   }
+
+
+  /**
+   * EndPoint para obtener las ventas de un videojuego en un mes específico
+   * @param videoGame ID del videojuego
+   * @param month Mes de la venta (Index 0 = Enero, Index 11 = Diciembre)
+   * @returns Ventas del videojuego en el mes
+   */
+  @Get(':videogame/ventas/:mes')
+  @Public()
+  getVideoGameSales(@Param('videogame') videoGame: number, @Param('mes') month: number) {
+    return this.videoGamesService.getSalesByMonth(videoGame, month);
+  }
 }

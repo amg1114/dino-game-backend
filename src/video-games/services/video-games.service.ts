@@ -112,7 +112,8 @@ export class VideoGamesService {
    * @returns Videojuegos del desarrollador
    */
   async findDeveloperVideoGames(developerId: number) {
-    const videoGames = await this.videoGameRepository.createQueryBuilder('videoGame')
+    const videoGames = await this.videoGameRepository
+      .createQueryBuilder('videoGame')
       .leftJoinAndSelect('videoGame.assets', 'assets')
       .leftJoinAndSelect('assets.asset', 'asset')
       .leftJoinAndSelect('videoGame.descuentos', 'descuentos')
@@ -333,5 +334,32 @@ export class VideoGamesService {
       user,
       videoGame,
     });
+  }
+
+  /**
+   * Obtiene la cantidad de ventas y el total de ganancias de un videojuego por mes actual
+   * @param id ID del videojuego a buscar
+   * @param month Mes a buscar (Index entre 0 y 11)
+   * @returns Ventas del videojuego
+   */
+  async getSalesByMonth(id: number, month: number) {
+    const sales = await this.userVideoGameRepository
+      .createQueryBuilder('userVideoGame')
+      .select('EXTRACT(MONTH FROM userVideoGame.fechaCompra) as month')
+      .addSelect('COUNT(userVideoGame.id) as cant_ventas')
+      .addSelect('SUM(userVideoGame.precio - userVideoGame.precio * 0.1) as ganancias')
+      .where('userVideoGame.videoGame = :id', { id })
+      .andWhere('userVideoGame.fechaCompra between :start and :end', {
+        start: new Date(new Date().getFullYear(), month, 1),
+        end: new Date(new Date().getFullYear(), month, 31),
+      })
+      .groupBy('userVideoGame.fechaCompra')
+      .getRawMany();
+
+    if (sales.length === 0) {
+      throw new HttpException('Sales was not found', HttpStatus.NOT_FOUND);
+    }
+
+    return sales;
   }
 }
