@@ -49,6 +49,17 @@ export class VideoGamesController {
     return this.videoGamesService.createVideoGame(req.user.id, videoGameFields);
   }
 
+   /**
+   * EndPoint para obtener los videojuegos de un desarrollador
+   * @param developer ID del desarrollador
+   * @returns Videojuegos del desarrollador
+   */
+   @Get('developer/:developer/video-games')
+   @Roles(Role.DEVELOPER)
+   getDeveloperVideoGames(@Param('developer') developer: number) {
+     return this.videoGamesService.findDeveloperVideoGames(developer);
+   }
+
   /**
    * EndPoint para buscar un videojuego basado en el ID parametro ID.
    * @param {number} videogame ID del videojuego a
