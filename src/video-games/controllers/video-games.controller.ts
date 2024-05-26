@@ -106,7 +106,7 @@ export class VideoGamesController {
    * @returns Ventas del videojuego en el mes
    */
   @Get(':videogame/ventas/:mes')
-  @Public()
+  @Roles(Role.DEVELOPER)
   getVideoGameSales(@Param('videogame') videoGame: number, @Param('mes') month: number) {
     return this.videoGamesService.getSalesByMonth(videoGame, month);
   }
