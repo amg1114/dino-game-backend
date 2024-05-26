@@ -144,7 +144,7 @@ export class VideoGamesService {
       .leftJoinAndSelect('videoGame.assets', 'assets')
       .leftJoinAndSelect('assets.asset', 'asset')
       .leftJoinAndSelect('videoGame.descuentos', 'descuentos')
-      .where('userVideoGame.user = :user', { user })
+      .where('userVideoGame.user = :user', { user: user.id })
       .addOrderBy('asset.index', 'ASC')
       .getMany();
 
