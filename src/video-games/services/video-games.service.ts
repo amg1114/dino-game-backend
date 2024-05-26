@@ -100,7 +100,7 @@ export class VideoGamesService {
     }
 
     if (queries.limit) {
-      videoGames = videoGames.limit(queries.limit);
+      videoGames = videoGames.take(queries.limit);
     }
 
     return videoGames.getMany();
