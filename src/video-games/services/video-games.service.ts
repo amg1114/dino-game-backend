@@ -193,7 +193,7 @@ export class VideoGamesService {
       .leftJoinAndSelect('videoGame.assets', 'assets')
       .leftJoinAndSelect('assets.asset', 'asset')
       .where('userVideoGame.user = :user', { user: user.id })
-      .andWhere('userVideoGame.videoGame = :videoGame', { videoGame })
+      .andWhere('userVideoGame.videoGame = :videoGame', { videoGame: videoGame.id })
       .addOrderBy('asset.index', 'ASC')
       .getOne();
 
