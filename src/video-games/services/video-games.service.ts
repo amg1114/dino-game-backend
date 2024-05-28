@@ -193,7 +193,9 @@ export class VideoGamesService {
       .leftJoinAndSelect('videoGame.assets', 'assets')
       .leftJoinAndSelect('assets.asset', 'asset')
       .where('userVideoGame.user = :user', { user: user.id })
-      .andWhere('userVideoGame.videoGame = :videoGame', { videoGame: videoGame.id })
+      .andWhere('userVideoGame.videoGame = :videoGame', {
+        videoGame: videoGame.id,
+      })
       .addOrderBy('asset.index', 'ASC')
       .getOne();
 
@@ -356,31 +358,24 @@ export class VideoGamesService {
   /**
    * Obtiene la cantidad de ventas y el total de ganancias de un videojuego por mes actual
    * @param id ID del videojuego a buscar
-   * @param month Mes a buscar (Index entre 0 y 11)
+   * @param month Mes a buscar (Index entre 1 y 12)
    * @returns Ventas del videojuego
    */
-  async getSalesByMonth(id: number, month: number, developerId: number) {
+  async getSalesByMonth(id: number, month: number) {
     const sales = await this.userVideoGameRepository
       .createQueryBuilder('userVideoGame')
-      .select('EXTRACT(MONTH FROM userVideoGame.fechaCompra) as month')
-      .leftJoin('userVideoGame.videoGame', 'videoGame')
-      .leftJoin('videoGame.developer', 'developer')
-      .addSelect('COUNT(userVideoGame.id) as cant_ventas')
+      .select('COUNT(*)', 'cant_ventas')
       .addSelect(
-        'SUM(userVideoGame.precio - userVideoGame.precio * 0.1) as ganancias',
+        'SUM(userVideoGame.precio - userVideoGame.precio * 0.1)',
+        'ganancias',
       )
       .where('userVideoGame.videoGame = :id', { id })
-      .andWhere('developer.id = :developer', { developer: developerId })
-      .andWhere('userVideoGame.fechaCompra between :start and :end', {
-        start: new Date(new Date().getFullYear(), month, 1),
-        end: new Date(new Date().getFullYear(), month, 31),
+      .andWhere('userVideoGame.fechaCompra BETWEEN :start AND :end', {
+        start: new Date(new Date().getFullYear(), month - 1, 1),
+        end: new Date(new Date().getFullYear(), month, 0),
       })
-      .groupBy('userVideoGame.fechaCompra')
-      .getRawMany();
-
-    if (sales.length === 0) {
-      throw new HttpException('Sales was not found', HttpStatus.NOT_FOUND);
-    }
+      .groupBy('userVideoGame.videoGame')
+      .getRawOne();
 
     return sales;
   }
