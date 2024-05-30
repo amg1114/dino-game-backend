@@ -56,4 +56,15 @@ export class AuthService {
 
     return this.login(login);
   }
+
+  /**
+   * Obtiene los campos de un usuario
+   * @param id ID del usuario
+   * @returns Campos del usuario
+   */
+  async profile(id: number) {
+    const user = await this.usersService.findById(id);
+    const role = await this.usersService.getRole(id);
+    return { ...user, role};
+  }
 }

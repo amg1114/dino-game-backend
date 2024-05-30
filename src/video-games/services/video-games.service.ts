@@ -49,11 +49,22 @@ export class VideoGamesService {
       .leftJoinAndSelect('assets.asset', 'asset')
       .leftJoinAndSelect('videoGame.versions', 'versions')
       .leftJoinAndSelect('versions.requisitos', 'requisitos')
-      .leftJoinAndSelect('videoGame.descuentos', 'descuentos')
+      .leftJoinAndSelect(
+        'videoGame.descuentos',
+        'descuentos',
+        'descuentos.fechaFin >= :currentDate',
+        {
+          currentDate: new Date(),
+        },
+      )
       .leftJoinAndSelect('videoGame.categorias', 'categorias')
       .leftJoinAndSelect('videoGame.developer', 'developer')
       .leftJoinAndSelect('developer.user', 'user')
       .where('videoGame.id = :id', { id })
+      .addOrderBy('asset.index', 'ASC')
+      .addOrderBy('versions.releaseDate', 'DESC')
+      .addOrderBy('descuentos.fechaFin', 'DESC')
+      .addOrderBy('categorias.titulo', 'ASC')
       .getOne();
 
     if (videogame === null) {
@@ -95,15 +106,51 @@ export class VideoGamesService {
       });
     }
 
-    if ((await videoGames.getCount()) === 0) {
-      throw new HttpException('Videogames was not found', HttpStatus.NOT_FOUND);
-    }
+    videoGames = videoGames
+      .addOrderBy('asset.index', 'ASC')
+      .addOrderBy('videoGame.titulo', 'ASC');
 
     if (queries.limit) {
       videoGames = videoGames.take(queries.limit);
     }
 
+    if ((await videoGames.getCount()) === 0) {
+      throw new HttpException('Videogames was not found', HttpStatus.NOT_FOUND);
+    }
+
     return videoGames.getMany();
+  }
+
+  /**
+   * Busca los videojuegos de un desarrollador
+   * @param developerId ID del desarrollador
+   * @returns Videojuegos del desarrollador
+   */
+  async findDeveloperVideoGames(developerId: number) {
+    const videoGames = await this.videoGameRepository
+      .createQueryBuilder('videoGame')
+      .leftJoinAndSelect('videoGame.assets', 'assets')
+      .leftJoinAndSelect('assets.asset', 'asset')
+      .leftJoinAndSelect(
+        'videoGame.descuentos',
+        'descuentos',
+        'descuentos.fechaFin >= :currentDate',
+        {
+          currentDate: new Date(),
+        },
+      )
+      .leftJoinAndSelect('videoGame.developer', 'developer')
+      .leftJoinAndSelect('developer.user', 'user')
+      .where('developer.id = :developer', { developer: developerId })
+      .addOrderBy('asset.index', 'ASC')
+      .addOrderBy('videoGame.titulo', 'ASC')
+      .getMany();
+
+    if (videoGames.length === 0) {
+      throw new HttpException('VideoGames was not found', HttpStatus.NOT_FOUND);
+    }
+
+    return videoGames;
   }
 
   /**
@@ -118,9 +165,9 @@ export class VideoGamesService {
       .leftJoinAndSelect('userVideoGame.videoGame', 'videoGame')
       .leftJoinAndSelect('videoGame.assets', 'assets')
       .leftJoinAndSelect('assets.asset', 'asset')
-      .leftJoinAndSelect('videoGame.descuentos', 'descuentos')
-      .where('userVideoGame.user = :user', { user })
+      .where('userVideoGame.user = :user', { user: user.id })
       .addOrderBy('asset.index', 'ASC')
+      .addOrderBy('videoGame.titulo', 'ASC')
       .getMany();
 
     if (userVideoGames.length === 0) {
@@ -145,14 +192,11 @@ export class VideoGamesService {
       .leftJoinAndSelect('userVideoGame.videoGame', 'videoGame')
       .leftJoinAndSelect('videoGame.assets', 'assets')
       .leftJoinAndSelect('assets.asset', 'asset')
-      .leftJoinAndSelect('videoGame.versions', 'versions')
-      .leftJoinAndSelect('versions.requisitos', 'requisitos')
-      .leftJoinAndSelect('videoGame.descuentos', 'descuentos')
-      .leftJoinAndSelect('videoGame.categorias', 'categorias')
-      .leftJoinAndSelect('videoGame.developer', 'developer')
-      .leftJoinAndSelect('developer.user', 'user')
-      .where('userVideoGame.user = :user', { user })
-      .andWhere('userVideoGame.videoGame = :videoGame', { videoGame })
+      .where('userVideoGame.user = :user', { user: user.id })
+      .andWhere('userVideoGame.videoGame = :videoGame', {
+        videoGame: videoGame.id,
+      })
+      .addOrderBy('asset.index', 'ASC')
       .getOne();
 
     if (userVideoGame === null) {
@@ -309,5 +353,30 @@ export class VideoGamesService {
       user,
       videoGame,
     });
+  }
+
+  /**
+   * Obtiene la cantidad de ventas y el total de ganancias de un videojuego por mes actual
+   * @param id ID del videojuego a buscar
+   * @param month Mes a buscar (Index entre 1 y 12)
+   * @returns Ventas del videojuego
+   */
+  async getSalesByMonth(id: number, month: number) {
+    const sales = await this.userVideoGameRepository
+      .createQueryBuilder('userVideoGame')
+      .select('COUNT(*)', 'cant_ventas')
+      .addSelect(
+        'SUM(userVideoGame.precio - userVideoGame.precio * 0.1)',
+        'ganancias',
+      )
+      .where('userVideoGame.videoGame = :id', { id })
+      .andWhere('userVideoGame.fechaCompra BETWEEN :start AND :end', {
+        start: new Date(new Date().getFullYear(), month - 1, 1),
+        end: new Date(new Date().getFullYear(), month, 0),
+      })
+      .groupBy('userVideoGame.videoGame')
+      .getRawOne();
+
+    return sales;
   }
 }

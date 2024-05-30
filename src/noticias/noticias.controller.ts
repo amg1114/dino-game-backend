@@ -39,17 +39,6 @@ export class NoticiasController {
   }
 
   /**
-   * Endpoint para obtener una noticia por id
-   * @param id El id de la noticia
-   * @returns La noticia con el id dado
-   */
-  @Get(':id')
-  @Public()
-  findOne(@Param('id') id: string) {
-    return this.noticiasService.findOne(+id);
-  }
-
-  /**
    * Endpoint para crear una nueva noticia
    * @param noticiaFields Los datos para crear una nueva noticia
    * @returns La noticia recién creada
@@ -62,6 +51,28 @@ export class NoticiasController {
   ) {
     const autor = req.user;
     return this.noticiasService.create(autor.id, noticiaFields);
+  }
+
+  /**
+   * Endpoint para obtener las noticias de un autor
+   * @param autor El id del autor
+   * @returns Las noticias del autor
+   */
+  @Get('autor/:autor')
+  @Roles(Role.ADMINISTRATOR, Role.DEVELOPER)
+  findByAutor(@Param('autor') autor: number) {
+    return this.noticiasService.findByAutor(autor);
+  }
+
+  /**
+   * Endpoint para obtener una noticia por id
+   * @param id El id de la noticia
+   * @returns La noticia con el id dado
+   */
+  @Get(':id')
+  @Public()
+  findOne(@Param('id') id: string) {
+    return this.noticiasService.findOne(+id);
   }
 
   /**

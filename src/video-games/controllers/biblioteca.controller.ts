@@ -11,7 +11,9 @@ import {
 import { AuthGuard } from '../../auth/guards/auth.guard';
 import { VideoGamesService } from '../services/video-games.service';
 import { AddVideoGameToUserDto } from '../dto/video-games/add-videogame-to-user.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('VideoGames')
 @Controller('video-games/biblioteca')
 @UseGuards(AuthGuard)
 export class BibliotecaController {

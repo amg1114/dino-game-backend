@@ -30,7 +30,7 @@ export class AssetVideoGame {
   @PrimaryColumn()
   assetID: number;
 
-  @OneToOne(() => Asset)
+  @OneToOne(() => Asset, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'assetID' })
   asset: Asset;
 
@@ -45,7 +45,7 @@ export class AssetNoticia {
   @PrimaryColumn()
   assetID: number;
 
-  @OneToOne(() => Asset)
+  @OneToOne(() => Asset, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'assetID' })
   asset: Asset;
 

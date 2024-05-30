@@ -48,6 +48,7 @@ export class CategoriasService {
   async findCategoriaById(id: number) {
     const categoria = await this.categoriasRepository
       .createQueryBuilder('categoria')
+      .leftJoinAndSelect('categoria.videoGames', 'videoGames')
       .leftJoinAndSelect('videoGames.assets', 'assets')
       .leftJoinAndSelect('assets.asset', 'asset')
       .leftJoinAndSelect('videoGames.descuentos', 'descuentos')

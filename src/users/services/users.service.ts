@@ -113,27 +113,29 @@ export class UsersService {
    * @param id ID del usuario a buscar
    * @returns rol del usuario
    */
-  async getRole(id: number): Promise<Role> {
-    const user = await this.findById(id);
-    if (user) {
-      const isAdmin = await this.administratorsRepository.exists({
-        where: { user: { id } },
-      });
+  async getRole(id: number): Promise<Role[]> {
+    let roles: Role[] = [];
 
-      if (isAdmin) {
-        return Role.ADMINISTRATOR;
-      }
+    const isAdmin = await this.administratorsRepository.exists({
+      where: { user: { id } },
+    });
+    const isDeveloper = await this.developersRepository.exists({
+      where: { user: { id } },
+    });
 
-      const isDeveloper = await this.developersRepository.exists({
-        where: { user: { id } },
-      });
-
-      if (isDeveloper) {
-        return Role.DEVELOPER;
-      }
-
-      return Role.USER;
+    if (isAdmin) {
+      roles.push(Role.ADMINISTRATOR);
     }
+
+    if (isDeveloper) {
+      roles.push(Role.DEVELOPER);
+    }
+
+    if (!isAdmin && !isDeveloper) {
+      roles = [Role.USER];
+    }
+
+    return roles;
   }
 
   /**

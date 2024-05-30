@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Param, Post } from '@nestjs/common';
 
 import { RegisterAssetDto } from './dto/register-asset.dto';
 import { AssetsService } from './assets.service';
@@ -17,12 +17,17 @@ export class AssetsController {
     return this.assetsService.createVideoGameAsset(id, assetFields);
   }
 
-  @Post('noticia/:noticia')
+  @Post('noticias/:noticia')
   createNoticiaAsset(
     @Param('noticia') id: number,
     @Body() assetFields: RegisterAssetDto,
   ) {
     console.log('Create noticia asset')
     return this.assetsService.createNoticiaAsset(id, assetFields);
+  }
+
+  @Delete(':id')
+  deleteAsset(@Param('id') id: number) {
+    return this.assetsService.deleteAsset(id);
   }
 }

@@ -37,10 +37,16 @@ export class AuthController {
     return this.authService.register(registerFields);
   }
 
+  
+  /**
+   * Obtiene el perfil de un usuario
+   * @param req Request
+   * @returns Perfil del usuario
+   */
   @Get('profile')
   @UseGuards(AuthGuard)
   async profile(@Request() req: any) {
-    return req.user;
+    return this.authService.profile(req.user.id);
   }
 
   /**

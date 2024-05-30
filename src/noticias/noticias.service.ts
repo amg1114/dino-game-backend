@@ -70,6 +70,28 @@ export class NoticiasService {
   }
 
   /**
+   * Get noticias by autor
+   * @param autor The id of the autor
+   * @returns The noticias by the given autor
+   * @throws {HttpException} if there are no noticias
+   */
+  async findByAutor(autor: number) {
+    const noticias = await this.noticiasRepository.createQueryBuilder('noticia')
+      .leftJoinAndSelect('noticia.autor', 'autor')
+      .leftJoinAndSelect('noticia.assets', 'assets')
+      .leftJoinAndSelect('assets.asset', 'asset')
+      .where('autor.id = :autor', { autor })
+      .addOrderBy('asset.index', 'ASC')
+      .getMany();
+
+    if (!noticias.length) {
+      throw new HttpException('No noticias found', HttpStatus.NOT_FOUND);
+    }
+
+    return noticias;
+  }
+
+  /**
    * Update a noticia by id
    * @param id The id of the noticia
    * @param updateNoticiaDto The data to update the noticia
