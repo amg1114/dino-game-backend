@@ -54,4 +54,19 @@ export class AssetsService {
 
     return this.assetsNoticiaRepository.save(assetNoticia);
   }
+
+  /**
+   * Elimina un asset
+   * @param id ID del asset a eliminar
+   * @returns El asset eliminado
+   */
+  async deleteAsset(id: number) {
+    const result = await this.assetsRepository.delete(id);
+
+    if (result.affected === 0) {
+      throw new HttpException('Asset was not found', HttpStatus.NOT_FOUND);
+    }
+
+    return result;
+  }
 }
