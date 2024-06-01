@@ -35,6 +35,8 @@ export class CategoriasService {
       .leftJoinAndSelect('videoGames.descuentos', 'descuentos')
       .where(queries)
       .take(limit)
+      .addOrderBy('descuentos.fechaInicio', 'ASC')
+      .addOrderBy('descuentos.fechaFin', 'ASC')
       .addOrderBy('asset.index', 'ASC')
       .addOrderBy('categoria.titulo', 'ASC')
       .getMany();
@@ -52,6 +54,8 @@ export class CategoriasService {
       .leftJoinAndSelect('videoGames.assets', 'assets')
       .leftJoinAndSelect('assets.asset', 'asset')
       .leftJoinAndSelect('videoGames.descuentos', 'descuentos')
+      .addOrderBy('descuentos.fechaInicio', 'ASC')
+      .addOrderBy('descuentos.fechaFin', 'ASC')
       .addOrderBy('asset.index', 'ASC')
       .getOne();
 

@@ -49,21 +49,15 @@ export class VideoGamesService {
       .leftJoinAndSelect('assets.asset', 'asset')
       .leftJoinAndSelect('videoGame.versions', 'versions')
       .leftJoinAndSelect('versions.requisitos', 'requisitos')
-      .leftJoinAndSelect(
-        'videoGame.descuentos',
-        'descuentos',
-        'descuentos.fechaFin >= :currentDate',
-        {
-          currentDate: new Date(),
-        },
-      )
+      .leftJoinAndSelect('videoGame.descuentos', 'descuentos')
       .leftJoinAndSelect('videoGame.categorias', 'categorias')
       .leftJoinAndSelect('videoGame.developer', 'developer')
       .leftJoinAndSelect('developer.user', 'user')
       .where('videoGame.id = :id', { id })
       .addOrderBy('asset.index', 'ASC')
       .addOrderBy('versions.releaseDate', 'DESC')
-      .addOrderBy('descuentos.fechaFin', 'DESC')
+      .addOrderBy('descuentos.fechaInicio', 'ASC')
+      .addOrderBy('descuentos.fechaFin', 'ASC')
       .addOrderBy('categorias.titulo', 'ASC')
       .getOne();
 
@@ -131,14 +125,9 @@ export class VideoGamesService {
       .createQueryBuilder('videoGame')
       .leftJoinAndSelect('videoGame.assets', 'assets')
       .leftJoinAndSelect('assets.asset', 'asset')
-      .leftJoinAndSelect(
-        'videoGame.descuentos',
-        'descuentos',
-        'descuentos.fechaFin >= :currentDate',
-        {
-          currentDate: new Date(),
-        },
-      )
+      .leftJoinAndSelect('videoGame.descuentos', 'descuentos')
+      .addOrderBy('descuentos.fechaInicio', 'ASC')
+      .addOrderBy('descuentos.fechaFin', 'ASC')
       .leftJoinAndSelect('videoGame.developer', 'developer')
       .leftJoinAndSelect('developer.user', 'user')
       .where('developer.id = :developer', { developer: developerId })

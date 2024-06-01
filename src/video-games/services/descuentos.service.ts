@@ -25,7 +25,8 @@ export class DescuentosService {
   async getDescuentosByVideoGame(id: number) {
     const videoGame = await this.videoGameService.findById(id);
     const descuentos = await this.descuentoRepository.find({
-      where: { videoGame, fechaFin: MoreThanOrEqual(new Date()) },
+      where: { videoGame },
+      order: { fechaInicio: 'ASC', fechaFin: 'ASC' },
     });
 
     if (descuentos.length === 0) {
