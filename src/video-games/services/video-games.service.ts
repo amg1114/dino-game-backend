@@ -1,10 +1,4 @@
-import {
-  FindOptionsWhere,
-  ILike,
-  LessThanOrEqual,
-  Repository,
-  UpdateResult,
-} from 'typeorm';
+import { Repository, UpdateResult } from 'typeorm';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -266,11 +260,12 @@ export class VideoGamesService {
 
     if (categorias) {
       const videoGame = await this.findById(id);
+      await this.categoriasService.removeVideoGameFromCategorias(videoGame.id);
+      const promises = categorias.map(async (categoria) => {
+        return await this.categoriasService.addVideoGameToCategoria(categoria, videoGame);
+      });
 
-      videoGame.categorias =
-        await this.categoriasService.findCategoriesById(categorias);
-      await this.videoGameRepository.save(videoGame);
-
+      await Promise.all(promises);
       resultado.affected = 1;
     }
 

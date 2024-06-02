@@ -7,6 +7,8 @@ import { Categoria } from './categoria.entity';
 import { CreateCategoriaDto } from './dto/create-categoria.dto';
 import { UpdateCategoriaDto } from './dto/update-categoria.dto';
 import { CategoriaQueries } from './dto/categoria-queries.dto';
+import { VideoGame } from 'src/video-games/entities/video-game.entity';
+import { log } from 'console';
 
 @Injectable()
 export class CategoriasService {
@@ -81,6 +83,39 @@ export class CategoriasService {
     }
 
     return categorias;
+  }
+
+  async addVideoGameToCategoria(categoriaID: number, videoGame: VideoGame) {
+    const categoria = await this.categoriasRepository.findOne({
+      where: { id: categoriaID },
+      relations: {
+        videoGames: true,
+      
+      },
+    });
+
+    if (!categoria) {
+      throw new HttpException('Categoria was not found', HttpStatus.NOT_FOUND);
+    }
+    
+    categoria.videoGames.push(videoGame);
+
+    return this.categoriasRepository.save(categoria);
+  }
+
+  async removeVideoGameFromCategorias(videoGameID: number) {
+    const categorias = await this.categoriasRepository.find({
+      relations: ['videoGames'],
+    });
+    
+    const promises = categorias.map(async (categoria) => {
+      categoria.videoGames = categoria.videoGames.filter(
+        (videoGame) => videoGame.id !== videoGameID,
+      );
+     return  await this.categoriasRepository.save(categoria);
+    });
+
+    return Promise.all(promises);
   }
 
   /**
