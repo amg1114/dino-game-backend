@@ -56,6 +56,7 @@ export class CategoriasService {
       .leftJoinAndSelect('videoGames.assets', 'assets')
       .leftJoinAndSelect('assets.asset', 'asset')
       .leftJoinAndSelect('videoGames.descuentos', 'descuentos')
+      .where('categoria.id = :id', { id })
       .addOrderBy('descuentos.fechaInicio', 'ASC')
       .addOrderBy('descuentos.fechaFin', 'ASC')
       .addOrderBy('asset.index', 'ASC')
