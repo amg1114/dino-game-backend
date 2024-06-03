@@ -36,6 +36,7 @@ export class AssetVideoGame {
 
   @ManyToOne(() => VideoGame, (videoGame) => videoGame.assets, {
     onDelete: 'CASCADE',
+  
   })
   videoGame: VideoGame;
 }
