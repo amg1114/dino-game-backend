@@ -79,6 +79,8 @@ export class VideoGamesService {
     if (queries.search) {
       videoGames = videoGames.where('videoGame.titulo ILIKE :search', {
         search: `%${queries.search}%`,
+      }).orWhere('videoGame.descripcion ILIKE :search', {
+        search: `%${queries.search}%`,
       });
     }
 
