@@ -23,7 +23,4 @@ export class UpdateUserDto {
     @IsOptional()
     correo? : string
 
-    @IsString()
-    @IsOptional()
-    password? : string
 }

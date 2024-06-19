@@ -81,9 +81,6 @@ export class UsersService {
    * @returns usuario actualizado
    */
   async updateUser(id: number, userFields: UpdateUserDto) {
-    if (userFields.password) {
-      userFields.password = await bcrypt.hash(userFields.password, SALT_ROUNDS);
-    }
     const resultado = await this.userRepository.update(id, userFields);
 
     if (resultado.affected === 0) {
