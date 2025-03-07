@@ -8,7 +8,14 @@ import { DevelopersController } from './controllers/developers.controller';
 import { DevelopersService } from './services/developers.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Administrator, Developer, SolicitudDesarrollador])],
+  imports: [
+    TypeOrmModule.forFeature([
+      User,
+      Administrator,
+      Developer,
+      SolicitudDesarrollador,
+    ]),
+  ],
   providers: [UsersService, DevelopersService],
   controllers: [DevelopersController, UsersController],
   exports: [UsersModule, TypeOrmModule],

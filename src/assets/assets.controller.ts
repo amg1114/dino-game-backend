@@ -22,7 +22,7 @@ export class AssetsController {
     @Param('noticia') id: number,
     @Body() assetFields: RegisterAssetDto,
   ) {
-    console.log('Create noticia asset')
+    console.log('Create noticia asset');
     return this.assetsService.createNoticiaAsset(id, assetFields);
   }
 

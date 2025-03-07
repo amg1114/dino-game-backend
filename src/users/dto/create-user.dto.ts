@@ -1,29 +1,28 @@
-import { IsDate, IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator'
-import { Sexo } from '../../config/enums/sexo.enum'
+import { IsDate, IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { Sexo } from '../../config/enums/sexo.enum';
 
 export class CreateUserDto {
+  @IsString()
+  @IsNotEmpty()
+  nombre: string;
 
-    @IsString()
-    @IsNotEmpty()
-    nombre : string
-    
-    @IsDate()
-    @IsNotEmpty()
-    fechaNacimiento : Date
-    
-    @IsEnum(Sexo)
-    @IsNotEmpty()
-    sexo : Sexo
-    
-    @IsString()
-    @IsNotEmpty()
-    pais : string
-    
-    @IsEmail()
-    @IsNotEmpty()
-    correo : string
+  @IsDate()
+  @IsNotEmpty()
+  fechaNacimiento: Date;
 
-    @IsString()
-    @IsNotEmpty()
-    password : string
+  @IsEnum(Sexo)
+  @IsNotEmpty()
+  sexo: Sexo;
+
+  @IsString()
+  @IsNotEmpty()
+  pais: string;
+
+  @IsEmail()
+  @IsNotEmpty()
+  correo: string;
+
+  @IsString()
+  @IsNotEmpty()
+  password: string;
 }

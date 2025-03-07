@@ -262,7 +262,10 @@ export class VideoGamesService {
       const videoGame = await this.findById(id);
       await this.categoriasService.removeVideoGameFromCategorias(videoGame.id);
       const promises = categorias.map(async (categoria) => {
-        return await this.categoriasService.addVideoGameToCategoria(categoria, videoGame);
+        return await this.categoriasService.addVideoGameToCategoria(
+          categoria,
+          videoGame,
+        );
       });
 
       await Promise.all(promises);
