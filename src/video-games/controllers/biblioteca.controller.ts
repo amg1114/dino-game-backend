@@ -1,5 +1,5 @@
 import {
-    Body,
+  Body,
   Controller,
   Delete,
   Get,
@@ -48,9 +48,13 @@ export class BibliotecaController {
   addVideoGameToUser(
     @Param('videogame') videogame: number,
     @Request() req: any,
-    @Body() compraFields: AddVideoGameToUserDto
+    @Body() compraFields: AddVideoGameToUserDto,
   ) {
-    return this.videoGamesService.addVideoGameToUser(videogame, req.user.id, compraFields);
+    return this.videoGamesService.addVideoGameToUser(
+      videogame,
+      req.user.id,
+      compraFields,
+    );
   }
 
   /**

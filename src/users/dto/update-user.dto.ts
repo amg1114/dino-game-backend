@@ -3,29 +3,31 @@ import { Sexo } from '../../config/enums/sexo.enum'
 import { Role } from 'src/config/enums/roles.enum'
 
 export class UpdateUserDto {
-
     @IsString()
     @IsOptional()
-    nombre?: string
+    nombre?: string;
 
     @IsDate()
     @IsOptional()
-    fechaNacimiento?: Date
+    fechaNacimiento?: Date;
 
     @IsEnum(Sexo)
     @IsOptional()
-    sexo?: Sexo
+    sexo?: Sexo;
 
     @IsString()
     @IsOptional()
-    pais?: string
+    pais?: string;
 
     @IsEmail()
     @IsOptional()
-    correo?: string
+    correo?: string;
 
     @IsEnum(Role)
     @IsOptional()
     tipo?: Role
 
+    @IsString()
+    @IsOptional()
+    password?: string;
 }

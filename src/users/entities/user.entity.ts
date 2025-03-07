@@ -33,9 +33,9 @@ export class User {
     @Column()
     password: string;
 
-    @OneToMany(() => UserVideoGame, userVideoGame => userVideoGame.user)
-    userVideoGames: UserVideoGame[]
+    @OneToMany(() => UserVideoGame, (userVideoGame) => userVideoGame.user)
+    userVideoGames: UserVideoGame[];
 
-    @OneToMany(() => Noticia, noticia => noticia.autor)
+    @OneToMany(() => Noticia, (noticia) => noticia.autor)
     noticias: Noticia[];
 }

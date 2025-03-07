@@ -18,7 +18,7 @@ import { CreateSolicitudDesarrolladorDto } from '../dto/create-solicitud-desarro
 import { UpdateSolicitudDesarrolladorDto } from '../dto/update-solicitud-desarrollador.dto';
 import { ApiTags } from '@nestjs/swagger';
 
-@ApiTags ('Desarrolladores')
+@ApiTags('Desarrolladores')
 @Controller('users/developers')
 @UseGuards(AuthGuard, RolesGuard)
 export class DevelopersController {
@@ -78,7 +78,10 @@ export class DevelopersController {
    * @returns Resultado de la actualización
    */
   @Patch(':developer/solicitud')
-  updateSolicitud(@Param('developer') developer: number, @Body() solicitudFields: UpdateSolicitudDesarrolladorDto){
+  updateSolicitud(
+    @Param('developer') developer: number,
+    @Body() solicitudFields: UpdateSolicitudDesarrolladorDto,
+  ) {
     return this.developersService.updateSolicitud(developer, solicitudFields);
   }
 }

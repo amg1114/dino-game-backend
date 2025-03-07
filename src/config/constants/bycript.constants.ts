@@ -1,4 +1,4 @@
-import { ConfigModule, ConfigService } from "@nestjs/config";
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 ConfigModule.forRoot();
 const configService = new ConfigService();

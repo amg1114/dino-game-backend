@@ -37,7 +37,6 @@ export class AuthController {
     return this.authService.register(registerFields);
   }
 
-  
   /**
    * Obtiene el perfil de un usuario
    * @param req Request

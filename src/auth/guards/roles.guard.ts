@@ -33,7 +33,6 @@ export class RolesGuard implements CanActivate {
       context.getClass(),
     ]);
 
-
     if (!roles) {
       return true;
     }

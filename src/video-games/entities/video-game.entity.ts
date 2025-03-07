@@ -31,10 +31,15 @@ export class VideoGame {
   @Column({ type: 'date' })
   fechaLanzamiento: Date;
 
-  @OneToMany(() => AssetVideoGame, (asset) => asset.videoGame, { cascade: true, onDelete: 'CASCADE' })
+  @OneToMany(() => AssetVideoGame, (asset) => asset.videoGame, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   assets: AssetVideoGame[];
 
-  @ManyToMany(() => Categoria, (categoria) => categoria.videoGames, { onDelete: 'CASCADE' })
+  @ManyToMany(() => Categoria, (categoria) => categoria.videoGames, {
+    onDelete: 'CASCADE',
+  })
   categorias: Categoria[];
 
   @ManyToOne(() => User, (User) => User.id, { onDelete: 'CASCADE' })
