@@ -30,10 +30,27 @@ import { DevelopersService } from 'src/users/services/developers.service';
       UserVideoGame,
     ]),
     UsersModule,
-    CategoriasModule
+    CategoriasModule,
   ],
-  providers: [VideoGamesService, UsersService, DevelopersService, DescuentosService, CategoriasService],
-  controllers: [BibliotecaController, VideoGamesController, DescuentosController, VersionsController],
-  exports: [TypeOrmModule, VideoGamesService, UsersService, DevelopersService, CategoriasModule],
+  providers: [
+    VideoGamesService,
+    UsersService,
+    DevelopersService,
+    DescuentosService,
+    CategoriasService,
+  ],
+  controllers: [
+    BibliotecaController,
+    VideoGamesController,
+    DescuentosController,
+    VersionsController,
+  ],
+  exports: [
+    TypeOrmModule,
+    VideoGamesService,
+    UsersService,
+    DevelopersService,
+    CategoriasModule,
+  ],
 })
 export class VideoGamesModule {}

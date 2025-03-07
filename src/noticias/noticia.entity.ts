@@ -1,6 +1,12 @@
 import { AssetNoticia } from '../assets/asset.entity';
 import { User } from '../users/entities/user.entity';
-import { PrimaryGeneratedColumn, Column, OneToMany, Entity, ManyToOne } from 'typeorm';
+import {
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  Entity,
+  ManyToOne,
+} from 'typeorm';
 
 @Entity('noticias')
 export class Noticia {

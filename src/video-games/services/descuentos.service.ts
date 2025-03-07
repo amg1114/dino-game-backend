@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MoreThanOrEqual, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Descuento } from '../entities/descuento.entity';
 import { VideoGame } from '../entities/video-game.entity';
 import { VideoGamesService } from './video-games.service';

@@ -14,7 +14,6 @@ import { NoticiasService } from './noticias.service';
 import { CreateNoticiaDto } from './dto/create-noticia.dto';
 import { UpdateNoticiaDto } from './dto/update-noticia.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { User } from '../users/entities/user.entity';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Public } from '../auth/decorators/public.decorator';
@@ -45,10 +44,7 @@ export class NoticiasController {
    */
   @Post()
   @Roles(Role.ADMINISTRATOR, Role.DEVELOPER)
-  create(
-    @Body() noticiaFields: CreateNoticiaDto,
-    @Request() req: any,
-  ) {
+  create(@Body() noticiaFields: CreateNoticiaDto, @Request() req: any) {
     const autor = req.user;
     return this.noticiasService.create(autor.id, noticiaFields);
   }
