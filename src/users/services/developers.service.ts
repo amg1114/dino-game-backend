@@ -11,7 +11,7 @@ import { UsersService } from '../services/users.service';
 
 import { CreateSolicitudDesarrolladorDto } from '../dto/create-solicitud-desarrollador.dto';
 import { UpdateSolicitudDesarrolladorDto } from '../dto/update-solicitud-desarrollador.dto';
-import { Role } from 'src/config/enums/roles.enum';
+import { Role } from '../../config/enums/roles.enum';
 import { User } from '../entities/user.entity';
 
 @Injectable()
@@ -22,7 +22,7 @@ export class DevelopersService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(SolicitudDesarrollador)
     private readonly solicitudDesarrolladorRepository: Repository<SolicitudDesarrollador>,
-  ) { }
+  ) {}
 
   /**
    * Obtiene todas las solicitudes
@@ -130,7 +130,7 @@ export class DevelopersService {
    * @returns {Promise<Developer>} Desarrollador creado
    */
   async createDeveloper(user_id: number): Promise<any> {
-    const tipo = { tipo: Role.DEVELOPER }
+    const tipo = { tipo: Role.DEVELOPER };
     return this.userService.updateUser(user_id, tipo);
   }
 
@@ -140,7 +140,7 @@ export class DevelopersService {
    * @returns {Promise<DeleteResult>} Resultado de la eliminación
    */
   async deleteDeveloper(id: number): Promise<DeleteResult> {
-    const developer = await this.userService.findById(id)
+    const developer = await this.userService.findById(id);
 
     if (!developer) {
       throw new HttpException(
@@ -166,11 +166,11 @@ export class DevelopersService {
    */
   async getDevelopers(): Promise<User[]> {
     const developers = await this.userRepository.find({
-      where: { tipo: Role.DEVELOPER }
-    })
+      where: { tipo: Role.DEVELOPER },
+    });
 
     if (!developers) {
-      throw new HttpException("No hay desarrolladores", HttpStatus.NOT_FOUND)
+      throw new HttpException('No hay desarrolladores', HttpStatus.NOT_FOUND);
     }
     return developers;
   }

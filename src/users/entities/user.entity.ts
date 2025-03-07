@@ -1,41 +1,40 @@
-import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, PrimaryColumn } from "typeorm";
-import { Sexo } from "../../config/enums/sexo.enum";
-import { VideoGame } from "../../video-games/entities/video-game.entity";
-import { Exclude } from "class-transformer";
-import { UserVideoGame } from "../../video-games/entities/user-videogames.entity";
-import { Noticia } from "../../noticias/noticia.entity";
-import { Role } from "src/config/enums/roles.enum";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Sexo } from '../../config/enums/sexo.enum';
+import { Exclude } from 'class-transformer';
+import { UserVideoGame } from '../../video-games/entities/user-videogames.entity';
+import { Noticia } from '../../noticias/noticia.entity';
+import { Role } from '../../config/enums/roles.enum';
 
 @Entity('users')
 export class User {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    nombre: string;
+  @Column()
+  nombre: string;
 
-    @Column({ type: 'date' })
-    fechaNacimiento: Date;
+  @Column({ type: 'date' })
+  fechaNacimiento: Date;
 
-    @Column({ type: 'enum', enum: Sexo, default: Sexo.Dinosaurio })
-    sexo: Sexo;
+  @Column({ type: 'enum', enum: Sexo, default: Sexo.Dinosaurio })
+  sexo: Sexo;
 
-    @Column()
-    pais: string;
+  @Column()
+  pais: string;
 
-    @Column({ type: "enum", enum: Role, default: Role.ESTANDAR })
-    tipo: Role;
+  @Column({ type: 'enum', enum: Role, default: Role.ESTANDAR })
+  tipo: Role;
 
-    @Column({ unique: true })
-    correo: string;
+  @Column({ unique: true })
+  correo: string;
 
-    @Exclude()
-    @Column()
-    password: string;
+  @Exclude()
+  @Column()
+  password: string;
 
-    @OneToMany(() => UserVideoGame, (userVideoGame) => userVideoGame.user)
-    userVideoGames: UserVideoGame[];
+  @OneToMany(() => UserVideoGame, (userVideoGame) => userVideoGame.user)
+  userVideoGames: UserVideoGame[];
 
-    @OneToMany(() => Noticia, (noticia) => noticia.autor)
-    noticias: Noticia[];
+  @OneToMany(() => Noticia, (noticia) => noticia.autor)
+  noticias: Noticia[];
 }

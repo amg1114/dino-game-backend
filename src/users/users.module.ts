@@ -13,4 +13,4 @@ import { DevelopersService } from './services/developers.service';
   controllers: [DevelopersController, UsersController],
   exports: [UsersModule, TypeOrmModule],
 })
-export class UsersModule { }
+export class UsersModule {}

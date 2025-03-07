@@ -77,11 +77,13 @@ export class VideoGamesService {
       .leftJoinAndSelect('developer.user', 'user');
 
     if (queries.search) {
-      videoGames = videoGames.where('videoGame.titulo ILIKE :search', {
-        search: `%${queries.search}%`,
-      }).orWhere('videoGame.descripcion ILIKE :search', {
-        search: `%${queries.search}%`,
-      });
+      videoGames = videoGames
+        .where('videoGame.titulo ILIKE :search', {
+          search: `%${queries.search}%`,
+        })
+        .orWhere('videoGame.descripcion ILIKE :search', {
+          search: `%${queries.search}%`,
+        });
     }
 
     if (queries.categoria) {

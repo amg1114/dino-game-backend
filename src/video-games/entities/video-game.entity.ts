@@ -12,7 +12,7 @@ import {
 import { Descuento } from './descuento.entity';
 import { Version } from './version.entity';
 import { UserVideoGame } from './user-videogames.entity';
-import { User } from 'src/users/entities/user.entity';
+import { User } from '../../users/entities/user.entity';
 
 @Entity('videogames')
 export class VideoGame {

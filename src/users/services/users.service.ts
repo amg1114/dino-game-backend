@@ -23,7 +23,7 @@ export class UsersService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(SolicitudDesarrollador)
     private readonly solicitudDesarrolladorRepository: Repository<SolicitudDesarrollador>,
-  ) { }
+  ) {}
 
   /**
    * busca un usuario segun el ID recibido por la función
@@ -107,8 +107,8 @@ export class UsersService {
    * @returns rol del usuario
    */
   async getRole(id: number): Promise<Role> {
-    const user = await this.findById(id)
-    return user.tipo
+    const user = await this.findById(id);
+    return user.tipo;
   }
 
   /**
