@@ -10,7 +10,7 @@ export class RolesGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
     private readonly usersService: UsersService,
-  ) {}
+  ) { }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
@@ -21,7 +21,7 @@ export class RolesGuard implements CanActivate {
     if (isPublic) {
       return true;
     }
-    
+
     const { user } = context.switchToHttp().getRequest();
 
     if (!user) {
@@ -38,7 +38,7 @@ export class RolesGuard implements CanActivate {
       return true;
     }
 
-    const userRoles = await this.usersService.getRole(user.id);
-    return roles.some((role) => userRoles.includes(role));
+    const userRole = await this.usersService.getRole(user.id);
+    return roles.some((role) => userRole == role);
   }
 }

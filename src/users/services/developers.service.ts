@@ -6,24 +6,23 @@ import {
   EstadoSolicitud,
   SolicitudDesarrollador,
 } from '../entities/solicitud-desarrollador.entity';
-import { Developer, Administrator } from '../entities/user.entity';
 
 import { UsersService } from '../services/users.service';
 
 import { CreateSolicitudDesarrolladorDto } from '../dto/create-solicitud-desarrollador.dto';
 import { UpdateSolicitudDesarrolladorDto } from '../dto/update-solicitud-desarrollador.dto';
+import { Role } from 'src/config/enums/roles.enum';
+import { User } from '../entities/user.entity';
 
 @Injectable()
 export class DevelopersService {
   constructor(
     private readonly userService: UsersService,
-    @InjectRepository(Developer)
-    private readonly developersRepository: Repository<Developer>,
-    @InjectRepository(Administrator)
-    private readonly administratorsRepository: Repository<Administrator>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
     @InjectRepository(SolicitudDesarrollador)
     private readonly solicitudDesarrolladorRepository: Repository<SolicitudDesarrollador>,
-  ) {}
+  ) { }
 
   /**
    * Obtiene todas las solicitudes
@@ -130,9 +129,9 @@ export class DevelopersService {
    * @param user_id El id del usuario
    * @returns {Promise<Developer>} Desarrollador creado
    */
-  async createDeveloper(user_id: number): Promise<Developer> {
-    const user = await this.userService.findById(user_id);
-    return this.developersRepository.save({ id: user.id, user });
+  async createDeveloper(user_id: number): Promise<any> {
+    const tipo = { tipo: Role.DEVELOPER }
+    return this.userService.updateUser(user_id, tipo);
   }
 
   /**
@@ -141,9 +140,7 @@ export class DevelopersService {
    * @returns {Promise<DeleteResult>} Resultado de la eliminación
    */
   async deleteDeveloper(id: number): Promise<DeleteResult> {
-    const developer = await this.developersRepository.findOne({
-      where: { id },
-    });
+    const developer = await this.userService.findById(id)
 
     if (!developer) {
       throw new HttpException(
@@ -152,7 +149,7 @@ export class DevelopersService {
       );
     }
 
-    const resultado = await this.developersRepository.delete(developer.id);
+    const resultado = await this.userService.deleteUser(developer.id);
 
     if (resultado.affected === 0) {
       throw new HttpException(
@@ -167,22 +164,14 @@ export class DevelopersService {
    * Obtener lista de desarrolladores
    * @returns Lista de desarrolladores
    */
-  async getDevelopers(): Promise<Developer[]> {
-    const developers = await this.developersRepository.find({
-      relations: ['user'],
-      order: {
-        user: {
-          nombre: 'ASC',
-        },
-      },
-    });
+  async getDevelopers(): Promise<User[]> {
+    const developers = await this.userRepository.find({
+      where: { tipo: Role.DEVELOPER }
+    })
 
-    if (!developers)
-      throw new HttpException(
-        'No se encontraron desarrolladores',
-        HttpStatus.NOT_FOUND,
-      );
-
+    if (!developers) {
+      throw new HttpException("No hay desarrolladores", HttpStatus.NOT_FOUND)
+    }
     return developers;
   }
 
@@ -191,10 +180,9 @@ export class DevelopersService {
    * @param id Id del desarrollador
    * @returns Desarrollador encontrado
    */
-  async getDeveloperById(id: number): Promise<Developer> {
-    const developer = await this.developersRepository.findOne({
-      where: { id },
-      relations: ['user'],
+  async getDeveloperById(id: number): Promise<User> {
+    const developer = await this.userRepository.findOne({
+      where: { id, tipo: Role.DEVELOPER },
     });
 
     if (!developer)
