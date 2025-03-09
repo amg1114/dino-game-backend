@@ -25,11 +25,11 @@ import { Public } from '../../auth/decorators/public.decorator';
 @Controller('video-games')
 @UseGuards(AuthGuard, RolesGuard)
 export class VideoGamesController {
-  constructor(private readonly videoGamesService: VideoGamesService) {}
+  constructor(private readonly videoGamesService: VideoGamesService) { }
 
   /**
    * EndPoint para buscar un videojuego basado en el ID parametro ID.
-   * @param id ID del videojuego a
+   * @param id ID del videojuego a buscar 
    * @returns Videojuego encontrado
    */
   @Get()
@@ -49,20 +49,20 @@ export class VideoGamesController {
     return this.videoGamesService.createVideoGame(req.user.id, videoGameFields);
   }
 
-   /**
-   * EndPoint para obtener los videojuegos de un desarrollador
-   * @param developer ID del desarrollador
-   * @returns Videojuegos del desarrollador
-   */
-   @Get('developer/:developer/video-games')
-   @Roles(Role.DEVELOPER)
-   getDeveloperVideoGames(@Param('developer') developer: number) {
-     return this.videoGamesService.findDeveloperVideoGames(developer);
-   }
+  /**
+  * EndPoint para obtener los videojuegos de un desarrollador
+  * @param developer ID del desarrollador
+  * @returns Videojuegos del desarrollador
+  */
+  @Get('developer/:developer/video-games')
+  @Roles(Role.DEVELOPER)
+  getDeveloperVideoGames(@Param('developer') developer: number) {
+    return this.videoGamesService.findDeveloperVideoGames(developer);
+  }
 
   /**
    * EndPoint para buscar un videojuego basado en el ID parametro ID.
-   * @param {number} videogame ID del videojuego a
+   * @param {number} videogame ID del videojuego a buscar 
    * @returns Videojuego encontrado
    */
   @Get(':videogame')
@@ -107,7 +107,7 @@ export class VideoGamesController {
    */
   @Get(':videogame/ventas/:mes')
   @Roles(Role.DEVELOPER)
-  getVideoGameSales(@Param('videogame') videoGame: number, @Param('mes') month: number){    
+  getVideoGameSales(@Param('videogame') videoGame: number, @Param('mes') month: number) {
     return this.videoGamesService.getSalesByMonth(videoGame, month);
   }
 }

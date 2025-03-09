@@ -18,12 +18,16 @@ import { CreateSolicitudDesarrolladorDto } from '../dto/create-solicitud-desarro
 import { UpdateSolicitudDesarrolladorDto } from '../dto/update-solicitud-desarrollador.dto';
 import { ApiTags } from '@nestjs/swagger';
 
-@ApiTags ('Desarrolladores')
+@ApiTags('Desarrolladores')
 @Controller('users/developers')
 @UseGuards(AuthGuard, RolesGuard)
 export class DevelopersController {
-  constructor(private readonly developersService: DevelopersService) {}
+  constructor(private readonly developersService: DevelopersService) { }
 
+  /**
+   * Endpoint para obtener todos los desarrolladores
+   * @returns Lista de desarrolladores
+   */
   @Get()
   @Roles(Role.ADMINISTRATOR)
   getDevelopers() {
@@ -40,6 +44,11 @@ export class DevelopersController {
     return this.developersService.getSolicitudes();
   }
 
+  /**
+   * Endpoint para eliminar un desarrollador 
+   * @param developer ID desarrollador a eliminar
+   * @returns desarrollador eliminado 
+   */
   @Delete(':developer')
   @Roles(Role.ADMINISTRATOR)
   deleteDeveloper(@Param('developer') developer: number) {
@@ -78,7 +87,7 @@ export class DevelopersController {
    * @returns Resultado de la actualización
    */
   @Patch(':developer/solicitud')
-  updateSolicitud(@Param('developer') developer: number, @Body() solicitudFields: UpdateSolicitudDesarrolladorDto){
+  updateSolicitud(@Param('developer') developer: number, @Body() solicitudFields: UpdateSolicitudDesarrolladorDto) {
     return this.developersService.updateSolicitud(developer, solicitudFields);
   }
 }

@@ -19,11 +19,11 @@ import { ApiTags } from '@nestjs/swagger';
 @ApiTags('Categorias')
 @Controller('categorias')
 export class CategoriasController {
-  constructor(private readonly categoriasService: CategoriasService) {}
+  constructor(private readonly categoriasService: CategoriasService) { }
 
   /**
    * EndPoint para obtener la lista de todas las categorias
-   * @returns {Promise<Categoria[]>}
+   * @returns {Promise<Categoria[]>} lista de todas las categorias
    */
   @Get()
   getAll(@Query() queries: CategoriaQueries): Promise<Categoria[]> {
@@ -33,7 +33,7 @@ export class CategoriasController {
   /**
    * EndPoint para obtener una categoria por el parámetro ID
    * @param id ID de la categoria a buscar
-   * @returns {Promise<Categoria>}
+   * @returns {Promise<Categoria>} categoria buscada 
    */
   @Get(':id')
   getOne(@Param('id') id: number): Promise<Categoria> {
@@ -43,7 +43,7 @@ export class CategoriasController {
   /**
    * EndPoint para crear una Categoria
    * @param categoriaFields Campos de la categoria a crear
-   * @returns {Promise<Categoria>}
+   * @returns {Promise<Categoria>} categoria creada
    */
   @Post()
   create(@Body() categoriaFields: CreateCategoriaDto): Promise<Categoria> {
@@ -54,7 +54,7 @@ export class CategoriasController {
    * EndPoint para actualizar una categoria
    * @param id ID de la categoria a actualizar
    * @param categoriaFields Campos de la Categoria a actualizar
-   * @returns {Promise<UpdateResult>}
+   * @returns {Promise<UpdateResult>} categoria actualizada 
    */
   @Patch(':id')
   update(
@@ -67,7 +67,7 @@ export class CategoriasController {
   /**
    * EndPoint para eliminar una categoria
    * @param id ID de la categoria a eliminar
-   * @returns {Promise<DeleteResult>}
+   * @returns {Promise<DeleteResult>} categoria eliminada
    */
   @Delete(':id')
   delete(@Param('id') id: number): Promise<DeleteResult> {
