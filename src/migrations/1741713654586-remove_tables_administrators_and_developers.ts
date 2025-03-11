@@ -9,21 +9,18 @@ export class RemoveTablesAdministratorsDevelopers1741294973448
   implements MigrationInterface
 {
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // Verificar si la tabla "videogames" existe antes de intentar eliminar la restricción
     const foreignKeyExist = await queryRunner.query(`
             SELECT conname 
             FROM pg_constraint 
             WHERE conname = 'FK_8689717bf54cfb45835aabe7cdc'
         `);
 
-    // Si la restricción existe, se elimina
     if (foreignKeyExist.length > 0) {
       await queryRunner.query(
         `ALTER TABLE "videogames" DROP CONSTRAINT IF EXISTS "FK_8689717bf54cfb45835aabe7cdc"`,
       );
     }
 
-    // Verificar si las tablas "administrators" y "developers" existen antes de intentar eliminarlas
     const administratorsExist = await queryRunner.query(`
             SELECT to_regclass('public.administrators')
         `);
@@ -32,7 +29,6 @@ export class RemoveTablesAdministratorsDevelopers1741294973448
             SELECT to_regclass('public.developers')
         `);
 
-    // Si las tablas existen, se eliminan
     if (administratorsExist[0].to_regclass) {
       await queryRunner.dropTable('administrators');
     }
@@ -43,7 +39,6 @@ export class RemoveTablesAdministratorsDevelopers1741294973448
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    // Crear las tablas "administrators" y "developers" si no existen
     await queryRunner.createTable(
       new Table({
         name: 'administrators',
@@ -74,7 +69,6 @@ export class RemoveTablesAdministratorsDevelopers1741294973448
       }),
     );
 
-    // Crear la restricción de clave foránea si no existe
     const foreignKeyExist = await queryRunner.query(`
             SELECT conname 
             FROM pg_constraint 
