@@ -8,6 +8,7 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 import { Descuento } from './descuento.entity';
 import { Version } from './version.entity';
@@ -54,4 +55,8 @@ export class VideoGame {
 
   @OneToMany(() => UserVideoGame, (userVideoGame) => userVideoGame.videoGame)
   userVideoGames: UserVideoGame[];
+
+  @DeleteDateColumn({ nullable: true }) // Agregar Soft Delete
+  @Column()
+  deletedAt?: Date;
 }

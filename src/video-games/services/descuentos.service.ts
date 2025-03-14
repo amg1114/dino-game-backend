@@ -75,7 +75,7 @@ export class DescuentosService {
    * @returns Resultado de la eliminación
    */
   async deleteDescuento(id: number) {
-    const resultado = await this.descuentoRepository.delete(id);
+    const resultado = await this.descuentoRepository.softDelete(id);
     if (resultado.affected === 0) {
       throw new HttpException(
         'Discount could not deleted',

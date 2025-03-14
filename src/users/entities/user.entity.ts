@@ -6,6 +6,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
   PrimaryColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 import { Sexo } from '../../config/enums/sexo.enum';
 import { VideoGame } from '../../video-games/entities/video-game.entity';
@@ -42,6 +43,9 @@ export class User {
 
   @OneToMany(() => Noticia, (noticia) => noticia.autor)
   noticias: Noticia[];
+
+  @DeleteDateColumn({ nullable: true }) // Soft Delete
+  deletedAt?: Date;
 }
 
 @Entity('administrators')
@@ -65,4 +69,8 @@ export class Developer {
 
   @OneToMany(() => VideoGame, (videoGame) => videoGame.developer)
   videoGames: VideoGame[];
+
+  @DeleteDateColumn({ nullable: true }) // Agregar Soft Delete
+  @Column()
+  deletedAt?: Date;
 }

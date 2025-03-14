@@ -70,7 +70,7 @@ export class CategoriasController {
    * @returns {Promise<DeleteResult>}
    */
   @Delete(':id')
-  delete(@Param('id') id: number): Promise<DeleteResult> {
+  async delete(@Param('id') id: number): Promise<DeleteResult> {
     return this.categoriasService.deleteCategoria(id);
   }
 }

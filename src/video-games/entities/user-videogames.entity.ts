@@ -1,5 +1,11 @@
 import { User } from '../../users/entities/user.entity';
-import { PrimaryGeneratedColumn, Column, ManyToOne, Entity } from 'typeorm';
+import {
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  Entity,
+  DeleteDateColumn,
+} from 'typeorm';
 import { VideoGame } from './video-game.entity';
 
 @Entity('user_videogames')
@@ -20,4 +26,8 @@ export class UserVideoGame {
     onDelete: 'CASCADE',
   })
   videoGame: VideoGame;
+
+  @DeleteDateColumn({ nullable: true }) // Agregar Soft Delete
+  @Column()
+  deletedAt?: Date;
 }

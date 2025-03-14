@@ -152,7 +152,7 @@ export class DevelopersService {
       );
     }
 
-    const resultado = await this.developersRepository.delete(developer.id);
+    const resultado = await this.developersRepository.softDelete(developer.id);
 
     if (resultado.affected === 0) {
       throw new HttpException(

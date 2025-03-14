@@ -4,6 +4,7 @@ import {
   Column,
   OneToOne,
   JoinColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 import { User } from './user.entity';
 
@@ -34,4 +35,8 @@ export class SolicitudDesarrollador {
     default: EstadoSolicitud.Pendiente,
   })
   estado: EstadoSolicitud;
+
+  @DeleteDateColumn({ nullable: true }) // Agregar Soft Delete
+  @Column()
+  deletedAt?: Date;
 }

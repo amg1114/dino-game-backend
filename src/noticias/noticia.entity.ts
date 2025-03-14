@@ -6,6 +6,7 @@ import {
   OneToMany,
   Entity,
   ManyToOne,
+  DeleteDateColumn,
 } from 'typeorm';
 
 @Entity('noticias')
@@ -27,4 +28,8 @@ export class Noticia {
 
   @ManyToOne(() => User, (user) => user.noticias)
   autor: User;
+
+  @DeleteDateColumn({ nullable: true }) // Agregar Soft Delete
+  @Column()
+  deletedAt?: Date;
 }

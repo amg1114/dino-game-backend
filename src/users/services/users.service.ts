@@ -99,7 +99,7 @@ export class UsersService {
    * @returns resultado de la eliminación
    */
   async deleteUser(id: number) {
-    const resultado = await this.userRepository.delete(id);
+    const resultado = await this.userRepository.softDelete(id);
 
     if (resultado.affected === 0) {
       throw new HttpException('User could not delete', HttpStatus.CONFLICT);
