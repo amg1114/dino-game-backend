@@ -1,17 +1,9 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  OneToMany,
-  OneToOne,
-  PrimaryGeneratedColumn,
-  PrimaryColumn,
-} from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Sexo } from '../../config/enums/sexo.enum';
-import { VideoGame } from '../../video-games/entities/video-game.entity';
 import { Exclude } from 'class-transformer';
 import { UserVideoGame } from '../../video-games/entities/user-videogames.entity';
 import { Noticia } from '../../noticias/noticia.entity';
+import { Role } from '../../config/enums/roles.enum';
 
 @Entity('users')
 export class User {
@@ -30,6 +22,9 @@ export class User {
   @Column()
   pais: string;
 
+  @Column({ type: 'enum', enum: Role, default: Role.ESTANDAR })
+  tipo: Role;
+
   @Column({ unique: true })
   correo: string;
 
@@ -42,27 +37,4 @@ export class User {
 
   @OneToMany(() => Noticia, (noticia) => noticia.autor)
   noticias: Noticia[];
-}
-
-@Entity('administrators')
-export class Administrator {
-  @PrimaryColumn()
-  id: number;
-
-  @OneToOne(() => User, (user) => user.id, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'id' })
-  user: User;
-}
-
-@Entity('developers')
-export class Developer {
-  @PrimaryColumn()
-  id: number;
-
-  @OneToOne(() => User, (user) => user.id, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'id' })
-  user: User;
-
-  @OneToMany(() => VideoGame, (videoGame) => videoGame.developer)
-  videoGames: VideoGame[];
 }
