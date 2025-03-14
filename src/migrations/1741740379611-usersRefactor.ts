@@ -19,9 +19,17 @@ export class UsersRefactor1741740379611 implements MigrationInterface {
     await queryRunner.query(
       `ALTER TABLE "videogames" ADD CONSTRAINT "FK_4cc6319d9e418cb80ae9a7a339c" FOREIGN KEY ("developerId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
     );
+    await queryRunner.query(`DROP TABLE "developers"`);
+    await queryRunner.query(`DROP TABLE "administrators"`);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(
+      `CREATE TABLE "administrators" ("id" integer NOT NULL, CONSTRAINT "PK_aaa48522d99c3b6b33fdea7dc2f" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "developers" ("id" integer NOT NULL, CONSTRAINT "PK_247719240b950bd26dec14bdd21" PRIMARY KEY ("id"))`,
+    );
     await queryRunner.query(
       `ALTER TABLE "videogames" DROP CONSTRAINT "FK_4cc6319d9e418cb80ae9a7a339c"`,
     );
