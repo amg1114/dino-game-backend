@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
   Param,
   Patch,
   Post,
@@ -16,7 +17,12 @@ import { Role } from '../../config/enums/roles.enum';
 import { DevelopersService } from '../services/developers.service';
 import { CreateSolicitudDesarrolladorDto } from '../dto/create-solicitud-desarrollador.dto';
 import { UpdateSolicitudDesarrolladorDto } from '../dto/update-solicitud-desarrollador.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { SolicitudDesarrollador } from '../entities/solicitud-desarrollador.entity';
+import { Developer, User } from '../entities/user.entity';
+import { DeleteResult, UpdateResult } from 'typeorm';
+import { DesarrolladorConflictResponseDto, DesarrolladoresNotFoundResponseDto, SolicitudBadRequestResponseDto, SolicitudNotFoundResponseDto } from '../dto/responses-dto';
+import { DeleteResultResponseDto, UpdateResultResponseDto } from 'src/config/responses-dto';
 
 @ApiTags('Desarrolladores')
 @Controller('users/developers')
@@ -25,11 +31,24 @@ export class DevelopersController {
   constructor(private readonly developersService: DevelopersService) { }
 
   /**
-   * Endpoint para obtener todos los desarrolladores
    * @returns Lista de desarrolladores
    */
   @Get()
   @Roles(Role.ADMINISTRATOR)
+  @ApiOperation({
+    summary: 'Obtener todos los desarrolladores',
+    description: 'obtiene la lista de todos los desalloradores'
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'lista de todos los desarrolladores',
+    type: [Developer],
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'No se encontraron desarrolladores',
+    type: DesarrolladoresNotFoundResponseDto,
+  })
   getDevelopers() {
     return this.developersService.getDevelopers();
   }
@@ -38,6 +57,20 @@ export class DevelopersController {
    * Endpoint para obtener todas las solicitudes
    * @returns {Promise <SolicitudDesarrollador[]> } Lista de solicitudes
    */
+  @ApiOperation({
+    summary: 'Obtener todas las solicitudes de desarrolladores',
+    description: 'Obtiene una lista con todas las solicitudes de los desarrolladores'
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'lista de solicitudes de desarrolladores',
+    type: [SolicitudDesarrollador]
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'No se encontraron solicitudes de desarrolladores',
+    type: SolicitudNotFoundResponseDto
+  })
   @Get('solicitudes')
   @Roles(Role.ADMINISTRATOR)
   getSolicitudes() {
@@ -49,6 +82,25 @@ export class DevelopersController {
    * @param developer ID desarrollador a eliminar
    * @returns desarrollador eliminado 
    */
+  @ApiOperation({
+    summary: 'Eliminar un desarrollador',
+    description: 'Eliminar un perfil de desarrollador con el id',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Desarrollador eliminado correctamente',
+    type: DeleteResultResponseDto,
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'Desarrollador no eliminado',
+    type: DesarrolladorConflictResponseDto
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Desarrollador no encontrado',
+    type: DesarrolladoresNotFoundResponseDto
+  })
   @Delete(':developer')
   @Roles(Role.ADMINISTRATOR)
   deleteDeveloper(@Param('developer') developer: number) {
@@ -61,6 +113,20 @@ export class DevelopersController {
    * @param solicitudFields Campos de la solicitud a crear
    * @returns Solicitudes creada
    */
+  @ApiOperation({
+    summary: 'Crear una solicitud de desarrollador',
+    description: 'Crea la socilicitud de un usuario para ser desarrollador'
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'La solicitud fue enviada correctamente',
+    type: SolicitudDesarrollador
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Ya existe una solicitud',
+    type: SolicitudBadRequestResponseDto
+  })
   @Post(':user/solicitud')
   @Public()
   createSolicitud(
@@ -75,6 +141,20 @@ export class DevelopersController {
    * @param developer ID del usuario a buscar
    * @returns Solicitud del usuario
    */
+  @ApiOperation({
+    summary: 'Obtener la solicitud de un usuario',
+    description: 'Obtiene la solicitud de desarrollador de un usuario',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'solicitud obtenida correctamente',
+    type: SolicitudDesarrollador
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'La solicitud no fue encontrada',
+    type: SolicitudNotFoundResponseDto
+  })
   @Get(':developer/solicitud')
   getSolicitud(@Param('developer') developer: number) {
     return this.developersService.getSolicitud(developer);
@@ -86,6 +166,20 @@ export class DevelopersController {
    * @param solicitudFields Campos de la solicitud a actualizar
    * @returns Resultado de la actualización
    */
+  @ApiOperation({
+    summary: 'Actualizar la solicitud de un usuario',
+    description: 'Actualiza el estado de la solicitud de un usuario para ser desarrollador',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'la solicitud se actualizó correctamente',
+    type: UpdateResultResponseDto
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'la solicitud no fue encontrada',
+    type: SolicitudNotFoundResponseDto
+  })
   @Patch(':developer/solicitud')
   updateSolicitud(@Param('developer') developer: number, @Body() solicitudFields: UpdateSolicitudDesarrolladorDto) {
     return this.developersService.updateSolicitud(developer, solicitudFields);

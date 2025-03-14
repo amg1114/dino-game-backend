@@ -1,5 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, HttpException, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 // Importaciones propias
 import { Role } from '../../config/enums/roles.enum';
@@ -12,6 +12,10 @@ import { Roles } from '../../auth/decorators/roles.decorator';
 import { CreateDescuentoDto } from '../dto/descuentos/create-descuento.dto';
 import { UpdateDescuentoDto } from '../dto/descuentos/update-descuento.dto';
 import { DescuentosService } from '../services/descuentos.service';
+import { Descuento } from '../entities/descuento.entity';
+import { DeleteDescuentoResponseDto, DescuentosNotFoundResponseDto } from '../dto/descuentos/responses-dto';
+import { DeleteResult } from 'typeorm';
+import { DeleteResultResponseDto, UpdateResultResponseDto } from 'src/config/responses-dto';
 
 @ApiTags('Descuentos')
 @Controller('video-games/:videogame/descuentos')
@@ -24,9 +28,23 @@ export class DescuentosController {
      * @param videogame ID del videojuego
      * @returns Descuentos del videojuego
      */
+    @ApiOperation({
+        summary: 'Obtener descuentos activos de un videojuego',
+        description: 'Obtiene una lista con los descuentos activos de un videojuego'
+    })
+    @ApiResponse({
+        status: 200,
+        description: 'Los descuentos fueron encontrados exitosamente',
+        type: [Descuento]
+    })
+    @ApiResponse({
+        status: 404,
+        description: 'Los descuentos no fueron encontrados',
+        type: DescuentosNotFoundResponseDto
+    })
     @Get()
     @Public()
-    getDescuentos(@Param('videogame') videogame: number){
+    getDescuentos(@Param('videogame') videogame: number) {
         return this.descuentosService.getDescuentosByVideoGame(videogame);
     }
 
@@ -35,6 +53,15 @@ export class DescuentosController {
      * @param id ID del videojuego
      * @param descuentoFields campos del Descuento a agregar
      */
+    @ApiOperation({
+        summary: 'Agregar un descuento a un videojuego',
+        description: 'Agrega un descuento a un videojuego',
+    })
+    @ApiResponse({
+        status: 200,
+        description: 'Los descuentos fueron encontrados exitosamente',
+        type: Descuento
+    })
     @Post()
     @Roles(Role.ADMINISTRATOR)
     createDescuento(@Param('videogame') videogame: number, @Body() descuentoFields: CreateDescuentoDto) {
@@ -47,6 +74,20 @@ export class DescuentosController {
      * @param descuentoFields Campos del Descuento a actualizar
      * @returns Resultado de la actualización
      */
+    @ApiOperation({
+        summary: 'Actualizar el descuento de un videojuego',
+        description: 'Actualiza los descuentos activos de un videojuego'
+    })
+    @ApiResponse({
+        status: 200,
+        description: 'Los descuentos fueron encontrados exitosamente',
+        type: UpdateResultResponseDto
+    })
+    @ApiResponse({
+        status: 404,
+        description: 'Los descuentos no fueron encontrados',
+        type: DescuentosNotFoundResponseDto
+    })
     @Patch(':descuento')
     @Roles(Role.ADMINISTRATOR)
     updateDescuento(@Param('descuento') descuento: number, @Body() descuentoFields: UpdateDescuentoDto) {
@@ -58,6 +99,20 @@ export class DescuentosController {
      * @param descuento ID del Descuento a eliminar
      * @returns Resultado de la eliminación
      */
+    @ApiOperation({
+        summary: 'Eliminar el descuento de un videojuego',
+        description: 'Elimina un descuento activo de un videojuego'
+    })
+    @ApiResponse({
+        status: 200,
+        description: 'El descuento fue eliminados exitosamente',
+        type: DeleteResultResponseDto
+    })
+    @ApiResponse({
+        status: 409,
+        description: 'El descuento no fue eliminado correctamente',
+        type: DeleteDescuentoResponseDto
+    })
     @Delete(':descuento')
     @Roles(Role.ADMINISTRATOR)
     deleteDescuento(@Param('descuento') descuento: number) {

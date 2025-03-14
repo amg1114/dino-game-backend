@@ -29,7 +29,7 @@ export class VideoGamesService {
     private readonly categoriasService: CategoriasService,
     private readonly usersService: UsersService,
     private readonly developersService: DevelopersService,
-  ) {}
+  ) { }
 
   /**
    * Busca un video juego basado en el ID recibido

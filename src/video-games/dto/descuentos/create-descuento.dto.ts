@@ -14,7 +14,7 @@ export class CreateDescuentoDto {
     @IsDate()
     @IsNotEmpty()
     fechaInicio: Date;
-    
+
     /**
      * Fecha de fin del descuento
     */
