@@ -1,27 +1,27 @@
-import { IsString, IsNotEmpty, IsNumber, IsDate, IsArray } from "class-validator";
+import { IsString, IsNotEmpty, IsDate, IsArray } from 'class-validator';
 
 export class CreateVersionDto {
-    @IsString()
-    @IsNotEmpty()
-    version: string;
+  @IsString()
+  @IsNotEmpty()
+  version: string;
 
-    @IsString()
-    @IsNotEmpty()
-    descripcion: string;
+  @IsString()
+  @IsNotEmpty()
+  descripcion: string;
 
-    @IsString()
-    @IsNotEmpty()
-    size: string;
+  @IsString()
+  @IsNotEmpty()
+  size: string;
 
-    @IsString()
-    @IsNotEmpty()
-    url: string;
+  @IsString()
+  @IsNotEmpty()
+  url: string;
 
-    @IsDate()
-    @IsNotEmpty()
-    releaseDate: Date;
+  @IsDate()
+  @IsNotEmpty()
+  releaseDate: Date;
 
-    @IsArray()
-    @IsNotEmpty()
-    requisitos: string[];
+  @IsArray()
+  @IsNotEmpty()
+  requisitos: string[];
 }

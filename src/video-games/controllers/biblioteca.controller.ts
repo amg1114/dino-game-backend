@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpException,
   Param,
   Post,
   Request,
@@ -13,17 +12,18 @@ import { AuthGuard } from '../../auth/guards/auth.guard';
 import { VideoGamesService } from '../services/video-games.service';
 import { AddVideoGameToUserDto } from '../dto/video-games/add-videogame-to-user.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { VideoGame } from '../entities/video-game.entity';
 import { UserVideoGame } from '../entities/user-videogames.entity';
-import { DeleteResult } from 'typeorm';
-import { VideoGameNotFoundResponseDto, VideoGamesNotFoundResponseDto } from '../dto/video-games/responses-dto';
+import {
+  VideoGameNotFoundResponseDto,
+  VideoGamesNotFoundResponseDto,
+} from '../dto/video-games/responses-dto';
 import { DeleteResultResponseDto } from 'src/config/responses-dto';
 
 @ApiTags('VideoGames')
 @Controller('video-games/biblioteca')
 @UseGuards(AuthGuard)
 export class BibliotecaController {
-  constructor(private readonly videoGamesService: VideoGamesService) { }
+  constructor(private readonly videoGamesService: VideoGamesService) {}
 
   /**
    * EndPoint para buscar los videojuegos adquiridos por un usuario basado en el ID del usuario.
@@ -32,17 +32,17 @@ export class BibliotecaController {
   @Get()
   @ApiOperation({
     summary: 'Obtener los videojuegos adquiridos por un usuario',
-    description: 'Obtiene los videojuegos adquiridos por un usuario'
+    description: 'Obtiene los videojuegos adquiridos por un usuario',
   })
   @ApiResponse({
     status: 200,
     description: 'Los videojuegos fueron encontrados correctamente',
-    type: [UserVideoGame]
+    type: [UserVideoGame],
   })
   @ApiResponse({
     status: 404,
     description: 'Los videos juegos no fueron encontrados',
-    type: VideoGamesNotFoundResponseDto
+    type: VideoGamesNotFoundResponseDto,
   })
   getVideoGamesByUser(@Request() req: any) {
     const user = req.user.id;
@@ -56,17 +56,18 @@ export class BibliotecaController {
    */
   @ApiOperation({
     summary: 'Obtener un videojuego en la biblioteca de un usuario',
-    description: 'Obtiene un videojuego adquirido por un usuario basado en el ID del juego'
+    description:
+      'Obtiene un videojuego adquirido por un usuario basado en el ID del juego',
   })
   @ApiResponse({
     status: 200,
     description: 'el video juego fue encontrado exitosamente',
-    type: UserVideoGame
+    type: UserVideoGame,
   })
   @ApiResponse({
     status: 404,
     description: 'El videojuego no fue encontrado',
-    type: VideoGameNotFoundResponseDto
+    type: VideoGameNotFoundResponseDto,
   })
   @Get(':videogame')
   getVideoGameById(@Param('videogame') videogame: number, @Request() req: any) {
@@ -80,25 +81,29 @@ export class BibliotecaController {
    */
   @ApiOperation({
     summary: 'Añadir un videojuego a la biblioteca de un usuario',
-    description: 'Añade un vieo a la biblioteca de un usuario'
+    description: 'Añade un vieo a la biblioteca de un usuario',
   })
   @ApiResponse({
     status: 200,
     description: 'el video juego fue agregado exitosamente',
-    type: UserVideoGame
+    type: UserVideoGame,
   })
   @ApiResponse({
     status: 404,
     description: 'El videojuego no fue encontrado',
-    type: VideoGameNotFoundResponseDto
+    type: VideoGameNotFoundResponseDto,
   })
   @Post(':videogame')
   addVideoGameToUser(
     @Param('videogame') videogame: number,
     @Request() req: any,
-    @Body() compraFields: AddVideoGameToUserDto
+    @Body() compraFields: AddVideoGameToUserDto,
   ) {
-    return this.videoGamesService.addVideoGameToUser(videogame, req.user.id, compraFields);
+    return this.videoGamesService.addVideoGameToUser(
+      videogame,
+      req.user.id,
+      compraFields,
+    );
   }
 
   /**
@@ -108,17 +113,17 @@ export class BibliotecaController {
    */
   @ApiOperation({
     summary: 'Eliminar un videojuego de la biblioteca de un usuario',
-    description: 'Elimina un videojuego adquirido por un usuario'
+    description: 'Elimina un videojuego adquirido por un usuario',
   })
   @ApiResponse({
     status: 200,
     description: 'el video juego fue eliminado exitosamente',
-    type: DeleteResultResponseDto
+    type: DeleteResultResponseDto,
   })
   @ApiResponse({
     status: 404,
     description: 'El videojuego no fue encontrado',
-    type: VideoGameNotFoundResponseDto
+    type: VideoGameNotFoundResponseDto,
   })
   @Delete(':videogame')
   deleteVideoGameById(

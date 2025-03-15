@@ -15,13 +15,21 @@ import { Categoria } from './categoria.entity';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { CategoriaQueries } from './dto/categoria-queries.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CategoriaConflictResponseDto, CategoriaNotFoundResponseDto, CategoriasNotFoundResponseDto, DeleteCategoriaResponseDto } from './dto/responses-dto';
-import { DeleteResultResponseDto, UpdateResultResponseDto } from 'src/config/responses-dto';
+import {
+  CategoriaConflictResponseDto,
+  CategoriaNotFoundResponseDto,
+  CategoriasNotFoundResponseDto,
+  DeleteCategoriaResponseDto,
+} from './dto/responses-dto';
+import {
+  DeleteResultResponseDto,
+  UpdateResultResponseDto,
+} from 'src/config/responses-dto';
 
 @ApiTags('Categorias')
 @Controller('categorias')
 export class CategoriasController {
-  constructor(private readonly categoriasService: CategoriasService) { }
+  constructor(private readonly categoriasService: CategoriasService) {}
 
   /**
    * EndPoint para obtener la lista de todas las categorias
@@ -29,18 +37,18 @@ export class CategoriasController {
    */
   @ApiOperation({
     summary: 'Obtener lista de todas las categorias',
-    description: 'Obtiene la lista de todas las categorias de los videojuegos'
+    description: 'Obtiene la lista de todas las categorias de los videojuegos',
   })
   @ApiResponse({
     status: 200,
     description: 'Las categorias fueron encontradas exitosamente',
-    type: [Categoria]
+    type: [Categoria],
   })
   //Para revisar
   @ApiResponse({
     status: 404,
     description: 'Categorias no encontradas',
-    type: CategoriasNotFoundResponseDto
+    type: CategoriasNotFoundResponseDto,
   })
   @Get()
   getAll(@Query() queries: CategoriaQueries): Promise<Categoria[]> {
@@ -50,21 +58,21 @@ export class CategoriasController {
   /**
    * EndPoint para obtener una categoria por el parámetro ID
    * @param id ID de la categoria a buscar
-   * @returns {Promise<Categoria>} categoria buscada 
+   * @returns {Promise<Categoria>} categoria buscada
    */
   @ApiOperation({
     summary: 'Obtener una categoria',
-    description: 'Obtiene una categoria de videojuegos'
+    description: 'Obtiene una categoria de videojuegos',
   })
   @ApiResponse({
     status: 200,
     description: 'La categoria fue encontrada exitosamente',
-    type: Categoria
+    type: Categoria,
   })
   @ApiResponse({
     status: 404,
     description: 'Categoria no encontrada',
-    type: CategoriaNotFoundResponseDto
+    type: CategoriaNotFoundResponseDto,
   })
   @Get(':id')
   getOne(@Param('id') id: number): Promise<Categoria> {
@@ -78,17 +86,17 @@ export class CategoriasController {
    */
   @ApiOperation({
     summary: 'Crear una categoria',
-    description: 'Crea una nueva categoria'
+    description: 'Crea una nueva categoria',
   })
   @ApiResponse({
     status: 200,
     description: 'La categoria fue creada exitosamente',
-    type: Categoria
+    type: Categoria,
   })
   @ApiResponse({
     status: 409,
     description: 'La categoria existe actualmente',
-    type: CategoriaConflictResponseDto
+    type: CategoriaConflictResponseDto,
   })
   @Post()
   create(@Body() categoriaFields: CreateCategoriaDto): Promise<Categoria> {
@@ -99,22 +107,22 @@ export class CategoriasController {
    * EndPoint para actualizar una categoria
    * @param id ID de la categoria a actualizar
    * @param categoriaFields Campos de la Categoria a actualizar
-   * @returns {Promise<UpdateResult>} categoria actualizada 
+   * @returns {Promise<UpdateResult>} categoria actualizada
    */
   @ApiOperation({
     summary: 'Actualizar una categoria',
-    description: 'Actualiza la categoria de un videojuego'
+    description: 'Actualiza la categoria de un videojuego',
   })
   //Para revisar
   @ApiResponse({
     status: 200,
     description: 'La categoria fue actualizada exitosamente',
-    type: UpdateResultResponseDto
+    type: UpdateResultResponseDto,
   })
   @ApiResponse({
     status: 404,
     description: 'Categoria no encontrada',
-    type: CategoriaNotFoundResponseDto
+    type: CategoriaNotFoundResponseDto,
   })
   @Patch(':id')
   update(
@@ -131,18 +139,18 @@ export class CategoriasController {
    */
   @ApiOperation({
     summary: 'Eliminar una categoria',
-    description: 'Elimina la categoria de un videojuego'
+    description: 'Elimina la categoria de un videojuego',
   })
   //Para revisar
   @ApiResponse({
     status: 200,
     description: 'La categoria fue eliminada exitosamente',
-    type: DeleteResultResponseDto
+    type: DeleteResultResponseDto,
   })
   @ApiResponse({
     status: 409,
     description: 'Categoria no eliminada correctamente',
-    type: DeleteCategoriaResponseDto
+    type: DeleteCategoriaResponseDto,
   })
   @Delete(':id')
   delete(@Param('id') id: number): Promise<DeleteResult> {

@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpException,
   Param,
   Patch,
   Post,
@@ -22,34 +21,41 @@ import { Role } from '../../config/enums/roles.enum';
 import { Roles } from '../../auth/decorators/roles.decorator';
 import { Public } from '../../auth/decorators/public.decorator';
 import { VideoGame } from '../entities/video-game.entity';
-import { DeleteQueryBuilder, DeleteResult, UpdateResult } from 'typeorm';
-import { DeleteVideoGameResponseDto, UpdateVideoGameResponseDto, VideoGameNotFoundResponseDto, VideoGamesNotFoundResponseDto } from '../dto/video-games/responses-dto';
-import { DeleteResultResponseDto, UpdateResultResponseDto } from 'src/config/responses-dto';
+import {
+  DeleteVideoGameResponseDto,
+  UpdateVideoGameResponseDto,
+  VideoGameNotFoundResponseDto,
+  VideoGamesNotFoundResponseDto,
+} from '../dto/video-games/responses-dto';
+import {
+  DeleteResultResponseDto,
+  UpdateResultResponseDto,
+} from 'src/config/responses-dto';
 
 @ApiTags('VideoGames')
 @Controller('video-games')
 @UseGuards(AuthGuard, RolesGuard)
 export class VideoGamesController {
-  constructor(private readonly videoGamesService: VideoGamesService) { }
+  constructor(private readonly videoGamesService: VideoGamesService) {}
 
   /**
    * EndPoint para buscar un videojuego basado en el ID parametro ID.
-   * @param id ID del videojuego a buscar 
+   * @param id ID del videojuego a buscar
    * @returns Videojuego encontrado
    */
   @ApiOperation({
     summary: 'Obtener todos videojuego',
-    description: 'Obtiene un videojuegos basado en el id parametro id'
+    description: 'Obtiene un videojuegos basado en el id parametro id',
   })
   @ApiResponse({
     status: 200,
     description: 'Los videojuegos fueron encontrados exitosamente',
-    type: [VideoGame]
+    type: [VideoGame],
   })
   @ApiResponse({
     status: 404,
     description: 'Los videojuegos no fueron encontrados',
-    type: VideoGamesNotFoundResponseDto
+    type: VideoGamesNotFoundResponseDto,
   })
   @Get()
   @Public()
@@ -64,37 +70,41 @@ export class VideoGamesController {
    */
   @ApiOperation({
     summary: 'Crear un videojuego',
-    description: 'Crea un videojuego basado en los campos del body en la petición.'
+    description:
+      'Crea un videojuego basado en los campos del body en la petición.',
   })
   @ApiResponse({
     status: 200,
     description: 'El video juego fue añadido exitosamente',
-    type: [VideoGame]
+    type: [VideoGame],
   })
   @Post()
   @Roles(Role.ADMINISTRATOR, Role.DEVELOPER)
-  createVideoGame(@Request() req: any, @Body() videoGameFields: CreateVideoGameDto) {
+  createVideoGame(
+    @Request() req: any,
+    @Body() videoGameFields: CreateVideoGameDto,
+  ) {
     return this.videoGamesService.createVideoGame(req.user.id, videoGameFields);
   }
 
   /**
-  * EndPoint para obtener los videojuegos de un desarrollador
-  * @param developer ID del desarrollador
-  * @returns Videojuegos del desarrollador
-  */
+   * EndPoint para obtener los videojuegos de un desarrollador
+   * @param developer ID del desarrollador
+   * @returns Videojuegos del desarrollador
+   */
   @ApiOperation({
     summary: 'Obtener todos los videojuegos de un desarrollador',
-    description: 'Obtiene un videojuego publicados por un desarrollador'
+    description: 'Obtiene un videojuego publicados por un desarrollador',
   })
   @ApiResponse({
     status: 200,
     description: 'el video juego fue encontrado exitosamente',
-    type: [VideoGame]
+    type: [VideoGame],
   })
   @ApiResponse({
     status: 404,
     description: 'El videojuego no fue encontrado',
-    type: VideoGameNotFoundResponseDto
+    type: VideoGameNotFoundResponseDto,
   })
   @Get('developer/:developer/video-games')
   @Roles(Role.DEVELOPER)
@@ -104,22 +114,22 @@ export class VideoGamesController {
 
   /**
    * EndPoint para buscar un videojuego basado en el ID parametro ID.
-   * @param {number} videogame ID del videojuego a buscar 
+   * @param {number} videogame ID del videojuego a buscar
    * @returns Videojuego encontrado
    */
   @ApiOperation({
     summary: 'Obtener un videojuego',
-    description: 'Obtiene un videojuego basado en el id recibido'
+    description: 'Obtiene un videojuego basado en el id recibido',
   })
   @ApiResponse({
     status: 200,
     description: 'el video juego fue encontrado exitosamente',
-    type: [VideoGame]
+    type: [VideoGame],
   })
   @ApiResponse({
     status: 404,
     description: 'El videojuego no fue encontrado',
-    type: VideoGameNotFoundResponseDto
+    type: VideoGameNotFoundResponseDto,
   })
   @Get(':videogame')
   @Public()
@@ -136,17 +146,17 @@ export class VideoGamesController {
    */
   @ApiOperation({
     summary: 'Actualizar un videojuego',
-    description: 'Actualizar un videojuego'
+    description: 'Actualizar un videojuego',
   })
   @ApiResponse({
     status: 200,
     description: 'el video juego fue actualizado exitosamente',
-    type: UpdateResultResponseDto
+    type: UpdateResultResponseDto,
   })
   @ApiResponse({
     status: 409,
     description: 'El videojuego no fue actualizado exitosamente',
-    type: UpdateVideoGameResponseDto
+    type: UpdateVideoGameResponseDto,
   })
   @Patch(':videogame')
   @Roles(Role.ADMINISTRATOR, Role.DEVELOPER)
@@ -164,24 +174,23 @@ export class VideoGamesController {
    */
   @ApiOperation({
     summary: 'Eliminar un videojuego',
-    description: 'Elimina un videojuego'
+    description: 'Elimina un videojuego',
   })
   @ApiResponse({
     status: 200,
     description: 'el video juego fue eliminado exitosamente',
-    type: DeleteResultResponseDto
+    type: DeleteResultResponseDto,
   })
   @ApiResponse({
     status: 409,
     description: 'El videojuego no fue eliminado exitosamente',
-    type: DeleteVideoGameResponseDto
+    type: DeleteVideoGameResponseDto,
   })
   @Delete(':videogame')
   @Roles(Role.ADMINISTRATOR, Role.DEVELOPER)
   deleteVideoGame(@Param('videogame') videogame: number) {
     return this.videoGamesService.deleteVideoGame(videogame);
   }
-
 
   /**
    * EndPoint para obtener las ventas de un videojuego en un mes específico
@@ -191,16 +200,19 @@ export class VideoGamesController {
    */
   @ApiOperation({
     summary: 'Obtener las ventas de un video juego ',
-    description: 'Obtiene todas las ventas de un videojuego por mes actual'
+    description: 'Obtiene todas las ventas de un videojuego por mes actual',
   })
   @ApiResponse({
     status: 200,
     description: 'las ventas del videojuego fueron encontradas exitosamente',
-    type: DeleteResultResponseDto
+    type: DeleteResultResponseDto,
   })
   @Get(':videogame/ventas/:mes')
   @Roles(Role.DEVELOPER)
-  getVideoGameSales(@Param('videogame') videoGame: number, @Param('mes') month: number) {
+  getVideoGameSales(
+    @Param('videogame') videoGame: number,
+    @Param('mes') month: number,
+  ) {
     return this.videoGamesService.getSalesByMonth(videoGame, month);
   }
 }

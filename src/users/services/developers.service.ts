@@ -23,7 +23,7 @@ export class DevelopersService {
     private readonly administratorsRepository: Repository<Administrator>,
     @InjectRepository(SolicitudDesarrollador)
     private readonly solicitudDesarrolladorRepository: Repository<SolicitudDesarrollador>,
-  ) { }
+  ) {}
 
   /**
    * Obtiene todas las solicitudes

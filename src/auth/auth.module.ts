@@ -9,6 +9,6 @@ import { jwtConstants } from '../config/constants/jwt.constants';
 @Module({
   imports: [JwtModule.register(jwtConstants), UsersModule],
   controllers: [AuthController],
-  providers: [AuthService, UsersService]
+  providers: [AuthService, UsersService],
 })
 export class AuthModule {}

@@ -7,7 +7,7 @@ import { VideoGame } from '../entities/video-game.entity';
 @ApiTags('Versions')
 @Controller('video-games/:videogame/versions')
 export class VersionsController {
-  constructor(private readonly videoGamesService: VideoGamesService) { }
+  constructor(private readonly videoGamesService: VideoGamesService) {}
 
   /**
    * Crea una nueva versión para un videojuego
@@ -17,12 +17,12 @@ export class VersionsController {
    */
   @ApiOperation({
     summary: 'Crear una nueva version para un videojuego',
-    description: 'Agrega una nueva version a un videojuego'
+    description: 'Agrega una nueva version a un videojuego',
   })
   @ApiResponse({
     status: 200,
     description: 'La nueva version fue agregada exitosamente',
-    type: VideoGame
+    type: VideoGame,
   })
   @Post()
   create(

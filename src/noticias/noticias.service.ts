@@ -76,7 +76,8 @@ export class NoticiasService {
    * @throws {HttpException} if there are no noticias
    */
   async findByAutor(autor: number) {
-    const noticias = await this.noticiasRepository.createQueryBuilder('noticia')
+    const noticias = await this.noticiasRepository
+      .createQueryBuilder('noticia')
       .leftJoinAndSelect('noticia.autor', 'autor')
       .leftJoinAndSelect('noticia.assets', 'assets')
       .leftJoinAndSelect('assets.asset', 'asset')

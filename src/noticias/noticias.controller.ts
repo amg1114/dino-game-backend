@@ -9,28 +9,31 @@ import {
   Query,
   UseGuards,
   Request,
-  HttpException,
 } from '@nestjs/common';
 import { NoticiasService } from './noticias.service';
 import { CreateNoticiaDto } from './dto/create-noticia.dto';
 import { UpdateNoticiaDto } from './dto/update-noticia.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { User } from '../users/entities/user.entity';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Public } from '../auth/decorators/public.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { Role } from '../config/enums/roles.enum';
 import { Noticia } from './noticia.entity';
-import { DeleteResult } from 'typeorm';
-import { NoticiaNotFoundResponseDto, NoticiasNotFoundResponseDto } from './dto/responses-dto';
-import { DeleteResultResponseDto, UpdateResultResponseDto } from 'src/config/responses-dto';
+import {
+  NoticiaNotFoundResponseDto,
+  NoticiasNotFoundResponseDto,
+} from './dto/responses-dto';
+import {
+  DeleteResultResponseDto,
+  UpdateResultResponseDto,
+} from 'src/config/responses-dto';
 
 @ApiTags('Noticias')
 @Controller('noticias')
 @UseGuards(AuthGuard, RolesGuard)
 export class NoticiasController {
-  constructor(private noticiasService: NoticiasService) { }
+  constructor(private noticiasService: NoticiasService) {}
 
   /**
    * @param limit El número de noticias a devolver
@@ -40,17 +43,17 @@ export class NoticiasController {
   @Public()
   @ApiOperation({
     summary: 'Obtener todas las noticias',
-    description: 'Obtiene todas las noticias en la base de datos'
+    description: 'Obtiene todas las noticias en la base de datos',
   })
   @ApiResponse({
     status: 200,
     description: 'Lista de noticias',
-    type: [Noticia]
+    type: [Noticia],
   })
   @ApiResponse({
     status: 404,
     description: 'No se encontraron noticias',
-    type: NoticiasNotFoundResponseDto
+    type: NoticiasNotFoundResponseDto,
   })
   findAll(@Query('limit') limit = 100) {
     return this.noticiasService.findAll(+limit);
@@ -63,19 +66,16 @@ export class NoticiasController {
    */
   @ApiOperation({
     summary: 'Crear una noticia',
-    description: 'Crea una nueva noticia'
+    description: 'Crea una nueva noticia',
   })
   @ApiResponse({
     status: 200,
     description: 'La noticia fue creada exitosamente',
-    type: Noticia
+    type: Noticia,
   })
   @Post()
   @Roles(Role.ADMINISTRATOR, Role.DEVELOPER)
-  create(
-    @Body() noticiaFields: CreateNoticiaDto,
-    @Request() req: any,
-  ) {
+  create(@Body() noticiaFields: CreateNoticiaDto, @Request() req: any) {
     const autor = req.user;
     return this.noticiasService.create(autor.id, noticiaFields);
   }
@@ -87,12 +87,12 @@ export class NoticiasController {
    */
   @ApiOperation({
     summary: 'Obtener las noticias de un autor',
-    description: 'Obtiene todas las noticias hechas por un autor'
+    description: 'Obtiene todas las noticias hechas por un autor',
   })
   @ApiResponse({
     status: 200,
     description: 'Lista de noticias',
-    type: [Noticia]
+    type: [Noticia],
   })
   @ApiResponse({
     status: 404,
@@ -112,12 +112,12 @@ export class NoticiasController {
    */
   @ApiOperation({
     summary: 'Obtener una noticia',
-    description: 'Obtiene una noticia basado en el id de la noticia'
+    description: 'Obtiene una noticia basado en el id de la noticia',
   })
   @ApiResponse({
     status: 200,
     description: 'La noticia fue encontrada exitosamente',
-    type: Noticia
+    type: Noticia,
   })
   @ApiResponse({
     status: 404,
@@ -138,13 +138,13 @@ export class NoticiasController {
    */
   @ApiOperation({
     summary: 'Actualizar una noticia',
-    description: 'Actualiza una noticia en la base de datos'
+    description: 'Actualiza una noticia en la base de datos',
   })
   @ApiResponse({
     status: 200,
     description: 'Noticia actualizada',
     //Para revisar
-    type: UpdateResultResponseDto
+    type: UpdateResultResponseDto,
   })
   @ApiResponse({
     status: 404,
@@ -164,12 +164,12 @@ export class NoticiasController {
    */
   @ApiOperation({
     summary: 'Eliminar una noticia',
-    description: 'Elimina una noticia en la base de datos'
+    description: 'Elimina una noticia en la base de datos',
   })
   @ApiResponse({
     status: 200,
     description: 'Noticia eliminada',
-    type: DeleteResultResponseDto
+    type: DeleteResultResponseDto,
   })
   @ApiResponse({
     status: 404,

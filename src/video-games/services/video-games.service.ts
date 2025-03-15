@@ -29,7 +29,7 @@ export class VideoGamesService {
     private readonly categoriasService: CategoriasService,
     private readonly usersService: UsersService,
     private readonly developersService: DevelopersService,
-  ) { }
+  ) {}
 
   /**
    * Busca un video juego basado en el ID recibido
@@ -77,11 +77,13 @@ export class VideoGamesService {
       .leftJoinAndSelect('developer.user', 'user');
 
     if (queries.search) {
-      videoGames = videoGames.where('videoGame.titulo ILIKE :search', {
-        search: `%${queries.search}%`,
-      }).orWhere('videoGame.descripcion ILIKE :search', {
-        search: `%${queries.search}%`,
-      });
+      videoGames = videoGames
+        .where('videoGame.titulo ILIKE :search', {
+          search: `%${queries.search}%`,
+        })
+        .orWhere('videoGame.descripcion ILIKE :search', {
+          search: `%${queries.search}%`,
+        });
     }
 
     if (queries.categoria) {
@@ -264,7 +266,10 @@ export class VideoGamesService {
       const videoGame = await this.findById(id);
       await this.categoriasService.removeVideoGameFromCategorias(videoGame.id);
       const promises = categorias.map(async (categoria) => {
-        return await this.categoriasService.addVideoGameToCategoria(categoria, videoGame);
+        return await this.categoriasService.addVideoGameToCategoria(
+          categoria,
+          videoGame,
+        );
       });
 
       await Promise.all(promises);

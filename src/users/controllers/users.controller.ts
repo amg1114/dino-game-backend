@@ -12,16 +12,21 @@ import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { User } from '../entities/user.entity';
-import { DeleteResult } from 'typeorm';
-import { Role } from 'src/config/enums/roles.enum';
-import { Roles } from 'src/auth/decorators/roles.decorator';
-import { DeleteUserConflictResponseDto, UserConflictResponseDto, UserNotFoundResponseDto } from '../dto/responses-dto';
-import { DeleteResultResponseDto, GetRoleResponseDto, UpdateResultResponseDto } from 'src/config/responses-dto';
+import {
+  DeleteUserConflictResponseDto,
+  UserConflictResponseDto,
+  UserNotFoundResponseDto,
+} from '../dto/responses-dto';
+import {
+  DeleteResultResponseDto,
+  GetRoleResponseDto,
+  UpdateResultResponseDto,
+} from 'src/config/responses-dto';
 
 @Controller('users')
 @ApiTags('Users')
 export class UsersController {
-  constructor(private readonly userService: UsersService) { }
+  constructor(private readonly userService: UsersService) {}
 
   /**
    * crea un usuario basado en los campos recibidos por la funcion
@@ -30,17 +35,18 @@ export class UsersController {
    */
   @ApiOperation({
     summary: 'Crear un usuario',
-    description: 'Crea un usuario basado en los campos recibidos por la función'
+    description:
+      'Crea un usuario basado en los campos recibidos por la función',
   })
   @ApiResponse({
     status: 200,
     description: 'El usuario fue creado correctamente',
-    type: CreateUserDto
+    type: CreateUserDto,
   })
   @ApiResponse({
     status: 409,
     description: 'El usuario ya existe',
-    type: UserConflictResponseDto
+    type: UserConflictResponseDto,
   })
   @Post()
   createUser(@Body() userFields: CreateUserDto) {
@@ -54,17 +60,17 @@ export class UsersController {
    */
   @ApiOperation({
     summary: 'Buscar un usuario',
-    description: 'Busca un usario basado en el id que recibe la función'
+    description: 'Busca un usario basado en el id que recibe la función',
   })
   @ApiResponse({
     status: 200,
     description: 'El usuario fue encontrado exitosamente',
-    type: User
+    type: User,
   })
   @ApiResponse({
     status: 404,
     description: 'El usuario no fue encontrado',
-    type: UserNotFoundResponseDto
+    type: UserNotFoundResponseDto,
   })
   @Get(':id')
   findOne(@Param('id') id: number) {
@@ -79,17 +85,18 @@ export class UsersController {
    */
   @ApiOperation({
     summary: 'Actualizar un usuario',
-    description: ' Actualiza un usuario basado en el ID recibido por la función',
+    description:
+      ' Actualiza un usuario basado en el ID recibido por la función',
   })
   @ApiResponse({
     status: 200,
     description: 'El usuario fue actualizado exitosamente',
-    type: UpdateResultResponseDto
+    type: UpdateResultResponseDto,
   })
   @ApiResponse({
     status: 409,
     description: 'El usuario no fue actualizado correctamente',
-    type: UpdateUserDto
+    type: UpdateUserDto,
   })
   @Patch(':id')
   updateUser(@Param('id') id: number, @Body() userFields: UpdateUserDto) {
@@ -108,12 +115,12 @@ export class UsersController {
   @ApiResponse({
     status: 200,
     description: 'El usuario fue eliminado exitosamente',
-    type: DeleteResultResponseDto
+    type: DeleteResultResponseDto,
   })
   @ApiResponse({
     status: 409,
     description: 'El usuario no fue eliminado correctamente',
-    type: DeleteUserConflictResponseDto
+    type: DeleteUserConflictResponseDto,
   })
   @Delete(':id')
   deleteUser(@Param('id') id: number) {
@@ -133,12 +140,12 @@ export class UsersController {
     status: 200,
     //Para revisar
     description: 'Retorna el rol del un usuario',
-    type: GetRoleResponseDto
+    type: GetRoleResponseDto,
   })
   @ApiResponse({
     status: 404,
     description: 'El usuario no fue encontrado',
-    type: UserNotFoundResponseDto
+    type: UserNotFoundResponseDto,
   })
   @Get(':id/role')
   getRole(@Param('id') id: number) {
