@@ -1,3 +1,4 @@
+
 import {
   Column,
   Entity,
@@ -8,11 +9,12 @@ import {
   PrimaryColumn,
   DeleteDateColumn,
 } from 'typeorm';
+
 import { Sexo } from '../../config/enums/sexo.enum';
-import { VideoGame } from '../../video-games/entities/video-game.entity';
 import { Exclude } from 'class-transformer';
 import { UserVideoGame } from '../../video-games/entities/user-videogames.entity';
 import { Noticia } from '../../noticias/noticia.entity';
+import { Role } from '../../config/enums/roles.enum';
 
 @Entity('users')
 export class User {
@@ -30,6 +32,9 @@ export class User {
 
   @Column()
   pais: string;
+
+  @Column({ type: 'enum', enum: Role, default: Role.ESTANDAR })
+  tipo: Role;
 
   @Column({ unique: true })
   correo: string;
@@ -71,6 +76,5 @@ export class Developer {
   videoGames: VideoGame[];
 
   @DeleteDateColumn({ nullable: true }) // Agregar Soft Delete
-  @Column()
   deletedAt?: Date;
 }
