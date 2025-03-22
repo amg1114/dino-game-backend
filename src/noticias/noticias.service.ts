@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Noticia } from './noticia.entity';
 import { Repository } from 'typeorm';
 import { UsersService } from '../users/services/users.service';
+import slugify from 'slugify';
 
 @Injectable()
 export class NoticiasService {
@@ -21,8 +22,25 @@ export class NoticiasService {
    * @throws {HttpException} if the noticia is not created
    */
   async create(autorId: number, createNoticiaDto: CreateNoticiaDto) {
+    let slug = slugify(createNoticiaDto.titulo, {
+      strict: true,
+      lower: true,
+      trim: true,
+    });
+    let existeSlug = await this.noticiasRepository.findOne({ where: { slug } });
+    let count = 1;
+
+    while (existeSlug) {
+      slug = `${slug}-${count}`;
+      existeSlug = await this.noticiasRepository.findOne({ where: { slug } });
+      count++;
+    }
+
     const author = await this.usersService.findById(autorId);
-    const noticia = this.noticiasRepository.create(createNoticiaDto);
+    const noticia = this.noticiasRepository.create({
+      ...createNoticiaDto,
+      slug,
+    });
     noticia.autor = author;
 
     return this.noticiasRepository.save(noticia);

@@ -8,6 +8,7 @@ import { CreateCategoriaDto } from './dto/create-categoria.dto';
 import { UpdateCategoriaDto } from './dto/update-categoria.dto';
 import { CategoriaQueries } from './dto/categoria-queries.dto';
 import { VideoGame } from 'src/video-games/entities/video-game.entity';
+import slugify from 'slugify';
 
 @Injectable()
 export class CategoriasService {
@@ -123,7 +124,28 @@ export class CategoriasService {
    * @returns Categoria creada
    */
   async createCategoria(categoriaFields: CreateCategoriaDto) {
-    return this.categoriasRepository.save(categoriaFields);
+    let slug = slugify(categoriaFields.titulo, {
+      strict: true,
+      lower: true,
+      trim: true,
+    });
+    let existeSlug = await this.categoriasRepository.findOne({
+      where: { slug },
+    });
+    let count = 1;
+
+    while (existeSlug) {
+      slug = `${slug}-${count}`;
+      existeSlug = await this.categoriasRepository.findOne({ where: { slug } });
+      count++;
+    }
+
+    const categoria = this.categoriasRepository.create({
+      ...categoriaFields,
+      slug,
+    });
+
+    return this.categoriasRepository.save(categoria);
   }
 
   /**

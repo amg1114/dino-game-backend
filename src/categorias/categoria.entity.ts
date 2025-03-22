@@ -1,5 +1,8 @@
+import slugify from 'slugify';
 import { VideoGame } from '../video-games/entities/video-game.entity';
 import {
+  BeforeInsert,
+  BeforeUpdate,
   Column,
   Entity,
   JoinTable,
@@ -17,6 +20,15 @@ export class Categoria {
 
   @Column({ nullable: true })
   descripcion: string;
+
+  @Column({ unique: true })
+  slug: string;
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  generateSlug() {
+    this.slug = slugify(this.titulo, { strict: true, lower: true, trim: true });
+  }
 
   @ManyToMany(() => VideoGame, (videoGame) => videoGame.categorias)
   @JoinTable({

@@ -6,7 +6,10 @@ import {
   OneToMany,
   Entity,
   ManyToOne,
+  BeforeInsert,
+  BeforeUpdate,
 } from 'typeorm';
+import slugify from 'slugify';
 
 @Entity('noticias')
 export class Noticia {
@@ -21,6 +24,15 @@ export class Noticia {
 
   @Column()
   fecha: Date;
+
+  @Column({ unique: true })
+  slug: string;
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  generateSlug() {
+    this.slug = slugify(this.titulo, { strict: true, lower: true, trim: true });
+  }
 
   @OneToMany(() => AssetNoticia, (asset) => asset.noticia)
   assets: AssetNoticia[];

@@ -1,6 +1,8 @@
 import { AssetVideoGame } from '../../assets/asset.entity';
 import { Categoria } from '../../categorias/categoria.entity';
 import {
+  BeforeInsert,
+  BeforeUpdate,
   Column,
   Entity,
   JoinColumn,
@@ -13,6 +15,7 @@ import { Descuento } from './descuento.entity';
 import { Version } from './version.entity';
 import { UserVideoGame } from './user-videogames.entity';
 import { User } from '../../users/entities/user.entity';
+import slugify from 'slugify';
 
 @Entity('videogames')
 export class VideoGame {
@@ -30,6 +33,15 @@ export class VideoGame {
 
   @Column({ type: 'date' })
   fechaLanzamiento: Date;
+
+  @Column({ unique: true })
+  slug: string;
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  generateSlug() {
+    this.slug = slugify(this.titulo, { strict: true, lower: true, trim: true });
+  }
 
   @OneToMany(() => AssetVideoGame, (asset) => asset.videoGame, {
     cascade: true,
