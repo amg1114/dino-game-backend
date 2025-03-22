@@ -18,7 +18,6 @@ import { CreateSolicitudDesarrolladorDto } from '../dto/create-solicitud-desarro
 import { UpdateSolicitudDesarrolladorDto } from '../dto/update-solicitud-desarrollador.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SolicitudDesarrollador } from '../entities/solicitud-desarrollador.entity';
-import { Developer } from '../entities/user.entity';
 import {
   DesarrolladorConflictResponseDto,
   DesarrolladoresNotFoundResponseDto,
@@ -29,6 +28,7 @@ import {
   DeleteResultResponseDto,
   UpdateResultResponseDto,
 } from 'src/config/responses-dto';
+import { User } from '../entities/user.entity';
 
 @ApiTags('Desarrolladores')
 @Controller('users/developers')
@@ -48,7 +48,7 @@ export class DevelopersController {
   @ApiResponse({
     status: 200,
     description: 'lista de todos los desarrolladores',
-    type: [Developer],
+    type: [User],
   })
   @ApiResponse({
     status: 404,
