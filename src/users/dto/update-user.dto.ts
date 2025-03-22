@@ -25,7 +25,7 @@ export class UpdateUserDto {
 
   @IsEnum(Role)
   @IsOptional()
-  tipo?: Role;
+  role?: Role; // Cambiar 'tipo' por 'role'
 
   @IsString()
   @IsOptional()

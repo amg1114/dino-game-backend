@@ -1,13 +1,13 @@
 import { Noticia } from '../noticias/noticia.entity';
-import { VideoGame } from '..//video-games/entities/video-game.entity';
+import { VideoGame } from '../video-games/entities/video-game.entity';
 import {
   Column,
   Entity,
   JoinColumn,
   ManyToOne,
   OneToOne,
-  PrimaryColumn,
   PrimaryGeneratedColumn,
+  PrimaryColumn,
 } from 'typeorm';
 
 @Entity('assets')
@@ -23,6 +23,18 @@ export class Asset {
 
   @Column({ default: 0 })
   index: number;
+
+  // Relación inversa para el campo thumb en VideoGame
+  @OneToOne(() => VideoGame, (videoGame) => videoGame.thumb)
+  videoGameThumb: VideoGame;
+
+  // Relación inversa para el campo hero en VideoGame
+  @OneToOne(() => VideoGame, (videoGame) => videoGame.hero)
+  videoGameHero: VideoGame;
+
+  // Relación inversa para el campo thumb en Noticia
+  @OneToOne(() => Noticia, (noticia) => noticia.thumb)
+  noticiaThumb: Noticia;
 }
 
 @Entity('assets_videogames')

@@ -3,6 +3,7 @@ import { Sexo } from '../../config/enums/sexo.enum';
 import { Exclude } from 'class-transformer';
 import { UserVideoGame } from '../../video-games/entities/user-videogames.entity';
 import { Noticia } from '../../noticias/noticia.entity';
+import { VideoGame } from '../../video-games/entities/video-game.entity';
 import { Role } from '../../config/enums/roles.enum';
 
 @Entity('users')
@@ -23,7 +24,7 @@ export class User {
   pais: string;
 
   @Column({ type: 'enum', enum: Role, default: Role.ESTANDAR })
-  tipo: Role;
+  role: Role;
 
   @Column({ unique: true })
   correo: string;
@@ -37,4 +38,7 @@ export class User {
 
   @OneToMany(() => Noticia, (noticia) => noticia.autor)
   noticias: Noticia[];
+
+  @OneToMany(() => VideoGame, (videoGame) => videoGame.developer)
+  videoGames: VideoGame[];
 }

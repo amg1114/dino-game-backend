@@ -10,6 +10,7 @@ import {
 import { UsersService } from '../services/users.service';
 
 import { CreateSolicitudDesarrolladorDto } from '../dto/create-solicitud-desarrollador.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
 import { UpdateSolicitudDesarrolladorDto } from '../dto/update-solicitud-desarrollador.dto';
 import { Role } from '../../config/enums/roles.enum';
 import { User } from '../entities/user.entity';
@@ -130,8 +131,8 @@ export class DevelopersService {
    * @returns {Promise<Developer>} Desarrollador creado
    */
   async createDeveloper(user_id: number): Promise<any> {
-    const tipo = { tipo: Role.DEVELOPER };
-    return this.userService.updateUser(user_id, tipo);
+    const role: UpdateUserDto = { role: Role.DEVELOPER }; // Cambiamos 'tipo' por 'role'
+    return this.userService.updateUser(user_id, role);
   }
 
   /**
@@ -166,7 +167,7 @@ export class DevelopersService {
    */
   async getDevelopers(): Promise<User[]> {
     const developers = await this.userRepository.find({
-      where: { tipo: Role.DEVELOPER },
+      where: { role: Role.DEVELOPER }, // Cambiamos 'tipo' por 'role'
     });
 
     if (!developers) {
@@ -182,7 +183,7 @@ export class DevelopersService {
    */
   async getDeveloperById(id: number): Promise<User> {
     const developer = await this.userRepository.findOne({
-      where: { id, tipo: Role.DEVELOPER },
+      where: { id, role: Role.DEVELOPER }, // Cambiamos 'tipo' por 'role'
     });
 
     if (!developer)

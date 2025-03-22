@@ -4,9 +4,9 @@ export class UsersRefactor1741740379611 implements MigrationInterface {
   name = 'UsersRefactor1741740379611';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(
-      `ALTER TABLE "videogames" DROP CONSTRAINT "FK_8689717bf54cfb45835aabe7cdc"`,
-    );
+    //   await queryRunner.query(
+    //      `ALTER TABLE "videogames" DROP CONSTRAINT "FK_8689717bf54cfb45835aabe7cdc"`,
+    //    );
     await queryRunner.query(
       `ALTER TABLE "videogames" RENAME COLUMN "developer_id" TO "developerId"`,
     );
@@ -19,7 +19,7 @@ export class UsersRefactor1741740379611 implements MigrationInterface {
     await queryRunner.query(
       `ALTER TABLE "videogames" ADD CONSTRAINT "FK_4cc6319d9e418cb80ae9a7a339c" FOREIGN KEY ("developerId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
     );
-    await queryRunner.query(`DROP TABLE "developers"`);
+    await queryRunner.query(`DROP TABLE "developers" CASCADE`);
     await queryRunner.query(`DROP TABLE "administrators"`);
   }
 

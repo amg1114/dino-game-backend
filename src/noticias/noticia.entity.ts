@@ -6,7 +6,9 @@ import {
   OneToMany,
   Entity,
   ManyToOne,
+  JoinColumn,
 } from 'typeorm';
+import { Asset } from '../assets/asset.entity';
 
 @Entity('noticias')
 export class Noticia {
@@ -27,4 +29,8 @@ export class Noticia {
 
   @ManyToOne(() => User, (user) => user.noticias)
   autor: User;
+
+  @ManyToOne(() => Asset, { nullable: true })
+  @JoinColumn({ name: 'thumbId' })
+  thumb: Asset;
 }

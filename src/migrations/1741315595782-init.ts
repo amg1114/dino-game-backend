@@ -136,9 +136,9 @@ export class Init1741315595782 implements MigrationInterface {
     await queryRunner.query(
       `ALTER TABLE "assets_videogames" DROP CONSTRAINT "FK_c0c80001f2aa8fc0022d2cf54c7"`,
     );
-    await queryRunner.query(
-      `ALTER TABLE "videogames" DROP CONSTRAINT "FK_8689717bf54cfb45835aabe7cdc"`,
-    );
+    //    await queryRunner.query(
+    //      `ALTER TABLE "videogames" DROP CONSTRAINT "FK_8689717bf54cfb45835aabe7cdc"`,
+    //    );
     await queryRunner.query(
       `ALTER TABLE "requisitos" DROP CONSTRAINT "FK_bd045fb1cbb7f06e95d1b90fe5a"`,
     );

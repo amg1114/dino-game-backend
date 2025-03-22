@@ -13,6 +13,7 @@ import { Descuento } from './descuento.entity';
 import { Version } from './version.entity';
 import { UserVideoGame } from './user-videogames.entity';
 import { User } from '../../users/entities/user.entity';
+import { Asset } from '../../assets/asset.entity';
 
 @Entity('videogames')
 export class VideoGame {
@@ -42,7 +43,7 @@ export class VideoGame {
   })
   categorias: Categoria[];
 
-  @ManyToOne(() => User, (User) => User.id, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (user) => user.videoGames, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'developerId' })
   developer: User;
 
@@ -54,4 +55,12 @@ export class VideoGame {
 
   @OneToMany(() => UserVideoGame, (userVideoGame) => userVideoGame.videoGame)
   userVideoGames: UserVideoGame[];
+
+  @ManyToOne(() => Asset, { nullable: true })
+  @JoinColumn({ name: 'thumbId' })
+  thumb: Asset;
+
+  @ManyToOne(() => Asset, { nullable: true })
+  @JoinColumn({ name: 'heroId' })
+  hero: Asset;
 }

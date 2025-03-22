@@ -1,17 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-
 import { Repository } from 'typeorm';
-
 import * as bcrypt from 'bcrypt';
-
 import { SALT_ROUNDS } from '../../config/constants/bycript.constants';
-
 import { Role } from '../../config/enums/roles.enum';
-
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
-
 import { SolicitudDesarrollador } from '../entities/solicitud-desarrollador.entity';
 import { CreateSolicitudDesarrolladorDto } from '../dto/create-solicitud-desarrollador.dto';
 import { User } from '../entities/user.entity';
@@ -26,9 +20,9 @@ export class UsersService {
   ) {}
 
   /**
-   * busca un usuario segun el ID recibido por la función
-   * @param id ID del usuario a buscar
-   * @returns usuario encontrado
+   * Busca un usuario según el ID recibido por la función.
+   * @param id ID del usuario a buscar.
+   * @returns Usuario encontrado.
    */
   async findById(id: number) {
     const user = await this.userRepository.findOneBy({ id });
@@ -40,6 +34,11 @@ export class UsersService {
     return user;
   }
 
+  /**
+   * Busca un usuario por su correo electrónico.
+   * @param correo Correo electrónico del usuario a buscar.
+   * @returns Usuario encontrado.
+   */
   async findByCorreo(correo: string) {
     const user = await this.userRepository.findOne({ where: { correo } });
 
@@ -51,9 +50,9 @@ export class UsersService {
   }
 
   /**
-   * crea un usuario
-   * @param userFields campos del usuario a crear
-   * @returns usuario creado
+   * Crea un usuario.
+   * @param userFields Campos del usuario a crear.
+   * @returns Usuario creado.
    */
   async createUser(userFields: CreateUserDto) {
     userFields.password = bcrypt.hashSync(userFields.password, SALT_ROUNDS);
@@ -66,15 +65,14 @@ export class UsersService {
     }
 
     const user = await this.userRepository.save(userFields);
-
     return user;
   }
 
   /**
-   * actualiza un usuario segun el ID recibido por la funcion
-   * @param id Id del usuario a actualizar
-   * @param userFields campos del usuario a actualizar
-   * @returns usuario actualizado
+   * Actualiza un usuario según el ID recibido por la función.
+   * @param id ID del usuario a actualizar.
+   * @param userFields Campos del usuario a actualizar.
+   * @returns Resultado de la actualización.
    */
   async updateUser(id: number, userFields: UpdateUserDto) {
     const resultado = await this.userRepository.update(id, userFields);
@@ -87,9 +85,9 @@ export class UsersService {
   }
 
   /**
-   * Elimina un usuario segun el ID recibido por la función
-   * @param id ID del usuario a eliminar
-   * @returns resultado de la eliminación
+   * Elimina un usuario según el ID recibido por la función.
+   * @param id ID del usuario a eliminar.
+   * @returns Resultado de la eliminación.
    */
   async deleteUser(id: number) {
     const resultado = await this.userRepository.delete(id);
@@ -102,20 +100,20 @@ export class UsersService {
   }
 
   /**
-   * Retorna el rol de un usuario segun el ID recibido por la función
-   * @param id ID del usuario a buscar
-   * @returns rol del usuario
+   * Retorna el rol de un usuario según el ID recibido por la función.
+   * @param id ID del usuario a buscar.
+   * @returns Rol del usuario.
    */
   async getRole(id: number): Promise<Role> {
     const user = await this.findById(id);
-    return user.tipo;
+    return user.role; // Cambiar 'tipo' por 'role'
   }
 
   /**
-   * Crea una solicitud de desarrollador para un usuario
-   * @param id ID del usuario a crear la solicitud
-   * @param solicitudFields campos de la solicitud a crear
-   * @returns solicitud creada
+   * Crea una solicitud de desarrollador para un usuario.
+   * @param id ID del usuario a crear la solicitud.
+   * @param solicitudFields Campos de la solicitud a crear.
+   * @returns Solicitud creada.
    */
   async createSolicitudDesarrollador(
     id: number,
@@ -139,9 +137,9 @@ export class UsersService {
   }
 
   /**
-   * Retorna la solicitud de desarrollador de un usuario
-   * @param id ID del usuario a buscar la solicitud
-   * @returns solicitud encontrada
+   * Retorna la solicitud de desarrollador de un usuario.
+   * @param id ID del usuario a buscar la solicitud.
+   * @returns Solicitud encontrada.
    */
   async getSolicitudDesarrollador(id: number) {
     const solicitud = await this.solicitudDesarrolladorRepository.findOne({
