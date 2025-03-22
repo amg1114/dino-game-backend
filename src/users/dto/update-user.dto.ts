@@ -1,5 +1,6 @@
 import { IsDate, IsEmail, IsEnum, IsOptional, IsString } from 'class-validator';
 import { Sexo } from '../../config/enums/sexo.enum';
+import { Role } from '../../config/enums/roles.enum';
 
 export class UpdateUserDto {
   @IsString()
@@ -21,6 +22,10 @@ export class UpdateUserDto {
   @IsEmail()
   @IsOptional()
   correo?: string;
+
+  @IsEnum(Role)
+  @IsOptional()
+  tipo?: Role;
 
   @IsString()
   @IsOptional()

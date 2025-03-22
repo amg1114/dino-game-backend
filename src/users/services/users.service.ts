@@ -9,22 +9,18 @@ import { SALT_ROUNDS } from '../../config/constants/bycript.constants';
 
 import { Role } from '../../config/enums/roles.enum';
 
-import { Administrator, Developer, User } from '../entities/user.entity';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 
 import { SolicitudDesarrollador } from '../entities/solicitud-desarrollador.entity';
 import { CreateSolicitudDesarrolladorDto } from '../dto/create-solicitud-desarrollador.dto';
+import { User } from '../entities/user.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    @InjectRepository(Developer)
-    private readonly developersRepository: Repository<Developer>,
-    @InjectRepository(Administrator)
-    private readonly administratorsRepository: Repository<Administrator>,
     @InjectRepository(SolicitudDesarrollador)
     private readonly solicitudDesarrolladorRepository: Repository<SolicitudDesarrollador>,
   ) {}
@@ -110,29 +106,9 @@ export class UsersService {
    * @param id ID del usuario a buscar
    * @returns rol del usuario
    */
-  async getRole(id: number): Promise<Role[]> {
-    let roles: Role[] = [];
-
-    const isAdmin = await this.administratorsRepository.exists({
-      where: { user: { id } },
-    });
-    const isDeveloper = await this.developersRepository.exists({
-      where: { user: { id } },
-    });
-
-    if (isAdmin) {
-      roles.push(Role.ADMINISTRATOR);
-    }
-
-    if (isDeveloper) {
-      roles.push(Role.DEVELOPER);
-    }
-
-    if (!isAdmin && !isDeveloper) {
-      roles = [Role.USER];
-    }
-
-    return roles;
+  async getRole(id: number): Promise<Role> {
+    const user = await this.findById(id);
+    return user.tipo;
   }
 
   /**
