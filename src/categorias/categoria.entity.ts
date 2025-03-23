@@ -18,6 +18,9 @@ export class Categoria {
   @Column({ nullable: true })
   descripcion: string;
 
+  @Column({ unique: true })
+  slug: string;
+
   @ManyToMany(() => VideoGame, (videoGame) => videoGame.categorias)
   @JoinTable({
     name: 'categorias_videogames',

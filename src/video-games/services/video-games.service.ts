@@ -14,6 +14,7 @@ import { AddVideoGameToUserDto } from '../dto/video-games/add-videogame-to-user.
 import { CategoriasService } from '../../categorias/categorias.service';
 import { CreateVersionDto } from '../dto/versions/create-version.dto';
 import { DevelopersService } from 'src/users/services/developers.service';
+import slugify from 'slugify';
 
 @Injectable()
 export class VideoGamesService {
@@ -224,6 +225,22 @@ export class VideoGamesService {
     videogameFields: CreateVideoGameDto,
   ) {
     let categorias = [];
+    let slug = slugify(videogameFields.titulo, {
+      strict: true,
+      lower: true,
+      trim: true,
+    });
+    let existeSlug = await this.videoGameRepository.findOne({
+      where: { slug },
+    });
+    let count = 1;
+
+    while (existeSlug) {
+      slug = `${slug}-${count}`;
+      existeSlug = await this.videoGameRepository.findOne({ where: { slug } });
+      count++;
+    }
+
     const developer =
       await this.developersService.getDeveloperById(idDeveloper);
     if (videogameFields.categorias) {
@@ -236,6 +253,7 @@ export class VideoGamesService {
       ...videogameFields,
       categorias,
       developer,
+      slug,
     });
     return this.videoGameRepository.save(videoGame);
   }

@@ -31,6 +31,9 @@ export class VideoGame {
   @Column({ type: 'date' })
   fechaLanzamiento: Date;
 
+  @Column({ unique: true })
+  slug: string;
+
   @OneToMany(() => AssetVideoGame, (asset) => asset.videoGame, {
     cascade: true,
     onDelete: 'CASCADE',
