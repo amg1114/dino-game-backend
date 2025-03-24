@@ -24,6 +24,9 @@ export class Noticia {
   @Column()
   fecha: Date;
 
+  @Column({ unique: true })
+  slug: string;
+
   @OneToMany(() => AssetNoticia, (asset) => asset.noticia)
   assets: AssetNoticia[];
 
