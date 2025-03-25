@@ -1,4 +1,3 @@
-import { AssetVideoGame } from '../../assets/asset.entity';
 import { Categoria } from '../../categorias/categoria.entity';
 import {
   Column,
@@ -13,6 +12,7 @@ import { Descuento } from './descuento.entity';
 import { Version } from './version.entity';
 import { UserVideoGame } from './user-videogames.entity';
 import { User } from '../../users/entities/user.entity';
+import { Asset } from '../../assets/asset.entity';
 
 @Entity('videogames')
 export class VideoGame {
@@ -34,11 +34,13 @@ export class VideoGame {
   @Column({ unique: true })
   slug: string;
 
-  @OneToMany(() => AssetVideoGame, (asset) => asset.videoGame, {
-    cascade: true,
-    onDelete: 'CASCADE',
-  })
-  assets: AssetVideoGame[];
+  @ManyToOne(() => Asset, (asset) => asset.id, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'videoGameThumb' })
+  thumb: Asset;
+
+  @ManyToOne(() => Asset, (asset) => asset.id, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'videoGameHero' })
+  hero: Asset;
 
   @ManyToMany(() => Categoria, (categoria) => categoria.videoGames, {
     onDelete: 'CASCADE',

@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Asset, AssetNoticia, AssetVideoGame } from './asset.entity';
+import { Asset } from './asset.entity';
 import { Repository } from 'typeorm';
 import { RegisterAssetDto } from './dto/register-asset.dto';
 import { VideoGamesService } from '../video-games/services/video-games.service';
@@ -11,10 +11,6 @@ export class AssetsService {
   constructor(
     @InjectRepository(Asset)
     private readonly assetsRepository: Repository<Asset>,
-    @InjectRepository(AssetVideoGame)
-    private readonly assetsVideoGameRepository: Repository<AssetVideoGame>,
-    @InjectRepository(AssetNoticia)
-    private readonly assetsNoticiaRepository: Repository<AssetNoticia>,
     private readonly videoGamesService: VideoGamesService,
     private readonly noticiasService: NoticiasService,
   ) {}
@@ -27,14 +23,12 @@ export class AssetsService {
    */
   async createVideoGameAsset(owner: number, assetFields: RegisterAssetDto) {
     const videoGame = await this.videoGamesService.findById(owner);
-    const asset = await this.assetsRepository.save(assetFields);
-    const assetVideoGame = this.assetsVideoGameRepository.create({
-      assetID: asset.id,
-      asset,
-      videoGame,
+    const asset = this.assetsRepository.create({
+      ...assetFields,
+      videoGameThumb: videoGame,
+      videoGameHero: videoGame,
     });
-
-    return this.assetsVideoGameRepository.save(assetVideoGame);
+    return this.assetsRepository.save(asset);
   }
 
   /**
@@ -45,14 +39,11 @@ export class AssetsService {
    */
   async createNoticiaAsset(owner: number, assetFields: RegisterAssetDto) {
     const noticia = await this.noticiasService.findOne(owner);
-    const asset = await this.assetsRepository.save(assetFields);
-    const assetNoticia = this.assetsNoticiaRepository.create({
-      assetID: asset.id,
-      asset,
-      noticia,
+    const asset = this.assetsRepository.create({
+      ...assetFields,
+      noticiaThumb: noticia,
     });
-
-    return this.assetsNoticiaRepository.save(assetNoticia);
+    return this.assetsRepository.save(asset);
   }
 
   /**

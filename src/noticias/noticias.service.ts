@@ -55,9 +55,7 @@ export class NoticiasService {
   async findAll(limit: number | undefined) {
     const noticias = await this.noticiasRepository
       .createQueryBuilder('noticia')
-      .leftJoinAndSelect('noticia.assets', 'assets')
-      .leftJoinAndSelect('assets.asset', 'asset')
-      .addOrderBy('asset.index', 'ASC')
+      .leftJoinAndSelect('noticia.thumb', 'thumb')
       .addOrderBy('noticia.fecha', 'DESC')
       .take(limit)
       .getMany();
@@ -78,7 +76,7 @@ export class NoticiasService {
   async findOne(id: number) {
     const noticia = await this.noticiasRepository.findOne({
       where: { id },
-      relations: ['assets', 'assets.asset'],
+      relations: ['thumb'],
     });
 
     if (!noticia) {
@@ -97,10 +95,8 @@ export class NoticiasService {
     const noticias = await this.noticiasRepository
       .createQueryBuilder('noticia')
       .leftJoinAndSelect('noticia.autor', 'autor')
-      .leftJoinAndSelect('noticia.assets', 'assets')
-      .leftJoinAndSelect('assets.asset', 'asset')
+      .leftJoinAndSelect('noticia.thumb', 'thumb')
       .where('autor.id = :autor', { autor })
-      .addOrderBy('asset.index', 'ASC')
       .getMany();
 
     if (!noticias.length) {
