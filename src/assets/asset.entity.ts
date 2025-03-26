@@ -1,6 +1,12 @@
 import { Noticia } from '../noticias/noticia.entity';
 import { VideoGame } from '..//video-games/entities/video-game.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('assets')
 export class Asset {
@@ -16,12 +22,18 @@ export class Asset {
   @Column({ default: 0 })
   index: number;
 
-  @OneToMany(() => VideoGame, (videoGame) => videoGame.thumb)
+  @OneToOne(() => VideoGame, (videoGame) => videoGame.thumb)
   videoGameThumb: VideoGame;
 
-  @OneToMany(() => VideoGame, (videoGame) => videoGame.hero)
+  @OneToOne(() => VideoGame, (videoGame) => videoGame.hero)
   videoGameHero: VideoGame;
 
-  @OneToMany(() => Noticia, (noticia) => noticia.thumb)
+  @OneToOne(() => Noticia, (noticia) => noticia.thumb)
   noticiaThumb: Noticia;
+
+  @ManyToOne(() => VideoGame, (videoGame) => videoGame.assets, {
+    onDelete: 'CASCADE',
+    nullable: true,
+  })
+  videoGame: VideoGame;
 }

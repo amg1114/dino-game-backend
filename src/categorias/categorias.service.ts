@@ -32,8 +32,8 @@ export class CategoriasService {
     return this.categoriasRepository
       .createQueryBuilder('categoria')
       .leftJoinAndSelect('categoria.videoGames', 'videoGames')
-      .leftJoinAndSelect('videoGames.assets', 'assets')
-      .leftJoinAndSelect('assets.asset', 'asset')
+      .leftJoinAndSelect('videoGames.thumb', 'thumb')
+      .leftJoinAndSelect('videoGames.hero', 'hero')
       .leftJoinAndSelect('videoGames.descuentos', 'descuentos')
       .where(queries)
       .take(limit)
@@ -53,8 +53,8 @@ export class CategoriasService {
     const categoria = await this.categoriasRepository
       .createQueryBuilder('categoria')
       .leftJoinAndSelect('categoria.videoGames', 'videoGames')
-      .leftJoinAndSelect('videoGames.assets', 'assets')
-      .leftJoinAndSelect('assets.asset', 'asset')
+      .leftJoinAndSelect('videoGames.thumb', 'thumb')
+      .leftJoinAndSelect('videoGames.hero', 'hero')
       .leftJoinAndSelect('videoGames.descuentos', 'descuentos')
       .where('categoria.id = :id', { id })
       .addOrderBy('descuentos.fechaInicio', 'ASC')

@@ -6,6 +6,7 @@ import {
   Entity,
   ManyToOne,
   JoinColumn,
+  OneToOne,
 } from 'typeorm';
 
 @Entity('noticias')
@@ -25,7 +26,7 @@ export class Noticia {
   @Column({ unique: true })
   slug: string;
 
-  @ManyToOne(() => Noticia, (noticia) => noticia.id, {
+  @OneToOne(() => Noticia, (noticia) => noticia.id, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'noticiaThumb' })

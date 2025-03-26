@@ -42,6 +42,7 @@ export class VideoGamesService {
       .createQueryBuilder('videoGame')
       .leftJoinAndSelect('videoGame.thumb', 'thumb')
       .leftJoinAndSelect('videoGame.hero', 'hero')
+      .leftJoinAndSelect('videoGame.assets', 'assets')
       .leftJoinAndSelect('videoGame.versions', 'versions')
       .leftJoinAndSelect('versions.requisitos', 'requisitos')
       .leftJoinAndSelect('videoGame.descuentos', 'descuentos')
@@ -148,7 +149,6 @@ export class VideoGamesService {
       .createQueryBuilder('userVideoGame')
       .leftJoinAndSelect('userVideoGame.videoGame', 'videoGame')
       .leftJoinAndSelect('videoGame.thumb', 'thumb')
-      .leftJoinAndSelect('videoGame.hero', 'hero')
       .where('userVideoGame.user = :user', { user: user.id })
       .addOrderBy('videoGame.titulo', 'ASC')
       .getMany();
@@ -174,7 +174,6 @@ export class VideoGamesService {
       .createQueryBuilder('userVideoGame')
       .leftJoinAndSelect('userVideoGame.videoGame', 'videoGame')
       .leftJoinAndSelect('videoGame.thumb', 'thumb')
-      .leftJoinAndSelect('videoGame.hero', 'hero')
       .where('userVideoGame.user = :user', { user: user.id })
       .andWhere('userVideoGame.videoGame = :videoGame', {
         videoGame: videoGame.id,

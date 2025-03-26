@@ -6,6 +6,7 @@ import {
   ManyToMany,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Descuento } from './descuento.entity';
@@ -34,13 +35,19 @@ export class VideoGame {
   @Column({ unique: true })
   slug: string;
 
-  @ManyToOne(() => Asset, (asset) => asset.id, { onDelete: 'CASCADE' })
+  @OneToOne(() => Asset, (asset) => asset.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'videoGameThumb' })
   thumb: Asset;
 
-  @ManyToOne(() => Asset, (asset) => asset.id, { onDelete: 'CASCADE' })
+  @OneToOne(() => Asset, (asset) => asset.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'videoGameHero' })
   hero: Asset;
+
+  @OneToMany(() => Asset, (asset) => asset.videoGame, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  assets: Asset[];
 
   @ManyToMany(() => Categoria, (categoria) => categoria.videoGames, {
     onDelete: 'CASCADE',
