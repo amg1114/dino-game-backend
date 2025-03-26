@@ -1,11 +1,12 @@
-import { AssetNoticia } from '../assets/asset.entity';
+import { Asset } from '../assets/asset.entity';
 import { User } from '../users/entities/user.entity';
 import {
   PrimaryGeneratedColumn,
   Column,
-  OneToMany,
   Entity,
   ManyToOne,
+  JoinColumn,
+  OneToOne,
 } from 'typeorm';
 
 @Entity('noticias')
@@ -25,8 +26,11 @@ export class Noticia {
   @Column({ unique: true })
   slug: string;
 
-  @OneToMany(() => AssetNoticia, (asset) => asset.noticia)
-  assets: AssetNoticia[];
+  @OneToOne(() => Noticia, (noticia) => noticia.id, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'noticiaThumb' })
+  thumb: Asset;
 
   @ManyToOne(() => User, (user) => user.noticias)
   autor: User;

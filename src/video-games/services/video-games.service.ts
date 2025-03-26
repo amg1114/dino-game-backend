@@ -40,8 +40,9 @@ export class VideoGamesService {
   async findById(id: number) {
     const videogame = await this.videoGameRepository
       .createQueryBuilder('videoGame')
+      .leftJoinAndSelect('videoGame.thumb', 'thumb')
+      .leftJoinAndSelect('videoGame.hero', 'hero')
       .leftJoinAndSelect('videoGame.assets', 'assets')
-      .leftJoinAndSelect('assets.asset', 'asset')
       .leftJoinAndSelect('videoGame.versions', 'versions')
       .leftJoinAndSelect('versions.requisitos', 'requisitos')
       .leftJoinAndSelect('videoGame.descuentos', 'descuentos')
@@ -49,7 +50,6 @@ export class VideoGamesService {
       .leftJoinAndSelect('videoGame.developer', 'developer')
       .leftJoinAndSelect('developer.user', 'user')
       .where('videoGame.id = :id', { id })
-      .addOrderBy('asset.index', 'ASC')
       .addOrderBy('versions.releaseDate', 'DESC')
       .addOrderBy('descuentos.fechaInicio', 'ASC')
       .addOrderBy('descuentos.fechaFin', 'ASC')
@@ -71,8 +71,8 @@ export class VideoGamesService {
   async findAll(queries: VideoGameQueries) {
     let videoGames = this.videoGameRepository
       .createQueryBuilder('videoGame')
-      .leftJoinAndSelect('videoGame.assets', 'assets')
-      .leftJoinAndSelect('assets.asset', 'asset')
+      .leftJoinAndSelect('videoGame.thumb', 'thumb')
+      .leftJoinAndSelect('videoGame.hero', 'hero')
       .leftJoinAndSelect('videoGame.categorias', 'categorias')
       .leftJoinAndSelect('videoGame.developer', 'developer')
       .leftJoinAndSelect('developer.user', 'user');
@@ -99,9 +99,7 @@ export class VideoGamesService {
       });
     }
 
-    videoGames = videoGames
-      .addOrderBy('asset.index', 'ASC')
-      .addOrderBy('videoGame.titulo', 'ASC');
+    videoGames = videoGames.addOrderBy('videoGame.titulo', 'ASC');
 
     if (queries.limit) {
       videoGames = videoGames.take(queries.limit);
@@ -122,15 +120,14 @@ export class VideoGamesService {
   async findDeveloperVideoGames(developerId: number) {
     const videoGames = await this.videoGameRepository
       .createQueryBuilder('videoGame')
-      .leftJoinAndSelect('videoGame.assets', 'assets')
-      .leftJoinAndSelect('assets.asset', 'asset')
+      .leftJoinAndSelect('videoGame.thumb', 'thumb')
+      .leftJoinAndSelect('videoGame.hero', 'hero')
       .leftJoinAndSelect('videoGame.descuentos', 'descuentos')
       .addOrderBy('descuentos.fechaInicio', 'ASC')
       .addOrderBy('descuentos.fechaFin', 'ASC')
       .leftJoinAndSelect('videoGame.developer', 'developer')
       .leftJoinAndSelect('developer.user', 'user')
       .where('developer.id = :developer', { developer: developerId })
-      .addOrderBy('asset.index', 'ASC')
       .addOrderBy('videoGame.titulo', 'ASC')
       .getMany();
 
@@ -151,10 +148,8 @@ export class VideoGamesService {
     const userVideoGames = await this.userVideoGameRepository
       .createQueryBuilder('userVideoGame')
       .leftJoinAndSelect('userVideoGame.videoGame', 'videoGame')
-      .leftJoinAndSelect('videoGame.assets', 'assets')
-      .leftJoinAndSelect('assets.asset', 'asset')
+      .leftJoinAndSelect('videoGame.thumb', 'thumb')
       .where('userVideoGame.user = :user', { user: user.id })
-      .addOrderBy('asset.index', 'ASC')
       .addOrderBy('videoGame.titulo', 'ASC')
       .getMany();
 
@@ -178,13 +173,11 @@ export class VideoGamesService {
     const userVideoGame = await this.userVideoGameRepository
       .createQueryBuilder('userVideoGame')
       .leftJoinAndSelect('userVideoGame.videoGame', 'videoGame')
-      .leftJoinAndSelect('videoGame.assets', 'assets')
-      .leftJoinAndSelect('assets.asset', 'asset')
+      .leftJoinAndSelect('videoGame.thumb', 'thumb')
       .where('userVideoGame.user = :user', { user: user.id })
       .andWhere('userVideoGame.videoGame = :videoGame', {
         videoGame: videoGame.id,
       })
-      .addOrderBy('asset.index', 'ASC')
       .getOne();
 
     if (userVideoGame === null) {

@@ -3,9 +3,9 @@ import { Body, Controller, Delete, Param, Post } from '@nestjs/common';
 import { RegisterAssetDto } from './dto/register-asset.dto';
 import { AssetsService } from './assets.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { AssetNoticia, AssetVideoGame } from './asset.entity';
 import { ImageNotFoundResponseDto } from './dto/responses-dto';
 import { DeleteResultResponseDto } from 'src/config/responses-dto';
+import { Asset } from './asset.entity';
 
 @ApiTags('Assets')
 @Controller('assets')
@@ -25,7 +25,7 @@ export class AssetsController {
   @ApiResponse({
     status: 200,
     description: 'La imagen fue creada exitosamente',
-    type: AssetVideoGame,
+    type: Asset,
   })
   @Post('video-games/:videogame')
   createVideoGameAsset(
@@ -48,7 +48,7 @@ export class AssetsController {
   @ApiResponse({
     status: 200,
     description: 'La imagen fue creada exitosamente',
-    type: AssetNoticia,
+    type: Asset,
   })
   @Post('noticias/:noticia')
   createNoticiaAsset(

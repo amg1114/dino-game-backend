@@ -3,10 +3,8 @@ import { VideoGame } from '..//video-games/entities/video-game.entity';
 import {
   Column,
   Entity,
-  JoinColumn,
   ManyToOne,
   OneToOne,
-  PrimaryColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -23,34 +21,19 @@ export class Asset {
 
   @Column({ default: 0 })
   index: number;
-}
 
-@Entity('assets_videogames')
-export class AssetVideoGame {
-  @PrimaryColumn()
-  assetID: number;
+  @OneToOne(() => VideoGame, (videoGame) => videoGame.thumb)
+  videoGameThumb: VideoGame;
 
-  @OneToOne(() => Asset, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'assetID' })
-  asset: Asset;
+  @OneToOne(() => VideoGame, (videoGame) => videoGame.hero)
+  videoGameHero: VideoGame;
+
+  @OneToOne(() => Noticia, (noticia) => noticia.thumb)
+  noticiaThumb: Noticia;
 
   @ManyToOne(() => VideoGame, (videoGame) => videoGame.assets, {
     onDelete: 'CASCADE',
+    nullable: true,
   })
   videoGame: VideoGame;
-}
-
-@Entity('assets_noticias')
-export class AssetNoticia {
-  @PrimaryColumn()
-  assetID: number;
-
-  @OneToOne(() => Asset, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'assetID' })
-  asset: Asset;
-
-  @ManyToOne(() => Noticia, (noticia) => noticia.assets, {
-    onDelete: 'CASCADE',
-  })
-  noticia: Noticia;
 }
