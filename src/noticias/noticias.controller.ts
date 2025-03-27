@@ -28,6 +28,7 @@ import {
   DeleteResultResponseDto,
   UpdateResultResponseDto,
 } from 'src/config/responses-dto';
+import { QueriesNoticesDto } from './dto/queries-notices.dto';
 
 @ApiTags('Noticias')
 @Controller('noticias')
@@ -55,8 +56,8 @@ export class NoticiasController {
     description: 'No se encontraron noticias',
     type: NoticiasNotFoundResponseDto,
   })
-  findAll(@Query('limit') limit = 100) {
-    return this.noticiasService.findAll(+limit);
+  findAll(@Query() queries: QueriesNoticesDto) {
+    return this.noticiasService.findAll(queries);
   }
 
   /**
@@ -78,31 +79,6 @@ export class NoticiasController {
   create(@Body() noticiaFields: CreateNoticiaDto, @Request() req: any) {
     const autor = req.user;
     return this.noticiasService.create(autor.id, noticiaFields);
-  }
-
-  /**
-   * Endpoint para obtener las noticias de un autor
-   * @param autor El id del autor
-   * @returns Las noticias del autor
-   */
-  @ApiOperation({
-    summary: 'Obtener las noticias de un autor',
-    description: 'Obtiene todas las noticias hechas por un autor',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Lista de noticias',
-    type: [Noticia],
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'No se encontraron noticias',
-    type: NoticiasNotFoundResponseDto,
-  })
-  @Get('autor/:autor')
-  @Roles(Role.ADMINISTRATOR, Role.DEVELOPER)
-  findByAutor(@Param('autor') autor: number) {
-    return this.noticiasService.findByAutor(autor);
   }
 
   /**
