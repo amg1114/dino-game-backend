@@ -23,25 +23,44 @@ export class CategoriasService {
    * @returns Lista de categorias
    */
   async findCategorias(urlQueries: CategoriaQueries) {
-    const { limit, ...queries } = urlQueries;
+    const {
+      limit = null,
+      withGames = false,
+      offset = 0,
+      order = 'ASC',
+      ...queries
+    } = urlQueries;
 
     if (queries.title) {
       queries.title = Like(`%${queries.title}%`);
     }
 
-    return this.categoriasRepository
+    const queriesResult = this.categoriasRepository
       .createQueryBuilder('categoria')
-      .leftJoinAndSelect('categoria.videoGames', 'videoGames')
-      .leftJoinAndSelect('videoGames.thumb', 'thumb')
-      .leftJoinAndSelect('videoGames.hero', 'hero')
-      .leftJoinAndSelect('videoGames.descuentos', 'descuentos')
       .where(queries)
+      .skip(offset)
       .take(limit)
-      .addOrderBy('descuentos.fechaInicio', 'ASC')
-      .addOrderBy('descuentos.fechaFin', 'ASC')
-      .addOrderBy('asset.index', 'ASC')
-      .addOrderBy('categoria.titulo', 'ASC')
-      .getMany();
+      .addOrderBy('categoria.titulo', order);
+
+    if (withGames) {
+      queriesResult
+        .leftJoinAndSelect('categoria.videoGames', 'videoGames')
+        .leftJoinAndSelect('videoGames.thumb', 'thumb')
+        .leftJoinAndSelect('videoGames.hero', 'hero')
+        .leftJoinAndSelect('videoGames.descuentos', 'descuentos')
+        .leftJoinAndSelect('videoGames.assets', 'assets')
+        .addOrderBy('descuentos.fechaInicio', 'ASC')
+        .addOrderBy('descuentos.fechaFin', 'ASC')
+        .addOrderBy('assets.index', 'ASC')
+        .andWhere('descuentos.fechaInicio <= CURRENT_DATE()')
+        .andWhere('descuentos.fechaFin >= CURRENT_DATE()');
+    }
+
+    return {
+      items: await queriesResult.getMany(),
+      offset: offset,
+      total: await queriesResult.getCount(),
+    };
   }
 
   /**
