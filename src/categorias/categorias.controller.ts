@@ -51,7 +51,7 @@ export class CategoriasController {
     type: CategoriasNotFoundResponseDto,
   })
   @Get()
-  getAll(@Query() queries: CategoriaQueries): Promise<Categoria[]> {
+  getAll(@Query() queries: CategoriaQueries) {
     return this.categoriasService.findCategorias(queries);
   }
 
