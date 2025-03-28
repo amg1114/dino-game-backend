@@ -21,6 +21,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { Role } from '../config/enums/roles.enum';
 import { Noticia } from './noticia.entity';
 import {
+  NoticiaFoundResponseDto,
   NoticiaNotFoundResponseDto,
   NoticiasNotFoundResponseDto,
 } from './dto/responses-dto';
@@ -37,8 +38,11 @@ export class NoticiasController {
   constructor(private noticiasService: NoticiasService) {}
 
   /**
-   * @param limit El número de noticias a devolver
-   * @returns La lista de noticias
+   
+   * @method findAll
+   * @description Obtiene todas las noticias de la base de datos.
+   * @param {QueriesNoticesDto} queries - Parámetros de consulta para filtrar y ordenar las noticias.
+   * @returns {Promise<Noticia[]>} Lista de noticias.
    */
   @Get()
   @Public()
@@ -49,7 +53,15 @@ export class NoticiasController {
   @ApiResponse({
     status: 200,
     description: 'Lista de noticias',
-    type: [Noticia],
+    type: NoticiaFoundResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid order value. Allowed values are ASC or DESC.',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid orderBy value. Allowed values are titulo or fecha.',
   })
   @ApiResponse({
     status: 404,

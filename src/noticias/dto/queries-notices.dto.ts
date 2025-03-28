@@ -1,15 +1,13 @@
-import { IsOptional, IsIn, IsInt, Min, IsNumber } from 'class-validator';
+import { IsOptional, IsInt, Min, IsNumber } from 'class-validator';
+import { Order } from 'src/config/enums/order.enum';
+import { OrderBy } from 'src/config/enums/orderby.enum';
 
 export class QueriesNoticesDto {
   @IsOptional()
-  @IsIn(['ASC', 'DESC'], { message: 'Order must be either ASC or DESC' })
-  order?: 'ASC' | 'DESC' = 'ASC';
+  order?: Order = Order.ASC;
 
   @IsOptional()
-  @IsIn(['titulo', 'fecha'], {
-    message: 'OrderBy must be either titulo or fecha',
-  })
-  orderBy?: 'titulo' | 'fecha' = 'titulo';
+  orderBy?: OrderBy = OrderBy.TITLE;
 
   @IsOptional()
   @IsNumber()
