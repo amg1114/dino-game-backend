@@ -12,7 +12,7 @@ export class CategoriaQueries {
   @IsOptional()
   title?: string | FindOperator<string>;
 
-  @IsNumber({ allowInfinity: false, allowNaN: false, maxDecimalPlaces: 0 })
+  @IsNumber({ allowInfinity: false, maxDecimalPlaces: 0 })
   @IsOptional()
   limit?: number;
 
@@ -21,11 +21,11 @@ export class CategoriaQueries {
   @IsIn(['ASC', 'DESC'])
   order?: 'ASC' | 'DESC';
 
-  @IsNumber({ allowInfinity: false, allowNaN: false, maxDecimalPlaces: 0 })
+  @IsNumber({ allowInfinity: false, maxDecimalPlaces: 0 })
   @IsOptional()
   offset?: number;
 
   @IsOptional()
   @IsBoolean()
-  withGames?: boolean;
+  withgames?: boolean;
 }
