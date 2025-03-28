@@ -21,6 +21,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { Role } from '../config/enums/roles.enum';
 import { Noticia } from './noticia.entity';
 import {
+  NoticiaFoundResponseDto,
   NoticiaNotFoundResponseDto,
   NoticiasNotFoundResponseDto,
 } from './dto/responses-dto';
@@ -28,6 +29,7 @@ import {
   DeleteResultResponseDto,
   UpdateResultResponseDto,
 } from 'src/config/responses-dto';
+import { QueriesNoticesDto } from './dto/queries-notices.dto';
 
 @ApiTags('Noticias')
 @Controller('noticias')
@@ -36,8 +38,11 @@ export class NoticiasController {
   constructor(private noticiasService: NoticiasService) {}
 
   /**
-   * @param limit El número de noticias a devolver
-   * @returns La lista de noticias
+   
+   * @method findAll
+   * @description Obtiene todas las noticias de la base de datos.
+   * @param {QueriesNoticesDto} queries - Parámetros de consulta para filtrar y ordenar las noticias.
+   * @returns {Promise<Noticia[]>} Lista de noticias.
    */
   @Get()
   @Public()
@@ -48,15 +53,29 @@ export class NoticiasController {
   @ApiResponse({
     status: 200,
     description: 'Lista de noticias',
-    type: [Noticia],
+    type: NoticiaFoundResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid order value. Allowed values are ASC or DESC.',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid orderBy value. Allowed values are titulo or fecha.',
   })
   @ApiResponse({
     status: 404,
     description: 'No se encontraron noticias',
     type: NoticiasNotFoundResponseDto,
   })
-  findAll(@Query('limit') limit = 100) {
-    return this.noticiasService.findAll(+limit);
+  findAll(@Query() queries: QueriesNoticesDto) {
+    if (queries.offset) {
+      queries.offset = parseInt(queries.offset as unknown as string, 10);
+    }
+    if (queries.limit) {
+      queries.limit = parseInt(queries.limit as unknown as string, 10);
+    }
+    return this.noticiasService.findAll(queries);
   }
 
   /**
@@ -78,31 +97,6 @@ export class NoticiasController {
   create(@Body() noticiaFields: CreateNoticiaDto, @Request() req: any) {
     const autor = req.user;
     return this.noticiasService.create(autor.id, noticiaFields);
-  }
-
-  /**
-   * Endpoint para obtener las noticias de un autor
-   * @param autor El id del autor
-   * @returns Las noticias del autor
-   */
-  @ApiOperation({
-    summary: 'Obtener las noticias de un autor',
-    description: 'Obtiene todas las noticias hechas por un autor',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Lista de noticias',
-    type: [Noticia],
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'No se encontraron noticias',
-    type: NoticiasNotFoundResponseDto,
-  })
-  @Get('autor/:autor')
-  @Roles(Role.ADMINISTRATOR, Role.DEVELOPER)
-  findByAutor(@Param('autor') autor: number) {
-    return this.noticiasService.findByAutor(autor);
   }
 
   /**

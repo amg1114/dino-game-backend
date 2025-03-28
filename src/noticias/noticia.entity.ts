@@ -26,7 +26,7 @@ export class Noticia {
   @Column({ unique: true })
   slug: string;
 
-  @OneToOne(() => Noticia, (noticia) => noticia.id, {
+  @OneToOne(() => Asset, (asset) => asset.id, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'noticiaThumb' })
