@@ -6,6 +6,9 @@ import { Noticia } from './noticia.entity';
 import { Repository } from 'typeorm';
 import { UsersService } from '../users/services/users.service';
 import slugify from 'slugify';
+import { QueriesNoticesDto } from './dto/queries-notices.dto';
+import { Order } from 'src/config/enums/order.enum';
+import { OrderBy } from 'src/config/enums/orderby.enum';
 
 @Injectable()
 export class NoticiasService {
@@ -47,24 +50,68 @@ export class NoticiasService {
   }
 
   /**
-   * Get all noticias
-   * @param limit - The number of noticias to return
-   * @returns The list of noticias
-   * @throws {HttpException} if there are no noticias
+   * Retrieves a list of noticias (news) based on the provided query parameters.
+   *
+   * @param queries - An object containing the query parameters for filtering and sorting the noticias.
+   * @param queries.order - The order in which to sort the noticias. Allowed values are 'ASC' or 'DESC'. Defaults to 'ASC'.
+   * @param queries.orderBy - The field by which to sort the noticias. Allowed values are 'titulo' or 'fecha'. Defaults to 'titulo'.
+   * @param queries.offset - The page offset for pagination. Defaults to 0.
+   * @param queries.limit - The maximum number of noticias to retrieve per page. If null, retrieves all noticias.
+   * @param queries.autor - The author of the noticias to filter by. If null, no filtering by author is applied.
+   *
+   * @returns An object containing the retrieved noticias, the offset, and the total count of noticias.
+   *
+   * @throws {HttpException} If the `order` value is invalid.
+   * @throws {HttpException} If the `orderBy` value is invalid.
+   * @throws {HttpException} If no noticias are found.
    */
-  async findAll(limit: number | undefined) {
-    const noticias = await this.noticiasRepository
+  async findAll(queries: QueriesNoticesDto) {
+    const {
+      order = Order.ASC,
+      orderBy = OrderBy.TITLE,
+      offset = 0,
+      limit = null,
+      autor = null,
+    } = queries;
+
+    if (!Object.values(Order).includes(order.toUpperCase() as Order)) {
+      throw new HttpException(
+        'Invalid order value. Allowed values are ASC or DESC.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    if (!Object.values(OrderBy).includes(orderBy.toLowerCase() as OrderBy)) {
+      throw new HttpException(
+        'Invalid orderBy value. Allowed values are titulo or fecha.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const queryBuilder = this.noticiasRepository
       .createQueryBuilder('noticia')
       .leftJoinAndSelect('noticia.thumb', 'thumb')
-      .addOrderBy('noticia.fecha', 'DESC')
-      .take(limit)
-      .getMany();
+
+      .orderBy(`noticia.${orderBy}`, order.toUpperCase() as 'ASC' | 'DESC');
+
+    if (autor !== null) {
+      queryBuilder.andWhere('noticia.autor = :autor', { autor });
+    }
+
+    if (limit !== null) {
+      queryBuilder.take(limit).skip(offset * limit);
+    }
+
+    const [noticias, total] = await queryBuilder.getManyAndCount();
 
     if (!noticias.length) {
       throw new HttpException('No noticias found', HttpStatus.NOT_FOUND);
     }
 
-    return noticias;
+    return {
+      data: noticias,
+      offset,
+      total,
+    };
   }
 
   /**
@@ -83,27 +130,6 @@ export class NoticiasService {
       throw new HttpException('Noticia not found', HttpStatus.NOT_FOUND);
     }
     return noticia;
-  }
-
-  /**
-   * Get noticias by autor
-   * @param autor The id of the autor
-   * @returns The noticias by the given autor
-   * @throws {HttpException} if there are no noticias
-   */
-  async findByAutor(autor: number) {
-    const noticias = await this.noticiasRepository
-      .createQueryBuilder('noticia')
-      .leftJoinAndSelect('noticia.autor', 'autor')
-      .leftJoinAndSelect('noticia.thumb', 'thumb')
-      .where('autor.id = :autor', { autor })
-      .getMany();
-
-    if (!noticias.length) {
-      throw new HttpException('No noticias found', HttpStatus.NOT_FOUND);
-    }
-
-    return noticias;
   }
 
   /**
