@@ -22,7 +22,7 @@ export class CategoriasService {
    *
    * @param urlQueries - Objeto que contiene los parámetros de consulta para filtrar y ordenar las categorías.
    *   - `limit` (opcional): Número máximo de categorías a devolver. Debe ser un número positivo.
-   *   - `withgames` (opcional): Indica si se deben incluir los videojuegos relacionados con las categorías.
+   *   - `withGames` (opcional): Indica si se deben incluir los videojuegos relacionados con las categorías.
    *     Puede ser un booleano o una cadena que evalúe a "true" o "false".
    *   - `offset` (opcional): Número de páginas a omitir según el límite especificado. Debe ser un número no negativo.
    *   - `order` (opcional): Orden de los resultados, ya sea "ASC" (ascendente) o "DESC" (descendente).
@@ -42,14 +42,14 @@ export class CategoriasService {
   async findCategorias(urlQueries: CategoriaQueries) {
     const {
       limit = null,
-      withgames = false,
+      withGames = false,
       offset = 0,
       order = 'ASC',
       ...queries
     } = urlQueries;
 
     const isWithGames =
-      typeof withgames === 'string' ? withgames === 'true' : withgames;
+      typeof withGames === 'string' ? withGames === 'true' : withGames;
 
     if (limit !== null && (typeof limit !== 'number' || limit <= 0)) {
       throw new HttpException('Invalid limit value', HttpStatus.BAD_REQUEST);

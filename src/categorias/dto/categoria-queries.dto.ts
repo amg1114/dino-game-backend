@@ -27,5 +27,5 @@ export class CategoriaQueries {
 
   @IsOptional()
   @IsBoolean()
-  withgames?: boolean;
+  withGames?: boolean;
 }
