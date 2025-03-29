@@ -18,8 +18,13 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
   CategoriaConflictResponseDto,
   CategoriaNotFoundResponseDto,
+  CategoriasLimitBadRequestResponseDto,
   CategoriasNotFoundResponseDto,
+  CategoriasOffsetBadRequestResponseDto,
+  CategoriasOrderBadRequestResponseDto,
+  CategoriasTitleBadRequestResponseDto,
   DeleteCategoriaResponseDto,
+  ResponseCategoriasDto,
 } from './dto/responses-dto';
 import {
   DeleteResultResponseDto,
@@ -42,16 +47,41 @@ export class CategoriasController {
   @ApiResponse({
     status: 200,
     description: 'Las categorias fueron encontradas exitosamente',
-    type: [Categoria],
+    type: ResponseCategoriasDto,
   })
-  //Para revisar
   @ApiResponse({
     status: 404,
     description: 'Categorias no encontradas',
     type: CategoriasNotFoundResponseDto,
   })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid limit value',
+    type: CategoriasLimitBadRequestResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid offset value',
+    type: CategoriasOffsetBadRequestResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid order value',
+    type: CategoriasOrderBadRequestResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid title value',
+    type: CategoriasTitleBadRequestResponseDto,
+  })
   @Get()
-  getAll(@Query() queries: CategoriaQueries): Promise<Categoria[]> {
+  getAll(@Query() queries: CategoriaQueries) {
+    if (queries.offset) {
+      queries.offset = parseInt(queries.offset as unknown as string, 10);
+    }
+    if (queries.limit) {
+      queries.limit = parseInt(queries.limit as unknown as string, 10);
+    }
     return this.categoriasService.findCategorias(queries);
   }
 

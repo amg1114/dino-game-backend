@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Like, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { Categoria } from './categoria.entity';
@@ -18,30 +18,100 @@ export class CategoriasService {
   ) {}
 
   /**
-   * Encuentra todas las categorias
-   * @param urlQueries Queries de la URL
-   * @returns Lista de categorias
+   * Busca y devuelve una lista de categorías según los parámetros de consulta proporcionados.
+   *
+   * @param urlQueries - Objeto que contiene los parámetros de consulta para filtrar y ordenar las categorías.
+   *   - `limit` (opcional): Número máximo de categorías a devolver. Debe ser un número positivo.
+   *   - `withGames` (opcional): Indica si se deben incluir los videojuegos relacionados con las categorías.
+   *     Puede ser un booleano o una cadena que evalúe a "true" o "false".
+   *   - `offset` (opcional): Número de páginas a omitir según el límite especificado. Debe ser un número no negativo.
+   *   - `order` (opcional): Orden de los resultados, ya sea "ASC" (ascendente) o "DESC" (descendente).
+   *   - `title` (opcional): Filtro para buscar categorías cuyo título coincida parcialmente con el valor proporcionado.
+   *
+   * @returns Un objeto que contiene:
+   *   - `data`: Lista de categorías que cumplen con los criterios de búsqueda.
+   *   - `offset`: El valor de desplazamiento utilizado en la consulta.
+   *   - `total`: El número total de categorías que cumplen con los criterios de búsqueda.
+   *
+   * @throws `HttpException`:
+   *   - Si el valor de `limit` no es un número positivo.
+   *   - Si el valor de `offset` no es un número no negativo.
+   *   - Si el valor de `order` no es "ASC" ni "DESC".
+   *   - Si el valor de `title` no es una cadena.
    */
   async findCategorias(urlQueries: CategoriaQueries) {
-    const { limit, ...queries } = urlQueries;
+    const {
+      limit = null,
+      withGames = false,
+      offset = 0,
+      order = 'ASC',
+      ...queries
+    } = urlQueries;
 
-    if (queries.title) {
-      queries.title = Like(`%${queries.title}%`);
+    const isWithGames =
+      typeof withGames === 'string' ? withGames === 'true' : withGames;
+
+    if (limit !== null && (typeof limit !== 'number' || limit <= 0)) {
+      throw new HttpException('Invalid limit value', HttpStatus.BAD_REQUEST);
     }
 
-    return this.categoriasRepository
+    if (offset < 0 || typeof offset !== 'number') {
+      throw new HttpException('Invalid offset value', HttpStatus.BAD_REQUEST);
+    }
+
+    if (order !== 'ASC' && order !== 'DESC') {
+      throw new HttpException('Invalid order value', HttpStatus.BAD_REQUEST);
+    }
+
+    if (queries.title && typeof queries.title !== 'string') {
+      throw new HttpException('Invalid title value', HttpStatus.BAD_REQUEST);
+    }
+
+    const queriesResult = this.categoriasRepository
       .createQueryBuilder('categoria')
-      .leftJoinAndSelect('categoria.videoGames', 'videoGames')
-      .leftJoinAndSelect('videoGames.thumb', 'thumb')
-      .leftJoinAndSelect('videoGames.hero', 'hero')
-      .leftJoinAndSelect('videoGames.descuentos', 'descuentos')
-      .where(queries)
-      .take(limit)
-      .addOrderBy('descuentos.fechaInicio', 'ASC')
-      .addOrderBy('descuentos.fechaFin', 'ASC')
-      .addOrderBy('asset.index', 'ASC')
-      .addOrderBy('categoria.titulo', 'ASC')
-      .getMany();
+      .addOrderBy('categoria.titulo', order);
+
+    if (isWithGames) {
+      queriesResult
+        .leftJoinAndSelect('categoria.videoGames', 'videoGames')
+        .leftJoinAndSelect('videoGames.thumb', 'thumb')
+        .leftJoinAndSelect('videoGames.hero', 'hero')
+        .leftJoinAndSelect('videoGames.descuentos', 'descuentos')
+        .leftJoinAndSelect('videoGames.assets', 'assets')
+        .addOrderBy('videoGames.titulo', order);
+    }
+
+    if (queries.title) {
+      queriesResult.andWhere('categoria.titulo ILIKE :title', {
+        title: `%${queries.title}%`,
+      });
+    }
+
+    if (limit !== null) {
+      queriesResult.take(limit).skip(offset * limit);
+    }
+
+    const categorias = await queriesResult.getMany();
+
+    if (isWithGames) {
+      categorias.forEach((categoria) => {
+        categoria.videoGames.forEach((videoGame) => {
+          videoGame.descuentos = videoGame.descuentos.filter((descuento) => {
+            const now = new Date();
+            return (
+              new Date(descuento.fechaInicio) <= now &&
+              new Date(descuento.fechaFin) >= now
+            );
+          });
+        });
+      });
+    }
+
+    return {
+      data: categorias,
+      offset: offset,
+      total: await queriesResult.getCount(),
+    };
   }
 
   /**

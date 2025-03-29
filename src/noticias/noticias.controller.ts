@@ -69,6 +69,12 @@ export class NoticiasController {
     type: NoticiasNotFoundResponseDto,
   })
   findAll(@Query() queries: QueriesNoticesDto) {
+    if (queries.offset) {
+      queries.offset = parseInt(queries.offset as unknown as string, 10);
+    }
+    if (queries.limit) {
+      queries.limit = parseInt(queries.limit as unknown as string, 10);
+    }
     return this.noticiasService.findAll(queries);
   }
 
