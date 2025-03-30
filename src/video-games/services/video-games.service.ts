@@ -77,8 +77,8 @@ export class VideoGamesService {
       .leftJoinAndSelect('videoGame.thumb', 'thumb')
       .leftJoinAndSelect('videoGame.hero', 'hero')
       .leftJoinAndSelect('videoGame.categorias', 'categorias')
-      .leftJoinAndSelect('videoGame.developer', 'developer')
-      .leftJoinAndSelect('videoGame.descuentos', 'descuentos');
+      .leftJoinAndSelect('videoGame.descuentos', 'descuentos')
+      .leftJoin('videoGame.developer', 'developer');
 
     if (queries.search) {
       videoGames = videoGames
