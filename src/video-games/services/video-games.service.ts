@@ -15,6 +15,7 @@ import { CategoriasService } from '../../categorias/categorias.service';
 import { CreateVersionDto } from '../dto/versions/create-version.dto';
 import { DevelopersService } from 'src/users/services/developers.service';
 import slugify from 'slugify';
+import { PaginatedDataResponse } from 'src/config/models/paginatedData-response.interface';
 
 @Injectable()
 export class VideoGamesService {
@@ -68,14 +69,16 @@ export class VideoGamesService {
    * @param queries Queries para filtrar los videojuegos
    * @returns Videojuegos encontrados
    */
-  async findAll(queries: VideoGameQueries) {
+  async findAll(
+    queries: VideoGameQueries,
+  ): Promise<PaginatedDataResponse<VideoGame>> {
     let videoGames = this.videoGameRepository
       .createQueryBuilder('videoGame')
       .leftJoinAndSelect('videoGame.thumb', 'thumb')
       .leftJoinAndSelect('videoGame.hero', 'hero')
       .leftJoinAndSelect('videoGame.categorias', 'categorias')
-      .leftJoinAndSelect('videoGame.developer', 'developer')
-      .leftJoinAndSelect('developer.user', 'user');
+      .leftJoinAndSelect('videoGame.descuentos', 'descuentos')
+      .leftJoin('videoGame.developer', 'developer');
 
     if (queries.search) {
       videoGames = videoGames
@@ -93,23 +96,54 @@ export class VideoGamesService {
       });
     }
 
+    if (queries.descuentos) {
+      videoGames = videoGames.andWhere('descuentos.fechaFin >= :now', {
+        now: new Date(),
+      });
+    }
     if (queries.precio) {
       videoGames = videoGames.andWhere('videoGame.precio <= :precio', {
         precio: queries.precio,
       });
     }
 
-    videoGames = videoGames.addOrderBy('videoGame.titulo', 'ASC');
+    if (queries.developer) {
+      videoGames = videoGames.andWhere('developer.id = :developer', {
+        developer: queries.developer,
+      });
+    }
+
+    if (!queries.orderBy) {
+      videoGames = videoGames.addOrderBy(
+        'videoGame.titulo',
+        queries.order || 'ASC',
+      );
+    } else {
+      videoGames = videoGames.addOrderBy(
+        `videoGame.${queries.orderBy}`,
+        queries.order || 'ASC',
+      );
+    }
 
     if (queries.limit) {
       videoGames = videoGames.take(queries.limit);
+    }
+
+    if (queries.offset) {
+      videoGames = videoGames.skip(queries.offset * queries.limit);
     }
 
     if ((await videoGames.getCount()) === 0) {
       throw new HttpException('Videogames was not found', HttpStatus.NOT_FOUND);
     }
 
-    return videoGames.getMany();
+    const [videoGamesList, total] = await videoGames.getManyAndCount();
+
+    return {
+      data: videoGamesList,
+      offset: queries.offset,
+      total,
+    };
   }
 
   /**
