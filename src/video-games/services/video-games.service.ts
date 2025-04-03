@@ -49,7 +49,6 @@ export class VideoGamesService {
       .leftJoinAndSelect('videoGame.descuentos', 'descuentos')
       .leftJoinAndSelect('videoGame.categorias', 'categorias')
       .leftJoinAndSelect('videoGame.developer', 'developer')
-      .leftJoinAndSelect('developer.user', 'user')
       .where('videoGame.id = :id', { id })
       .addOrderBy('versions.releaseDate', 'DESC')
       .addOrderBy('descuentos.fechaInicio', 'ASC')
