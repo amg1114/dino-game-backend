@@ -19,6 +19,7 @@ import { CategoriasModule } from '../categorias/categorias.module';
 import { CategoriasService } from '../categorias/categorias.service';
 import { VersionsController } from './controllers/versions.controller';
 import { DevelopersService } from 'src/users/services/developers.service';
+import { Calificacion, Comentario } from './entities/calificacion.entity';
 
 @Module({
   imports: [
@@ -28,6 +29,8 @@ import { DevelopersService } from 'src/users/services/developers.service';
       Requisito,
       Descuento,
       UserVideoGame,
+      Calificacion,
+      Comentario,
     ]),
     UsersModule,
     CategoriasModule,

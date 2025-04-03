@@ -14,6 +14,7 @@ import { Version } from './version.entity';
 import { UserVideoGame } from './user-videogames.entity';
 import { User } from '../../users/entities/user.entity';
 import { Asset } from '../../assets/asset.entity';
+import { Calificacion, Comentario } from './calificacion.entity';
 
 @Entity('videogames')
 export class VideoGame {
@@ -36,11 +37,11 @@ export class VideoGame {
   slug: string;
 
   @OneToOne(() => Asset, (asset) => asset.id, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'videoGameThumb' })
+  @JoinColumn()
   thumb: Asset;
 
   @OneToOne(() => Asset, (asset) => asset.id, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'videoGameHero' })
+  @JoinColumn()
   hero: Asset;
 
   @OneToMany(() => Asset, (asset) => asset.videoGame, {
@@ -66,4 +67,10 @@ export class VideoGame {
 
   @OneToMany(() => UserVideoGame, (userVideoGame) => userVideoGame.videoGame)
   userVideoGames: UserVideoGame[];
+
+  @OneToMany(() => Calificacion, (calificacion) => calificacion.videoGame)
+  calificaciones: Calificacion[];
+
+  @OneToMany(() => Comentario, (comentario) => comentario.videoGame)
+  comentarios: Comentario[];
 }
