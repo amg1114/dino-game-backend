@@ -49,11 +49,17 @@ export class VideoGamesService {
       .leftJoinAndSelect('videoGame.descuentos', 'descuentos')
       .leftJoinAndSelect('videoGame.categorias', 'categorias')
       .leftJoinAndSelect('videoGame.developer', 'developer')
+      .leftJoinAndSelect('videoGame.comentarios', 'comentarios')
+      .leftJoinAndSelect('videoGame.calificaciones', 'calificaciones')
+      .leftJoinAndSelect('calificaciones.user', 'userCalificacion')
+      .leftJoinAndSelect('comentarios.user', 'userComentario')
       .where('videoGame.id = :id', { id })
       .addOrderBy('versions.releaseDate', 'DESC')
       .addOrderBy('descuentos.fechaInicio', 'ASC')
       .addOrderBy('descuentos.fechaFin', 'ASC')
       .addOrderBy('categorias.titulo', 'ASC')
+      .addOrderBy('comentarios.createdAt', 'DESC')
+      .addOrderBy('calificaciones.createdAt', 'DESC')
       .getOne();
 
     if (videogame === null) {
@@ -61,6 +67,20 @@ export class VideoGamesService {
     }
 
     return videogame;
+  }
+
+  /**
+   * Busca un video juego basado en el slug recibido
+   * @param slug Slug del videojuego a buscar
+   * @returns VideoJuego encontrado
+   */
+  async softFindById(id: number | string) {
+    return this.videoGameRepository.findOne({
+      where: [
+        ...(typeof id === 'number' ? [{ id }] : []),
+        ...(typeof id === 'string' ? [{ slug: id }] : []),
+      ],
+    });
   }
 
   /**
