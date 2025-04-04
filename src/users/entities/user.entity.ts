@@ -8,6 +8,7 @@ import {
   Calificacion,
   Comentario,
 } from '../../video-games/entities/calificacion.entity';
+import { Like } from 'src/likes/entities/like.entity';
 
 @Entity('users')
 export class User {
@@ -47,4 +48,7 @@ export class User {
 
   @OneToMany(() => Comentario, (comentario) => comentario.user)
   comentarios: Comentario[];
+
+  @OneToMany(() => Like, (like) => like.user)
+  like: Like[];
 }

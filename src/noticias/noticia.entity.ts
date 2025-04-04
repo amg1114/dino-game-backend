@@ -1,4 +1,5 @@
 // import { Asset } from '../assets/asset.entity';
+import { Like } from 'src/likes/entities/like.entity';
 import { Asset } from '../assets/asset.entity';
 import { User } from '../users/entities/user.entity';
 import {
@@ -8,6 +9,7 @@ import {
   ManyToOne,
   JoinColumn,
   OneToOne,
+  OneToMany,
 } from 'typeorm';
 
 @Entity('noticias')
@@ -35,4 +37,7 @@ export class Noticia {
 
   @ManyToOne(() => User, (user) => user.noticias)
   autor: User;
+
+  @OneToMany(() => Like, (like) => like.noticia)
+  like: Like[];
 }
