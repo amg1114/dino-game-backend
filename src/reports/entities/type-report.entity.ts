@@ -1,8 +1,9 @@
 import { Column, Entity, OneToMany } from 'typeorm';
 import { Report } from './report.entity';
+import { BaseEntity } from '../../config/models/base-entity.entity';
 
 @Entity('type_reports')
-export class TypeReport {
+export class TypeReport extends BaseEntity {
   @Column()
   title: string;
 

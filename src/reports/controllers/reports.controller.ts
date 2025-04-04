@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Request,
 } from '@nestjs/common';
 import { ReportsService } from '../services/reports.service';
 import { CreateReportDto } from '../dto/create-report.dto';
@@ -21,8 +22,8 @@ export class ReportsController {
   }
 
   @Get()
-  findAll() {
-    return this.reportsService.findAll();
+  findAll(@Request() req: any) {
+    return this.reportsService.findAll(/*query ,*/ req.query);
   }
 
   @Get(':id')

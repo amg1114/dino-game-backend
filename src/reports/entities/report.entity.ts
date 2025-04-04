@@ -1,14 +1,12 @@
 import { State } from '../../config/enums/state';
 import { User } from '../../users/entities/user.entity';
 import { VideoGame } from '../../video-games/entities/video-game.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne } from 'typeorm';
 import { TypeReport } from './type-report.entity';
+import { BaseEntity } from '../../config/models/base-entity.entity';
 
 @Entity('reports')
-export class Report {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class Report extends BaseEntity {
   @Column({ type: 'enum', enum: State, default: State.PENDING })
   state: State;
 
@@ -22,7 +20,4 @@ export class Report {
     onDelete: 'CASCADE',
   })
   typeReport: TypeReport;
-
-  @Column({ type: 'date', default: () => 'CURRENT_TIMESTAMP' })
-  createdAt: Date;
 }
