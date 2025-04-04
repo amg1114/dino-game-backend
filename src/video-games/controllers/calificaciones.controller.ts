@@ -15,10 +15,11 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/config/enums/roles.enum';
 import { CreateComentarioDto } from '../dto/calificaciones/create-comentario.dto';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @Controller('video-games/:videogame/calificaciones')
 @UseGuards(AuthGuard, RolesGuard)
+@ApiTags('Calificaciones')
 export class CalificacionesController {
   constructor(private readonly calificacionesService: CalificacionesService) {}
 
@@ -91,6 +92,7 @@ export class CalificacionesController {
 
 @Controller('video-games/:videogame/comentarios')
 @UseGuards(AuthGuard, RolesGuard)
+@ApiTags('Comentarios')
 export class ComentariosController {
   constructor(private readonly calificacionesService: CalificacionesService) {}
 
