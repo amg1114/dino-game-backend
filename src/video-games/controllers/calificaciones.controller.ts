@@ -70,17 +70,22 @@ export class CalificacionesController {
   async updateCalificacion(
     @Body() calificacionFields: CreateCalificacionDto,
     @Param('calificacion') id: number,
+    @Request() req: any,
   ) {
     return this.calificacionesService.updateCalificacion(
       id,
+      req.user.id,
       calificacionFields,
     );
   }
 
   @Delete(':calificacion')
   @Roles(Role.ESTANDAR)
-  async deleteCalificacion(@Param('calificacion') id: number) {
-    return this.calificacionesService.deleteCalificacion(id);
+  async deleteCalificacion(
+    @Param('calificacion') id: number,
+    @Request() req: any,
+  ) {
+    return this.calificacionesService.deleteCalificacion(id, req.user.id);
   }
 }
 
@@ -132,8 +137,13 @@ export class ComentariosController {
   async updateComentario(
     @Body() comentarioFields: CreateComentarioDto,
     @Param('comentario') id: number,
+    @Request() req: any,
   ) {
-    return this.calificacionesService.updateComentario(id, comentarioFields);
+    return this.calificacionesService.updateComentario(
+      id,
+      req.user.id,
+      comentarioFields,
+    );
   }
 
   @Delete(':comentario')
@@ -150,7 +160,7 @@ export class ComentariosController {
     status: 404,
     description: 'No se encontró el comentario',
   })
-  async deleteComentario(@Param('comentario') id: number) {
-    return this.calificacionesService.deleteComentario(id);
+  async deleteComentario(@Param('comentario') id: number, @Request() req: any) {
+    return this.calificacionesService.deleteComentario(id, req.user.id);
   }
 }

@@ -77,11 +77,26 @@ export class CalificacionesService {
    * @returns A promise resolving to the result of the update operation.
    * @throws {NotFoundException} If no calification is found with the given ID.
    */
-  async updateCalificacion(id: number, { puntaje }: CreateCalificacionDto) {
+  async updateCalificacion(
+    id: number,
+    userId: number,
+    { puntaje }: CreateCalificacionDto,
+  ) {
+    const calificacion = await this.calificacionRepository.findOne({
+      where: {
+        id,
+        user: { id: userId },
+      },
+    });
+
+    if (!calificacion) {
+      throw new NotFoundException('No se encontró la calificación');
+    }
+
     const result = await this.calificacionRepository.update(id, { puntaje });
 
     if (result.affected === 0) {
-      throw new NotFoundException('No se encontró la calificación');
+      throw new ConflictException('No se pudo actualizar la calificación');
     }
 
     return result;
@@ -94,11 +109,22 @@ export class CalificacionesService {
    * @returns The result of the delete operation.
    * @throws NotFoundException - If no calificación is found with the given ID.
    */
-  async deleteCalificacion(id: number) {
+  async deleteCalificacion(id: number, userId: number) {
+    const calificacion = await this.calificacionRepository.findOne({
+      where: {
+        id,
+        user: { id: userId },
+      },
+    });
+
+    if (!calificacion) {
+      throw new NotFoundException('No se encontró la calificación');
+    }
+
     const result = await this.calificacionRepository.delete(id);
 
     if (result.affected === 0) {
-      throw new NotFoundException('No se encontró la calificación');
+      throw new ConflictException('No se pudo eliminar la calificación');
     }
 
     return result;
@@ -144,11 +170,28 @@ export class CalificacionesService {
    * @throws {NotFoundException} If no comentario is found with the given ID.
    * @returns A promise containing the result of the update operation.
    */
-  async updateComentario(id: number, { comentario }: CreateComentarioDto) {
-    const result = await this.comentarioRepository.update(id, { comentario });
+  async updateComentario(
+    id: number,
+    userId: number,
+    { comentario: newComentario }: CreateComentarioDto,
+  ) {
+    const comentario = await this.comentarioRepository.findOne({
+      where: {
+        id,
+        user: { id: userId },
+      },
+    });
+
+    if (!comentario) {
+      throw new NotFoundException('No se encontró el comentario');
+    }
+
+    const result = await this.comentarioRepository.update(id, {
+      comentario: newComentario,
+    });
 
     if (result.affected === 0) {
-      throw new NotFoundException('No se encontró el comentario');
+      throw new ConflictException('No se pudo actualizar el comentario');
     }
 
     return result;
@@ -161,11 +204,22 @@ export class CalificacionesService {
    * @returns The result of the delete operation.
    * @throws {NotFoundException} If no comentario with the given ID is found.
    */
-  async deleteComentario(id: number) {
+  async deleteComentario(id: number, userId: number) {
+    const comentario = await this.comentarioRepository.findOne({
+      where: {
+        id,
+        user: { id: userId },
+      },
+    });
+
+    if (!comentario) {
+      throw new NotFoundException('No se encontró el comentario');
+    }
+
     const result = await this.comentarioRepository.delete(id);
 
     if (result.affected === 0) {
-      throw new NotFoundException('No se encontró el comentario');
+      throw new ConflictException('No se pudo eliminar el comentario');
     }
 
     return result;
