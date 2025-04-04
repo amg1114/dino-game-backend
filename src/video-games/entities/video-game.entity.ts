@@ -14,6 +14,7 @@ import { Version } from './version.entity';
 import { UserVideoGame } from './user-videogames.entity';
 import { User } from '../../users/entities/user.entity';
 import { Asset } from '../../assets/asset.entity';
+import { Report } from '../../reports/entities/report.entity';
 
 @Entity('videogames')
 export class VideoGame {
@@ -66,4 +67,7 @@ export class VideoGame {
 
   @OneToMany(() => UserVideoGame, (userVideoGame) => userVideoGame.videoGame)
   userVideoGames: UserVideoGame[];
+
+  @OneToMany(() => Report, (report) => report.videoGame)
+  reports: Report[];
 }

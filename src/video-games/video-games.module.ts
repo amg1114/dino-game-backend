@@ -19,6 +19,7 @@ import { CategoriasModule } from '../categorias/categorias.module';
 import { CategoriasService } from '../categorias/categorias.service';
 import { VersionsController } from './controllers/versions.controller';
 import { DevelopersService } from 'src/users/services/developers.service';
+import { AssetsModule } from 'src/assets/assets.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { DevelopersService } from 'src/users/services/developers.service';
     ]),
     UsersModule,
     CategoriasModule,
+    AssetsModule,
   ],
   providers: [
     VideoGamesService,
