@@ -103,7 +103,7 @@ export class CalificacionesService {
   }
 
   /**
-   * Deletes a calificación (csore) by its ID.
+   * Deletes a calificación (score) by its ID.
    *
    * @param id - The ID of the calificación to delete.
    * @returns The result of the delete operation.
