@@ -69,6 +69,42 @@ export class CalificacionesService {
   }
 
   /**
+   * Updates the calificación (score) of an existing record by its ID.
+   *
+   * @param id - The unique identifier of the calification to update.
+   * @param param1 - An object containing the updated calification data.
+   * @param param1.puntaje - The new score to assign to the calification.
+   * @returns A promise resolving to the result of the update operation.
+   * @throws {NotFoundException} If no calification is found with the given ID.
+   */
+  async updateCalificacion(id: number, { puntaje }: CreateCalificacionDto) {
+    const result = await this.calificacionRepository.update(id, { puntaje });
+
+    if (result.affected === 0) {
+      throw new NotFoundException('No se encontró la calificación');
+    }
+
+    return result;
+  }
+
+  /**
+   * Deletes a calificación (csore) by its ID.
+   *
+   * @param id - The ID of the calificación to delete.
+   * @returns The result of the delete operation.
+   * @throws NotFoundException - If no calificación is found with the given ID.
+   */
+  async deleteCalificacion(id: number) {
+    const result = await this.calificacionRepository.delete(id);
+
+    if (result.affected === 0) {
+      throw new NotFoundException('No se encontró la calificación');
+    }
+
+    return result;
+  }
+
+  /**
    * Creates a new comentario (comment) for a video game by a specific user.
    *
    * @param userId - The ID of the user creating the comentario.
@@ -98,5 +134,40 @@ export class CalificacionesService {
     newComentario.videoGame = videoGame;
 
     return this.comentarioRepository.save(newComentario);
+  }
+
+  /**
+   * Updates the comentario (comment) of an existing record by its ID.
+   *
+   * @param id - The unique identifier of the comentario to update.
+   * @param comentarioDto - An object containing the updated comentario data.
+   * @throws {NotFoundException} If no comentario is found with the given ID.
+   * @returns A promise containing the result of the update operation.
+   */
+  async updateComentario(id: number, { comentario }: CreateComentarioDto) {
+    const result = await this.comentarioRepository.update(id, { comentario });
+
+    if (result.affected === 0) {
+      throw new NotFoundException('No se encontró el comentario');
+    }
+
+    return result;
+  }
+
+  /**
+   * Deletes a comentario (comment) by its ID.
+   *
+   * @param id - The ID of the comentario to delete.
+   * @returns The result of the delete operation.
+   * @throws {NotFoundException} If no comentario with the given ID is found.
+   */
+  async deleteComentario(id: number) {
+    const result = await this.comentarioRepository.delete(id);
+
+    if (result.affected === 0) {
+      throw new NotFoundException('No se encontró el comentario');
+    }
+
+    return result;
   }
 }

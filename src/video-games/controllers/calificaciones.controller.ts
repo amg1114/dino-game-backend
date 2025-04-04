@@ -1,7 +1,9 @@
 import {
   Body,
   Controller,
+  Delete,
   Param,
+  Patch,
   Post,
   Request,
   UseGuards,
@@ -13,6 +15,7 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/config/enums/roles.enum';
 import { CreateComentarioDto } from '../dto/calificaciones/create-comentario.dto';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @Controller('video-games/:videogame/calificaciones')
 @UseGuards(AuthGuard, RolesGuard)
@@ -21,6 +24,23 @@ export class CalificacionesController {
 
   @Post()
   @Roles(Role.ESTANDAR)
+  @ApiOperation({
+    summary: 'Crear calificación',
+    description: 'Crea una calificación para un videojuego por un usuario',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Calificación creada correctamente',
+  })
+  @ApiResponse({
+    status: 409,
+    description:
+      'Ya existe una calificación para este videojuego por parte de este usuario',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'No se encontró el videojuego',
+  })
   async createCalificacion(
     @Body() calificacionFields: CreateCalificacionDto,
     @Param('videogame') videoGame: string,
@@ -32,6 +52,36 @@ export class CalificacionesController {
       calificacionFields,
     );
   }
+
+  @Patch(':calificacion')
+  @Roles(Role.ESTANDAR)
+  @ApiOperation({
+    summary: 'Actualizar calificación',
+    description: 'Actualiza la calificación de un videojuego por un usuario',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Calificación actualizada correctamente',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'No se encontró la calificación',
+  })
+  async updateCalificacion(
+    @Body() calificacionFields: CreateCalificacionDto,
+    @Param('calificacion') id: number,
+  ) {
+    return this.calificacionesService.updateCalificacion(
+      id,
+      calificacionFields,
+    );
+  }
+
+  @Delete(':calificacion')
+  @Roles(Role.ESTANDAR)
+  async deleteCalificacion(@Param('calificacion') id: number) {
+    return this.calificacionesService.deleteCalificacion(id);
+  }
 }
 
 @Controller('video-games/:videogame/comentarios')
@@ -41,6 +91,18 @@ export class ComentariosController {
 
   @Post()
   @Roles(Role.ESTANDAR)
+  @ApiOperation({
+    summary: 'Crear comentario',
+    description: 'Crea un comentario para un videojuego por un usuario',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Comentario creado correctamente',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'No se encontró el videojuego',
+  })
   async createComentario(
     @Body() comentarioFields: CreateComentarioDto,
     @Param('videogame') videoGame: string,
@@ -51,5 +113,44 @@ export class ComentariosController {
       videoGame,
       comentarioFields,
     );
+  }
+
+  @Patch(':comentario')
+  @Roles(Role.ESTANDAR)
+  @ApiOperation({
+    summary: 'Actualizar comentario',
+    description: 'Actualiza el comentario de un videojuego por un usuario',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Comentario actualizado correctamente',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'No se encontró el comentario',
+  })
+  async updateComentario(
+    @Body() comentarioFields: CreateComentarioDto,
+    @Param('comentario') id: number,
+  ) {
+    return this.calificacionesService.updateComentario(id, comentarioFields);
+  }
+
+  @Delete(':comentario')
+  @Roles(Role.ESTANDAR)
+  @ApiOperation({
+    summary: 'Eliminar comentario',
+    description: 'Elimina un comentario de un videojuego por un usuario',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Comentario eliminado correctamente',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'No se encontró el comentario',
+  })
+  async deleteComentario(@Param('comentario') id: number) {
+    return this.calificacionesService.deleteComentario(id);
   }
 }
