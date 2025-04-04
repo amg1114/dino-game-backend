@@ -8,6 +8,6 @@ export class CreateComentarioDto {
   })
   @IsNotEmpty()
   @IsString()
-  @MaxLength(250)
+  @MaxLength(500)
   comentario: string;
 }
