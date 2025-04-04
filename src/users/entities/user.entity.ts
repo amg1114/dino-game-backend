@@ -4,6 +4,10 @@ import { Exclude } from 'class-transformer';
 import { UserVideoGame } from '../../video-games/entities/user-videogames.entity';
 import { Noticia } from '../../noticias/noticia.entity';
 import { Role } from '../../config/enums/roles.enum';
+import {
+  Calificacion,
+  Comentario,
+} from '../../video-games/entities/calificacion.entity';
 
 @Entity('users')
 export class User {
@@ -37,4 +41,10 @@ export class User {
 
   @OneToMany(() => Noticia, (noticia) => noticia.autor)
   noticias: Noticia[];
+
+  @OneToMany(() => Calificacion, (calificacion) => calificacion.user)
+  calificaciones: Calificacion[];
+
+  @OneToMany(() => Comentario, (comentario) => comentario.user)
+  comentarios: Comentario[];
 }

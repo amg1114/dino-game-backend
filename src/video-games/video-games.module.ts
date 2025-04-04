@@ -19,6 +19,12 @@ import { CategoriasModule } from '../categorias/categorias.module';
 import { CategoriasService } from '../categorias/categorias.service';
 import { VersionsController } from './controllers/versions.controller';
 import { DevelopersService } from 'src/users/services/developers.service';
+import { Calificacion, Comentario } from './entities/calificacion.entity';
+import { CalificacionesService } from './services/calificaciones.service';
+import {
+  CalificacionesController,
+  ComentariosController,
+} from './controllers/calificaciones.controller';
 
 @Module({
   imports: [
@@ -28,6 +34,8 @@ import { DevelopersService } from 'src/users/services/developers.service';
       Requisito,
       Descuento,
       UserVideoGame,
+      Calificacion,
+      Comentario,
     ]),
     UsersModule,
     CategoriasModule,
@@ -38,12 +46,15 @@ import { DevelopersService } from 'src/users/services/developers.service';
     DevelopersService,
     DescuentosService,
     CategoriasService,
+    CalificacionesService,
   ],
   controllers: [
-    BibliotecaController,
-    VideoGamesController,
-    DescuentosController,
     VersionsController,
+    DescuentosController,
+    BibliotecaController,
+    CalificacionesController,
+    ComentariosController,
+    VideoGamesController,
   ],
   exports: [
     TypeOrmModule,
