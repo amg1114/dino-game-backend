@@ -25,7 +25,6 @@ import {
   CalificacionesController,
   ComentariosController,
 } from './controllers/calificaciones.controller';
-import { AssetsModule } from 'src/assets/assets.module';
 
 @Module({
   imports: [
@@ -40,7 +39,6 @@ import { AssetsModule } from 'src/assets/assets.module';
     ]),
     UsersModule,
     CategoriasModule,
-    AssetsModule,
   ],
   providers: [
     VideoGamesService,
