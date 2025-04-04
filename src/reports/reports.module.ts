@@ -8,6 +8,8 @@ import { TypeReportsController } from './controllers/type-reports.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Report } from './entities/report.entity';
 import { TypeReport } from './entities/type-report.entity';
+import { UsersService } from 'src/users/services/users.service';
+import { VideoGamesService } from 'src/video-games/services/video-games.service';
 
 @Module({
   imports: [
@@ -15,7 +17,14 @@ import { TypeReport } from './entities/type-report.entity';
     UsersModule,
     VideoGamesModule,
   ],
+  exports: [TypeOrmModule, UsersModule, VideoGamesModule],
   controllers: [ReportsController, TypeReportsController],
-  providers: [ReportsService, TypeReportsService, TypeOrmModule],
+  providers: [
+    ReportsService,
+    TypeReportsService,
+    TypeOrmModule,
+    UsersService,
+    VideoGamesService,
+  ],
 })
 export class ReportsModule {}
