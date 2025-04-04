@@ -221,7 +221,7 @@ export class VideoGamesService {
    */
   async findUserVideoGame(userId: number, videoGameId: number) {
     const user = await this.usersService.findById(userId);
-    const videoGame = await this.findById(videoGameId);
+    const videoGame = await this.softFindById(videoGameId);
 
     const userVideoGame = await this.userVideoGameRepository
       .createQueryBuilder('userVideoGame')
@@ -248,7 +248,7 @@ export class VideoGamesService {
    */
   async deleteUserVideoGame(userId: number, videoGameId: number) {
     const user = await this.usersService.findById(userId);
-    const videoGame = await this.findById(videoGameId);
+    const videoGame = await this.softFindById(videoGameId);
 
     const userVideoGame = await this.userVideoGameRepository.findOne({
       where: { user, videoGame },
@@ -327,7 +327,7 @@ export class VideoGamesService {
     }
 
     if (categorias) {
-      const videoGame = await this.findById(id);
+      const videoGame = await this.softFindById(id);
       await this.categoriasService.removeVideoGameFromCategorias(videoGame.id);
       const promises = categorias.map(async (categoria) => {
         return await this.categoriasService.addVideoGameToCategoria(
@@ -370,7 +370,7 @@ export class VideoGamesService {
     videoGameId: number,
     { requisitos, ...versionFields }: CreateVersionDto,
   ) {
-    const videoGame = await this.findById(videoGameId);
+    const videoGame = await this.softFindById(videoGameId);
     const version = await this.versionRepository.save({
       ...versionFields,
       videoGame,
@@ -400,7 +400,7 @@ export class VideoGamesService {
     compraFields: AddVideoGameToUserDto,
   ) {
     const user = await this.usersService.findById(userId);
-    const videoGame = await this.findById(videoGameId);
+    const videoGame = await this.softFindById(videoGameId);
 
     return this.userVideoGameRepository.save({
       precio: compraFields.precio,
