@@ -50,8 +50,6 @@ export class VideoGamesService {
       .leftJoinAndSelect('videoGame.categorias', 'categorias')
       .leftJoinAndSelect('videoGame.developer', 'developer')
       .leftJoinAndSelect('videoGame.comentarios', 'comentarios')
-      .leftJoinAndSelect('videoGame.calificaciones', 'calificaciones')
-      .leftJoinAndSelect('calificaciones.user', 'userCalificacion')
       .leftJoinAndSelect('comentarios.user', 'userComentario')
       .where('videoGame.id = :id', { id })
       .addOrderBy('versions.releaseDate', 'DESC')
@@ -59,14 +57,22 @@ export class VideoGamesService {
       .addOrderBy('descuentos.fechaFin', 'ASC')
       .addOrderBy('categorias.titulo', 'ASC')
       .addOrderBy('comentarios.createdAt', 'DESC')
-      .addOrderBy('calificaciones.createdAt', 'DESC')
       .getOne();
 
     if (videogame === null) {
       throw new HttpException('Videogame was not found', HttpStatus.NOT_FOUND);
     }
 
-    return videogame;
+    const calificaciones = await this.videoGameRepository
+      .createQueryBuilder('videoGame')
+      .leftJoinAndSelect('videoGame.calificaciones', 'calificaciones')
+      .where('videoGame.id = :id', { id })
+      .select('ROUND(AVG(calificaciones.puntaje)::numeric, 1)', 'promedio')
+      .addSelect('COUNT(calificaciones.id)', 'cantidad')
+      .groupBy('videoGame.id')
+      .getRawOne();
+
+    return { ...videogame, calificaciones };
   }
 
   /**
