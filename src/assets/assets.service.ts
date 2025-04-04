@@ -22,7 +22,7 @@ export class AssetsService {
    * @returns El asset creado
    */
   async createVideoGameAsset(owner: number, assetFields: RegisterAssetDto) {
-    const videoGame = await this.videoGamesService.findById(owner);
+    const videoGame = await this.videoGamesService.softFindById(owner);
     const asset = this.assetsRepository.create({
       ...assetFields,
       videoGameThumb: videoGame,
