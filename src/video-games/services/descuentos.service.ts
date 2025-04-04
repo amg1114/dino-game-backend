@@ -23,7 +23,7 @@ export class DescuentosService {
    * @returns Descuentos del videojuego
    */
   async getDescuentosByVideoGame(id: number) {
-    const videoGame = await this.videoGameService.findById(id);
+    const videoGame = await this.videoGameService.softFindById(id);
     const descuentos = await this.descuentoRepository.find({
       where: { videoGame },
       order: { fechaInicio: 'ASC', fechaFin: 'ASC' },
@@ -43,7 +43,7 @@ export class DescuentosService {
    * @returns Descuento agregado
    */
   async addDescuentoToVideoGame(id: number, descuento: CreateDescuentoDto) {
-    const videoGame = await this.videoGameService.findById(id);
+    const videoGame = await this.videoGameService.softFindById(id);
     const descuentoEntity = this.descuentoRepository.create(descuento);
 
     descuentoEntity.videoGame = videoGame;

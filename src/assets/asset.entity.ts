@@ -1,5 +1,5 @@
 import { Noticia } from '../noticias/noticia.entity';
-import { VideoGame } from '..//video-games/entities/video-game.entity';
+import { VideoGame } from '../video-games/entities/video-game.entity';
 import {
   Column,
   Entity,
