@@ -13,6 +13,9 @@ import { CreateSolicitudDesarrolladorDto } from '../dto/create-solicitud-desarro
 import { UpdateSolicitudDesarrolladorDto } from '../dto/update-solicitud-desarrollador.dto';
 import { Role } from '../../config/enums/roles.enum';
 import { User } from '../entities/user.entity';
+import { SolicitudDesarrolladorQueries } from '../dto/SolicitudDesarrollador-queries.dto';
+import { SolicitudOrderBy } from 'src/config/enums/orderby.enum';
+import { PaginatedDataResponse } from 'src/config/models/paginatedData-response.interface';
 
 @Injectable()
 export class DevelopersService {
@@ -28,13 +31,66 @@ export class DevelopersService {
    * Obtiene todas las solicitudes
    * @returns {Promise <SolicitudDesarrollador[]> } Lista de solicitudes
    */
-  async getSolicitudes(): Promise<SolicitudDesarrollador[]> {
-    return this.solicitudDesarrolladorRepository.find({
-      relations: ['user'],
-      order: {
-        estado: 'ASC',
-      },
-    });
+  async getSolicitudes(
+    urlQueries: SolicitudDesarrolladorQueries,
+  ): Promise<PaginatedDataResponse<SolicitudDesarrollador>> {
+    const {
+      limit = null,
+      offset = 0,
+      order = 'ASC',
+      orderBy = SolicitudOrderBy.TITLE,
+      ...queries
+    } = urlQueries;
+
+    const queryBuilder =
+      this.solicitudDesarrolladorRepository.createQueryBuilder('solicitud');
+    queryBuilder.leftJoinAndSelect('solicitud.user', 'user');
+
+    if (queries.search) {
+      queryBuilder
+        .where('solicitud.titulo ILIKE :search', {
+          search: `%${queries.search}%`,
+        })
+        .orWhere('solicitud.mensaje ILIKE :search', {
+          search: `%${queries.search}%`,
+        });
+    }
+
+    if (limit !== null && (typeof limit !== 'number' || limit <= 0)) {
+      throw new HttpException('Invalid limit value', HttpStatus.BAD_REQUEST);
+    }
+
+    if (offset < 0 || typeof offset !== 'number') {
+      throw new HttpException('Invalid offset value', HttpStatus.BAD_REQUEST);
+    }
+
+    if (order !== 'ASC' && order !== 'DESC') {
+      throw new HttpException('Invalid order value', HttpStatus.BAD_REQUEST);
+    }
+
+    if (
+      typeof orderBy !== 'string' ||
+      !Object.values(SolicitudOrderBy).includes(
+        orderBy.toLowerCase() as SolicitudOrderBy,
+      )
+    ) {
+      throw new HttpException(
+        'Invalid orderBy value. Allowed values are titulo or fecha.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    queryBuilder.orderBy(`solicitud.${orderBy}`, order);
+
+    if (limit !== null) {
+      queryBuilder.take(limit).skip(offset * limit);
+    }
+
+    return {
+      data: await queryBuilder.getMany(),
+      offset,
+      total: await queryBuilder.getCount(),
+    };
   }
 
   /**

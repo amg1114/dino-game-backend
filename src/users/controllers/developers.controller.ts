@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { Public } from '../../auth/decorators/public.decorator';
@@ -29,6 +30,7 @@ import {
   UpdateResultResponseDto,
 } from 'src/config/responses-dto';
 import { User } from '../entities/user.entity';
+import { SolicitudDesarrolladorQueries } from '../dto/SolicitudDesarrollador-queries.dto';
 
 @ApiTags('Desarrolladores')
 @Controller('users/developers')
@@ -80,8 +82,14 @@ export class DevelopersController {
   })
   @Get('solicitudes')
   @Roles(Role.ADMINISTRATOR)
-  getSolicitudes() {
-    return this.developersService.getSolicitudes();
+  findAll(@Query() queries: SolicitudDesarrolladorQueries) {
+    if (queries.offset) {
+      queries.offset = parseInt(queries.offset as unknown as string, 10);
+    }
+    if (queries.limit) {
+      queries.limit = parseInt(queries.limit as unknown as string, 10);
+    }
+    return this.developersService.getSolicitudes(queries);
   }
 
   /**

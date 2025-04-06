@@ -3,6 +3,12 @@ export enum OrderBy {
   DATE = 'fecha',
 }
 
+export enum SolicitudOrderBy {
+  TITLE = 'titulo',
+  MESSAGE = 'mensaje',
+  DATE = 'fechaCreacion',
+}
+
 export enum GameOrderBy {
   TITLE = 'titulo',
   PRICE = 'precio',
