@@ -4,8 +4,9 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
-  Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { TypeReportsService } from '../services/type-reports.service';
@@ -17,6 +18,7 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/config/enums/roles.enum';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { TypeReport } from '../entities/type-report.entity';
+import { ReportQueries } from '../dto/report-queries.dto';
 
 @ApiTags('Tipos de Reportes')
 @Controller('type-reports')
@@ -24,6 +26,28 @@ import { TypeReport } from '../entities/type-report.entity';
 @Roles(Role.ADMINISTRATOR)
 export class TypeReportsController {
   constructor(private readonly typeReportsService: TypeReportsService) {}
+
+  /**
+   * Endpoint para obtener un tipo de reporte por ID
+   * @param id El ID del tipo de reporte
+   * @returns El tipo de reporte con el ID especificado
+   */
+  @ApiOperation({
+    summary: 'Lista los tipos de reporte',
+    description: 'Lista los tipos de reportes disponibles en la base de datos',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'los tipos de reportes fue encontrado exitosamente',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'ningun tipo de reporte fue encontrado',
+  })
+  @Get()
+  async findAll(@Query() query: ReportQueries) {
+    return await this.typeReportsService.findAll(query);
+  }
 
   /**
    * Endpoint para obtener un tipo de reporte por ID
@@ -90,7 +114,7 @@ export class TypeReportsController {
     status: 404,
     description: 'El tipo de reporte no fue encontrado',
   })
-  @Put(':id')
+  @Patch(':id')
   async update(
     @Param('id') id: number,
     @Body() updateData: UpdateTypeReportDto,

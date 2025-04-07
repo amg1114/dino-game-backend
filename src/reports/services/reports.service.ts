@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Report } from '../entities/report.entity';
 import { CreateReportDto } from '../dto/create-report.dto';
@@ -47,7 +47,8 @@ export class ReportsService {
     const { offset = 0, limit = null, search = '', order = 'ASC' } = query;
 
     const [data, total] = await this.reportRepository.findAndCount({
-      where: search ? { typeReport: { title: search } } : {},
+      where: search ? { typeReport: { title: ILike(`%${search}%`) } } : {},
+      relations: ['user', 'videoGame', 'typeReport'],
       order: { createdAt: order },
       ...(limit !== null ? { skip: offset * limit, take: limit } : {}),
     });
@@ -78,6 +79,7 @@ export class ReportsService {
         videoGame: { id: videoGameId },
         ...(search ? { typeReport: { title: search } } : {}),
       },
+      relations: ['user', 'videoGame', 'typeReport'],
       order: { createdAt: order },
       ...(limit !== null ? { skip: offset * limit, take: limit } : {}),
     });
@@ -100,6 +102,7 @@ export class ReportsService {
         user: { id: userId },
         ...(search ? { typeReport: { title: search } } : {}),
       },
+      relations: ['user', 'videoGame', 'typeReport'],
       order: { createdAt: order },
       ...(limit !== null ? { skip: offset * limit, take: limit } : {}),
     });
@@ -147,6 +150,6 @@ export class ReportsService {
     if (!report) {
       throw new Error(`Report with ID ${id} not found`);
     }
-    return await this.reportRepository.remove(report);
+    return await this.reportRepository.delete(id);
   }
 }

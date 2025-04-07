@@ -51,7 +51,7 @@ export class ReportsController {
     status: 404,
     description: 'Usuario, Videojuego o Tipo de Reporte no encontrado',
   })
-  @Post()
+  @Post(':videoGameId')
   @Roles(Role.ESTANDAR)
   create(
     @Body() createReportDto: CreateReportDto,
