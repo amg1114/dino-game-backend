@@ -1,9 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Like } from './entities/like.entity';
+import { Like } from '../entities/like.entity';
 import { Repository } from 'typeorm';
 import { UsersService } from 'src/users/services/users.service';
-import { NoticiasService } from 'src/noticias/noticias.service';
+import { NoticiasService } from 'src/noticias/services/noticias.service';
 
 @Injectable()
 export class LikesService {
@@ -14,6 +14,13 @@ export class LikesService {
     private readonly noticiasService: NoticiasService,
   ) {}
 
+  /**
+   *
+   * @param userId Id del usuario que da el like
+   * @param noticiaId id de la noticia a la cual se reacciona
+   * @returns mensaje indicando si se añadió o eliminó el like
+   * @throws {HttpException} si no existe el usuario o la noticia
+   */
   async manejoLike(userId: number, noticiaId: number) {
     const user = await this.usersService.findById(userId);
     const noticia = await this.noticiasService.findOne(noticiaId);
@@ -39,6 +46,12 @@ export class LikesService {
     }
   }
 
+  /**
+   *
+   * @param noticiaId Id de la noticia
+   * @returns cantidad de reacciones que tiene la noticia
+   * @throws {HttpException} si no existe la noticia
+   */
   async findAll(noticiaId: number) {
     const noticia = await this.noticiasService.findOne(noticiaId);
 
@@ -58,6 +71,11 @@ export class LikesService {
     return likes;
   }
 
+  /**
+   *
+   * @param likeId id del like
+   * @returns datos del like buscado
+   */
   async findoneLike(likeId: number) {
     const like = await this.likeRepository.findOne({ where: { id: likeId } });
 

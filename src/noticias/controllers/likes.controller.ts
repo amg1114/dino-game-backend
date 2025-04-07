@@ -10,7 +10,7 @@ import { LikesService } from './likes.service';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Like } from './entities/like.entity';
+import { Like } from '../entities/like.entity';
 
 @ApiTags('Likes')
 @Controller('likes')

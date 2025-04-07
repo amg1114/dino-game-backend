@@ -1,5 +1,5 @@
-import { Noticia } from 'src/noticias/noticia.entity';
-import { User } from 'src/users/entities/user.entity';
+import { Noticia } from './noticia.entity';
+import { User } from '../../users/entities/user.entity';
 import {
   Column,
   Entity,

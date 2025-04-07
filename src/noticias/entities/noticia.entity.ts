@@ -1,7 +1,7 @@
 // import { Asset } from '../assets/asset.entity';
-import { Like } from 'src/likes/entities/like.entity';
-import { Asset } from '../assets/asset.entity';
-import { User } from '../users/entities/user.entity';
+import { Like } from './like.entity';
+import { Asset } from '../../assets/asset.entity';
+import { User } from '../../users/entities/user.entity';
 import {
   PrimaryGeneratedColumn,
   Column,

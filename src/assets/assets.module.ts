@@ -6,7 +6,7 @@ import { Asset } from './asset.entity';
 import { VideoGamesModule } from '../video-games/video-games.module';
 import { VideoGamesService } from '../video-games/services/video-games.service';
 import { NoticiasModule } from '../noticias/noticias.module';
-import { NoticiasService } from '../noticias/noticias.service';
+import { NoticiasService } from '../noticias/services/noticias.service';
 
 @Module({
   imports: [

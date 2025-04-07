@@ -1,12 +1,12 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateNoticiaDto } from './dto/create-noticia.dto';
-import { UpdateNoticiaDto } from './dto/update-noticia.dto';
+import { CreateNoticiaDto } from '../dto/create-noticia.dto';
+import { UpdateNoticiaDto } from '../dto/update-noticia.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Noticia } from './noticia.entity';
 import { Repository } from 'typeorm';
-import { UsersService } from '../users/services/users.service';
+import { UsersService } from '../../users/services/users.service';
 import slugify from 'slugify';
-import { QueriesNoticesDto } from './dto/queries-notices.dto';
+import { QueriesNoticesDto } from '../dto/queries-notices.dto';
 import { Order } from 'src/config/enums/order.enum';
 import { OrderBy } from 'src/config/enums/orderby.enum';
 

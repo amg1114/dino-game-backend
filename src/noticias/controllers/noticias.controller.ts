@@ -10,26 +10,26 @@ import {
   UseGuards,
   Request,
 } from '@nestjs/common';
-import { NoticiasService } from './noticias.service';
-import { CreateNoticiaDto } from './dto/create-noticia.dto';
-import { UpdateNoticiaDto } from './dto/update-noticia.dto';
+import { NoticiasService } from '../services/noticias.service';
+import { CreateNoticiaDto } from '../dto/create-noticia.dto';
+import { UpdateNoticiaDto } from '../dto/update-noticia.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '../auth/guards/auth.guard';
-import { RolesGuard } from '../auth/guards/roles.guard';
-import { Public } from '../auth/decorators/public.decorator';
-import { Roles } from '../auth/decorators/roles.decorator';
-import { Role } from '../config/enums/roles.enum';
+import { AuthGuard } from '../../auth/guards/auth.guard';
+import { RolesGuard } from '../../auth/guards/roles.guard';
+import { Public } from '../../auth/decorators/public.decorator';
+import { Roles } from '../../auth/decorators/roles.decorator';
+import { Role } from '../../config/enums/roles.enum';
 import { Noticia } from './noticia.entity';
 import {
   NoticiaFoundResponseDto,
   NoticiaNotFoundResponseDto,
   NoticiasNotFoundResponseDto,
-} from './dto/responses-dto';
+} from '../dto/responses-dto';
 import {
   DeleteResultResponseDto,
   UpdateResultResponseDto,
 } from 'src/config/responses-dto';
-import { QueriesNoticesDto } from './dto/queries-notices.dto';
+import { QueriesNoticesDto } from '../dto/queries-notices.dto';
 
 @ApiTags('Noticias')
 @Controller('noticias')
