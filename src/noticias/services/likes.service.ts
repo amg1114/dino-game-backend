@@ -18,10 +18,10 @@ export class LikesService {
    *
    * @param userId Id del usuario que da el like
    * @param noticiaId id de la noticia a la cual se reacciona
-   * @returns mensaje indicando si se añadió o eliminó el like
+   * @returns mensaje indicando si se añadió el like
    * @throws {HttpException} si no existe el usuario o la noticia
    */
-  async manejoLike(userId: number, noticiaId: number) {
+  async createLike(userId: number, noticiaId: number) {
     const user = await this.usersService.findById(userId);
     const noticia = await this.noticiasService.findOne(noticiaId);
 
@@ -34,29 +34,41 @@ export class LikesService {
     });
 
     if (like) {
-      await this.likeRepository.remove(like);
-      return 'Se eliminó el like';
+      throw new HttpException('ya existe el like', HttpStatus.CONFLICT);
     } else {
       const newLike = await this.likeRepository.create({
         user: { id: userId },
         noticia: { id: noticiaId },
       });
       await this.likeRepository.save(newLike);
-      return 'Se añadió el like al post';
+      return 'Se añadió el like a la noticia';
     }
   }
 
   /**
    *
-   * @param likeId id del like
-   * @returns datos del like buscado
+   * @param userId id del usuario que ya había reaacionado a la noticia
+   * @param noticiaId id de la noticia
+   * @returns mensaje indicando que se eliminó la noticia ¿
+   * @throws {httpException} si no existe el usuario o la noticia
    */
-  async findoneLike(likeId: number) {
-    const like = await this.likeRepository.findOne({ where: { id: likeId } });
+  async deleteLike(userId: number, noticiaId: number) {
+    const user = await this.usersService.findById(userId);
+    const noticia = await this.noticiasService.findOne(noticiaId);
+
+    if (!user || !noticia) {
+      throw new HttpException('User or news not found', HttpStatus.NOT_FOUND);
+    }
+
+    const like = await this.likeRepository.findOne({
+      where: { user: { id: userId }, noticia: { id: noticiaId } },
+    });
 
     if (!like) {
-      throw new HttpException('like not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Like not found', HttpStatus.NOT_FOUND);
+    } else {
+      await this.likeRepository.remove(like);
+      return 'Like deleted';
     }
-    return like;
   }
 }

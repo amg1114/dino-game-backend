@@ -1,10 +1,10 @@
 import {
   Controller,
-  Get,
   Post,
   Param,
   Request,
   UseGuards,
+  Delete,
 } from '@nestjs/common';
 import { LikesService } from '../services/likes.service';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
@@ -19,42 +19,35 @@ export class LikesController {
   constructor(private readonly likesService: LikesService) {}
 
   @ApiOperation({
-    summary: 'Post or delete a like',
-    description:
-      'Elimina un like existente o crea uno nuevo en la base de datos',
+    summary: 'Post a like',
+    description: 'Crea un nuevo like en la base de datos',
   })
   @ApiResponse({
     status: 200,
-    description: 'Se creó / eliminó un like en la noticia',
+    description: 'Se creó un like en la noticia',
     type: Like,
   })
   @Post(':noticiaId')
-  async manejoLikes(
+  async createLikes(
     @Param('noticiaId') noticiaId: number,
     @Request() req: any,
   ) {
     const userId = req.user;
-    return this.likesService.manejoLike(userId.id, noticiaId);
+    return this.likesService.createLike(userId.id, noticiaId);
   }
 
   @ApiOperation({
-    summary: 'Get a like',
-    description: 'Obtener un like',
+    summary: 'Delete a like',
+    description: 'Elimina un like de la base de datos',
   })
   @ApiResponse({
     status: 200,
-    description: 'Like data',
+    description: 'Se eliminó el like de la noticia',
+    type: Like,
   })
-  @ApiResponse({
-    status: 400,
-    description: 'Invalid order value. Allowed values are ASC or DESC.',
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'No se encontró el like ',
-  })
-  @Get('likeId')
-  async findOneLike(@Param('likeId') likeId: number) {
-    return this.likesService.findoneLike(likeId);
+  @Delete(':noticiaId')
+  async deleteLike(@Param('noticiaId') noticiaId: number, @Request() req: any) {
+    const userId = req.user;
+    return this.likesService.deleteLike(userId.id, noticiaId);
   }
 }
