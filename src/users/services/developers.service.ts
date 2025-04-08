@@ -14,7 +14,6 @@ import { UpdateSolicitudDesarrolladorDto } from '../dto/update-solicitud-desarro
 import { Role } from '../../config/enums/roles.enum';
 import { User } from '../entities/user.entity';
 import { SolicitudDesarrolladorQueries } from '../dto/SolicitudDesarrollador-queries.dto';
-import { SolicitudOrderBy } from 'src/config/enums/orderby.enum';
 import { PaginatedDataResponse } from 'src/config/models/paginatedData-response.interface';
 
 @Injectable()
@@ -34,15 +33,9 @@ export class DevelopersService {
   async getSolicitudes(
     urlQueries: SolicitudDesarrolladorQueries,
   ): Promise<PaginatedDataResponse<SolicitudDesarrollador>> {
-    const {
-      limit = null,
-      offset = 0,
-      order = 'ASC',
-      orderBy = SolicitudOrderBy.TITLE,
-      ...queries
-    } = urlQueries;
+    const { limit = null, offset = 0, order = 'ASC', ...queries } = urlQueries;
 
-    const queryBuilder =
+    let queryBuilder =
       this.solicitudDesarrolladorRepository.createQueryBuilder('solicitud');
     queryBuilder.leftJoinAndSelect('solicitud.user', 'user');
 
@@ -56,11 +49,11 @@ export class DevelopersService {
         });
     }
 
-    if (limit !== null && (typeof limit !== 'number' || limit <= 0)) {
+    if (limit !== null && limit <= 0) {
       throw new HttpException('Invalid limit value', HttpStatus.BAD_REQUEST);
     }
 
-    if (offset < 0 || typeof offset !== 'number') {
+    if (offset < 0) {
       throw new HttpException('Invalid offset value', HttpStatus.BAD_REQUEST);
     }
 
@@ -68,22 +61,25 @@ export class DevelopersService {
       throw new HttpException('Invalid order value', HttpStatus.BAD_REQUEST);
     }
 
-    if (
-      typeof orderBy !== 'string' ||
-      !Object.values(SolicitudOrderBy).includes(
-        orderBy.toLowerCase() as SolicitudOrderBy,
-      )
-    ) {
-      throw new HttpException(
-        'Invalid orderBy value. Allowed values are titulo or fecha.',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
-    queryBuilder.orderBy(`solicitud.${orderBy}`, order);
-
     if (limit !== null) {
       queryBuilder.take(limit).skip(offset * limit);
+    }
+
+    if (!queries.orderBy) {
+      queryBuilder = queryBuilder.addOrderBy(
+        'solicitud.titulo',
+        order || 'ASC',
+      );
+    } else if (queries.orderBy === 'fecha') {
+      queryBuilder = queryBuilder.addOrderBy(
+        'solicitud.createdAt',
+        order || 'ASC',
+      );
+    } else {
+      queryBuilder = queryBuilder.addOrderBy(
+        `solicitud.${queries.orderBy}`,
+        order || 'ASC',
+      );
     }
 
     return {

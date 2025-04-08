@@ -10,7 +10,7 @@ export enum EstadoSolicitud {
 
 @Entity('solicitudes-desarrollador')
 export class SolicitudDesarrollador extends BaseEntity {
-  @Column({ nullable: true })
+  @Column()
   titulo: string;
 
   @Column()

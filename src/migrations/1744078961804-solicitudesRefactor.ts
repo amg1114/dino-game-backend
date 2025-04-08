@@ -1,29 +1,19 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class RefactorSolicitudDesarrollador1743912290441
-  implements MigrationInterface
-{
-  name = 'RefactorSolicitudDesarrollador1743912290441';
-
+export class SolicitudesRefactor1744078961804 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `ALTER TABLE "solicitudes-desarrollador" DROP COLUMN "nombre"`,
+      `ALTER TABLE "solicitudes-desarrollador" RENAME COLUMN "nombre" TO "titulo"`,
     );
     await queryRunner.query(
       `ALTER TABLE "solicitudes-desarrollador" ADD "created_at" TIMESTAMP NOT NULL DEFAULT now()`,
     );
     await queryRunner.query(
-      `ALTER TABLE "solicitudes-desarrollador" ADD "deleted_at" TIMESTAMP`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE "solicitudes-desarrollador" ADD "titulo" character varying`,
+      `ALTER TABLE "solicitudes-desarrolladorat" ADD "deleted_at" TIMESTAMP`,
     );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(
-      `ALTER TABLE "solicitudes-desarrollador" DROP COLUMN "titulo"`,
-    );
     await queryRunner.query(
       `ALTER TABLE "solicitudes-desarrollador" DROP COLUMN "deleted_at"`,
     );
@@ -31,7 +21,7 @@ export class RefactorSolicitudDesarrollador1743912290441
       `ALTER TABLE "solicitudes-desarrollador" DROP COLUMN "created_at"`,
     );
     await queryRunner.query(
-      `ALTER TABLE "solicitudes-desarrollador" ADD "nombre" character varying NOT NULL`,
+      `ALTER TABLE "solicitudes-desarrollador" RENAME COLUMN "titulo" TO "nombre"`,
     );
   }
 }

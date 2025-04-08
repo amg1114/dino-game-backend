@@ -6,7 +6,8 @@ export enum OrderBy {
 export enum SolicitudOrderBy {
   TITLE = 'titulo',
   MESSAGE = 'mensaje',
-  DATE = 'fechaCreacion',
+  DATE = 'fecha',
+  STATUS = 'estado',
 }
 
 export enum GameOrderBy {

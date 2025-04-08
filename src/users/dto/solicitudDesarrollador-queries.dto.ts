@@ -1,13 +1,14 @@
-import { OrderBy } from 'src/config/enums/orderby.enum';
-import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
+import { SolicitudOrderBy } from 'src/config/enums/orderby.enum';
+import { IsEnum, IsNumber, IsOptional, IsString, Min } from 'class-validator';
 import { Order } from 'src/config/enums/order.enum';
 
 export class SolicitudDesarrolladorQueries {
-  @IsNumber({ allowInfinity: false, maxDecimalPlaces: 0 })
+  @IsNumber()
   @IsOptional()
+  @Min(1)
   limit?: number;
 
-  @IsNumber({ allowInfinity: false, maxDecimalPlaces: 0 })
+  @IsNumber()
   @IsOptional()
   offset?: number;
 
@@ -16,8 +17,8 @@ export class SolicitudDesarrolladorQueries {
   order?: Order;
 
   @IsOptional()
-  @IsEnum(OrderBy)
-  orderBy?: OrderBy;
+  @IsEnum(SolicitudOrderBy)
+  orderBy?: SolicitudOrderBy;
 
   @IsString()
   @IsOptional()
