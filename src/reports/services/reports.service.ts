@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ILike, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Report } from '../entities/report.entity';
@@ -32,7 +36,7 @@ export class ReportsService {
       createReportDto.typeReportId,
     );
     if (!user || !videoGame || !typeReport) {
-      throw new Error('User, VideoGame or TypeReport not found');
+      throw new NotFoundException('User, VideoGame or TypeReport not found');
     }
     const report = this.reportRepository.create({
       ...createReportDto,
@@ -69,10 +73,12 @@ export class ReportsService {
     const user = await this.userService.findById(userId);
     const videoGame = await this.videoGameService.findById(videoGameId);
     if (!user || !videoGame) {
-      throw new Error('User or VideoGame not found');
+      throw new NotFoundException('User or VideoGame not found');
     }
     if (user.tipo === Role.DEVELOPER && videoGame.developer !== user) {
-      throw new Error(`You do not have permission to view this report`);
+      throw new UnauthorizedException(
+        `You do not have permission to view this report`,
+      );
     }
     const [data, total] = await this.reportRepository.findAndCount({
       where: {
@@ -121,13 +127,17 @@ export class ReportsService {
       relations: ['user', 'videoGame', 'typeReport'],
     });
     if (!report) {
-      throw new Error(`Report with ID ${id} not found`);
+      throw new NotFoundException(`Report with ID ${id} not found`);
     }
     if (![Role.ADMINISTRATOR, Role.DEVELOPER].includes(user.tipo)) {
-      throw new Error(`You do not have permission to view this report`);
+      throw new UnauthorizedException(
+        `You do not have permission to view this report`,
+      );
     }
     if (user.tipo === Role.DEVELOPER && report.videoGame.developer !== user) {
-      throw new Error(`You do not have permission to view this report`);
+      throw new UnauthorizedException(
+        `You do not have permission to view this report`,
+      );
     }
 
     return report;
@@ -139,7 +149,7 @@ export class ReportsService {
       ...updateReportDto,
     });
     if (!reportUpdate) {
-      throw new Error(`Report with ID ${id} not found`);
+      throw new NotFoundException(`Report with ID ${id} not found`);
     }
 
     return await this.reportRepository.save(reportUpdate);
@@ -148,7 +158,7 @@ export class ReportsService {
   async remove(id: number) {
     const report = await this.reportRepository.findOne({ where: { id } });
     if (!report) {
-      throw new Error(`Report with ID ${id} not found`);
+      throw new NotFoundException(`Report with ID ${id} not found`);
     }
     return await this.reportRepository.delete(id);
   }

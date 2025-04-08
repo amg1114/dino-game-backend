@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeReport } from '../entities/type-report.entity';
 import { ILike, Repository } from 'typeorm';
@@ -17,7 +17,7 @@ export class TypeReportsService {
       where: { id },
     });
     if (!typeReport) {
-      throw new Error(`Report with ID ${id} not found`);
+      throw new NotFoundException(`Report with ID ${id} not found`);
     }
     return typeReport;
   }
@@ -50,7 +50,7 @@ export class TypeReportsService {
     const result = await this.typeReportRepository.delete(id);
 
     if (result.affected === 0) {
-      throw new Error(`Report with ID ${id} not found`);
+      throw new NotFoundException(`Report with ID ${id} not found`);
     }
     return result;
   }
