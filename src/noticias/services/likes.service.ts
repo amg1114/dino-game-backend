@@ -64,11 +64,10 @@ export class LikesService {
       .where('like.noticiasId = :noticiaId', { noticiaId })
       .getMany();
 
-    if (likes.length === 0) {
-      return 'Not there are likes for this news';
-    }
-
-    return likes;
+    return {
+      total: likes.length,
+      data: likes,
+    };
   }
 
   /**
