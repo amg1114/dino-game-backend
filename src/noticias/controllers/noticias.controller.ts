@@ -19,7 +19,7 @@ import { RolesGuard } from '../../auth/guards/roles.guard';
 import { Public } from '../../auth/decorators/public.decorator';
 import { Roles } from '../../auth/decorators/roles.decorator';
 import { Role } from '../../config/enums/roles.enum';
-import { Noticia } from './noticia.entity';
+import { Noticia } from '../entities/noticia.entity';
 import {
   NoticiaFoundResponseDto,
   NoticiaNotFoundResponseDto,

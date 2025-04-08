@@ -6,7 +6,7 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { LikesService } from './likes.service';
+import { LikesService } from '../services/likes.service';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -35,28 +35,6 @@ export class LikesController {
   ) {
     const userId = req.user;
     return this.likesService.manejoLike(userId.id, noticiaId);
-  }
-
-  @ApiOperation({
-    summary: 'Get all likes of a news',
-    description: 'Obtiene todos los likes de una noticia',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Lista de likes de una noticia',
-    type: Like,
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Invalid order value. Allowed values are ASC or DESC.',
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'No se encontraron Likes',
-  })
-  @Get(':noticiaId')
-  async findAllLikes(@Param('noticiaId') noticiaId: number) {
-    return this.likesService.findAll(noticiaId);
   }
 
   @ApiOperation({

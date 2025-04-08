@@ -2,8 +2,8 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like } from '../entities/like.entity';
 import { Repository } from 'typeorm';
-import { UsersService } from 'src/users/services/users.service';
-import { NoticiasService } from 'src/noticias/services/noticias.service';
+import { UsersService } from '../../users/services/users.service';
+import { NoticiasService } from '../services/noticias.service';
 
 @Injectable()
 export class LikesService {
@@ -44,30 +44,6 @@ export class LikesService {
       await this.likeRepository.save(newLike);
       return 'Se añadió el like al post';
     }
-  }
-
-  /**
-   *
-   * @param noticiaId Id de la noticia
-   * @returns cantidad de reacciones que tiene la noticia
-   * @throws {HttpException} si no existe la noticia
-   */
-  async findAll(noticiaId: number) {
-    const noticia = await this.noticiasService.findOne(noticiaId);
-
-    if (!noticia) {
-      throw new HttpException('news not found', HttpStatus.NOT_FOUND);
-    }
-
-    const likes = await this.likeRepository
-      .createQueryBuilder('like')
-      .where('like.noticiasId = :noticiaId', { noticiaId })
-      .getMany();
-
-    return {
-      total: likes.length,
-      data: likes,
-    };
   }
 
   /**

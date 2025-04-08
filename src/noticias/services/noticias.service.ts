@@ -9,13 +9,14 @@ import slugify from 'slugify';
 import { QueriesNoticesDto } from '../dto/queries-notices.dto';
 import { Order } from 'src/config/enums/order.enum';
 import { OrderBy } from 'src/config/enums/orderby.enum';
-import { LikesService } from './likes.service';
+import { Like } from '../entities/like.entity';
 
 @Injectable()
 export class NoticiasService {
   constructor(
     private readonly usersService: UsersService,
-    private readonly likeService: LikesService,
+    @InjectRepository(Like)
+    private readonly likeRepository: Repository<Like>,
     @InjectRepository(Noticia)
     private readonly noticiasRepository: Repository<Noticia>,
   ) {}
@@ -132,7 +133,10 @@ export class NoticiasService {
       throw new HttpException('Noticia not found', HttpStatus.NOT_FOUND);
     }
 
-    const cantidadLikes = await this.likeService.findAll(id);
+    const cantidadLikes = await this.likeRepository
+      .createQueryBuilder('like')
+      .where('like.noticia_id = :id', { id })
+      .getCount();
 
     return {
       ...noticia,
