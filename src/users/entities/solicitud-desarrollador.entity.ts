@@ -1,11 +1,6 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  OneToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, Column, OneToOne, JoinColumn } from 'typeorm';
 import { User } from './user.entity';
+import { BaseEntity } from '../../config/models/base-entity.entity';
 
 export enum EstadoSolicitud {
   Pendiente = 0,
@@ -14,12 +9,9 @@ export enum EstadoSolicitud {
 }
 
 @Entity('solicitudes-desarrollador')
-export class SolicitudDesarrollador {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class SolicitudDesarrollador extends BaseEntity {
   @Column()
-  nombre: string;
+  titulo: string;
 
   @Column()
   mensaje: string;
