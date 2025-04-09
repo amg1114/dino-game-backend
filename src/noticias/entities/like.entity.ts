@@ -1,25 +1,11 @@
 import { Noticia } from './noticia.entity';
 import { User } from '../../users/entities/user.entity';
-import {
-  Column,
-  Entity,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-  Unique,
-} from 'typeorm';
+import { Entity, ManyToOne, Unique } from 'typeorm';
+import { BaseEntity } from '../../config/models/base-entity.entity';
 
 @Entity('likes')
 @Unique(['user', 'noticia'])
-export class Like {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column({ type: 'date' })
-  fecha: Date;
-
-  @Column({ type: 'time', default: () => 'CURRENT_TIME' })
-  hora: string;
-
+export class Like extends BaseEntity {
   @ManyToOne(() => User, (user) => user.like, { onDelete: 'CASCADE' })
   user: User;
 
