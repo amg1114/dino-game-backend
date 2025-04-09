@@ -14,6 +14,7 @@ import { TypeReportsService } from './type-reports.service';
 import { UsersService } from 'src/users/services/users.service';
 import { VideoGamesService } from 'src/video-games/services/video-games.service';
 import { Role } from 'src/config/enums/roles.enum';
+import { State } from 'src/config/enums/state';
 
 @Injectable()
 export class ReportsService {
@@ -35,11 +36,22 @@ export class ReportsService {
     const typeReport = await this.typeReportService.findById(
       createReportDto.typeReportId,
     );
+
+    const usersReports = await this.findByVideoGame(videoGameId, {}, userId);
+
+    const existingReport = usersReports.data.find(
+      (report) => report.user.id === userId,
+    );
+    if (existingReport) {
+      throw new UnauthorizedException(
+        `You have already reported this video game with this type of report`,
+      );
+    }
     if (!user || !videoGame || !typeReport) {
       throw new NotFoundException('User, VideoGame or TypeReport not found');
     }
     const report = this.reportRepository.create({
-      ...createReportDto,
+      state: State.PENDING,
       user: user,
       videoGame: videoGame,
       typeReport: typeReport,
@@ -83,29 +95,6 @@ export class ReportsService {
     const [data, total] = await this.reportRepository.findAndCount({
       where: {
         videoGame: { id: videoGameId },
-        ...(search ? { typeReport: { title: search } } : {}),
-      },
-      relations: ['user', 'videoGame', 'typeReport'],
-      order: { createdAt: order },
-      ...(limit !== null ? { skip: offset * limit, take: limit } : {}),
-    });
-
-    return {
-      data,
-      offset,
-      total,
-    };
-  }
-
-  async findByUser(
-    userId: number,
-    query: ReportQueries,
-  ): Promise<PaginatedDataResponse<Report>> {
-    const { offset = 0, limit = null, search = '', order = 'ASC' } = query;
-
-    const [data, total] = await this.reportRepository.findAndCount({
-      where: {
-        user: { id: userId },
         ...(search ? { typeReport: { title: search } } : {}),
       },
       relations: ['user', 'videoGame', 'typeReport'],

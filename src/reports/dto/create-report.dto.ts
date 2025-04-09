@@ -1,11 +1,6 @@
-import { IsEnum, IsNumber, IsOptional } from 'class-validator';
-import { State } from 'src/config/enums/state';
+import { IsNumber } from 'class-validator';
 
 export class CreateReportDto {
-  @IsEnum(State)
-  @IsOptional()
-  state: State;
-
   @IsNumber()
   typeReportId: number;
 }

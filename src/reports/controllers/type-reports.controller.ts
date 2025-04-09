@@ -50,29 +50,6 @@ export class TypeReportsController {
   }
 
   /**
-   * Endpoint para obtener un tipo de reporte por ID
-   * @param id El ID del tipo de reporte
-   * @returns El tipo de reporte con el ID especificado
-   */
-  @ApiOperation({
-    summary: 'Obtener un tipo de reporte',
-    description: 'Obtiene un tipo de reporte basado en su ID',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'El tipo de reporte fue encontrado exitosamente',
-    type: TypeReport,
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'El tipo de reporte no fue encontrado',
-  })
-  @Get(':id')
-  async findOne(@Param('id') id: number) {
-    return await this.typeReportsService.findById(id);
-  }
-
-  /**
    * Endpoint para crear un nuevo tipo de reporte
    * @param typeReportData Los datos para crear un nuevo tipo de reporte
    * @returns El tipo de reporte recién creado

@@ -12,6 +12,7 @@ export class TypeReportsService {
     @InjectRepository(TypeReport)
     private typeReportRepository: Repository<TypeReport>,
   ) {}
+
   async findById(id: number) {
     const typeReport = await this.typeReportRepository.findOne({
       where: { id },
@@ -32,6 +33,7 @@ export class TypeReportsService {
     Object.assign(typeReport, updateData);
     return await this.typeReportRepository.save(typeReport);
   }
+
   async findAll(querys: ReportQueries) {
     const { offset = 0, limit = null, search = '', order = 'ASC' } = querys;
     const [data, total] = await this.typeReportRepository.findAndCount({
@@ -46,6 +48,7 @@ export class TypeReportsService {
       total,
     };
   }
+
   async delete(id: number) {
     const result = await this.typeReportRepository.delete(id);
 

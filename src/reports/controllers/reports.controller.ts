@@ -20,7 +20,6 @@ import { Role } from 'src/config/enums/roles.enum';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ReportsFoundDto } from '../dto/responses/found.dto';
-import { Report } from '../entities/report.entity';
 
 @ApiTags('Reportes')
 @Controller('reports')
@@ -89,35 +88,6 @@ export class ReportsController {
   }
 
   /**
-   * Endpoint para obtener un reporte por ID
-   * @param id El ID del reporte
-   * @param req Información del usuario autenticado
-   * @returns El reporte con el ID especificado
-   */
-  @ApiOperation({
-    summary: 'Obtener un reporte',
-    description: 'Obtiene un reporte basado en su ID',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'El reporte fue encontrado exitosamente',
-    type: Report,
-  })
-  @ApiResponse({
-    status: 403,
-    description: 'El usuario no tiene permiso para ver este reporte',
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'El reporte no fue encontrado',
-  })
-  @Roles(Role.ADMINISTRATOR, Role.DEVELOPER)
-  @Get(':id')
-  findOne(@Param('id') id: string, @Request() req: any) {
-    return this.reportsService.findOne(+id, req.user.id);
-  }
-
-  /**
    * Endpoint para obtener reportes asociados a un videojuego
    * @param videoGameId El ID del videojuego
    * @param query Parámetros de consulta para filtrar y paginar los reportes
@@ -154,36 +124,6 @@ export class ReportsController {
       query,
       req.user.id,
     );
-  }
-
-  /**
-   * Endpoint para obtener reportes asociados a un usuario
-   * @param userId El ID del usuario
-   * @param query Parámetros de consulta para filtrar y paginar los reportes
-   * @returns Lista paginada de reportes asociados al usuario
-   */
-  @ApiOperation({
-    summary: 'Obtener reportes por usuario',
-    description:
-      'Obtiene una lista de reportes asociados a un usuario específico',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Lista de reportes obtenida exitosamente',
-    type: ReportsFoundDto,
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Parámetros de consulta inválidos',
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Usuario no encontrado',
-  })
-  @Roles(Role.ADMINISTRATOR)
-  @Get('user/:userId')
-  findByUser(@Param('userId') userId: string, @Query() query: ReportQueries) {
-    return this.reportsService.findByUser(+userId, query);
   }
 
   /**
