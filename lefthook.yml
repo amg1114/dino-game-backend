@@ -1,6 +1,6 @@
 pre-commit:
   commands:
     check-code:
-      run: npm run check-code
+      run: npm run clint
     update-index:
       run: git update-index --again
