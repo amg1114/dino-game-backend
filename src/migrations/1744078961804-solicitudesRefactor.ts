@@ -9,7 +9,7 @@ export class SolicitudesRefactor1744078961804 implements MigrationInterface {
       `ALTER TABLE "solicitudes-desarrollador" ADD "created_at" TIMESTAMP NOT NULL DEFAULT now()`,
     );
     await queryRunner.query(
-      `ALTER TABLE "solicitudes-desarrolladorat" ADD "deleted_at" TIMESTAMP`,
+      `ALTER TABLE "solicitudes-desarrollador" ADD "deleted_at" TIMESTAMP`,
     );
   }
 
