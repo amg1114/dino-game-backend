@@ -1,4 +1,4 @@
-import { IsOptional, IsInt, Min, IsNumber } from 'class-validator';
+import { IsOptional, IsInt, Min, IsNumber, IsString } from 'class-validator';
 import { Order } from 'src/config/enums/order.enum';
 import { OrderBy } from 'src/config/enums/orderby.enum';
 
@@ -25,4 +25,8 @@ export class QueriesNoticesDto {
   @IsNumber()
   @IsInt({ message: 'Author must be an integer' })
   autor?: number;
+
+  @IsOptional()
+  @IsString()
+  search?: string;
 }
