@@ -41,7 +41,7 @@ export class LikesService {
         noticia: { id: noticiaId },
       });
       await this.likeRepository.save(newLike);
-      return 'Se añadió el like a la noticia';
+      return newLike;
     }
   }
 
@@ -67,8 +67,8 @@ export class LikesService {
     if (!like) {
       throw new HttpException('Like not found', HttpStatus.NOT_FOUND);
     } else {
-      await this.likeRepository.remove(like);
-      return 'Like deleted';
+      const likedeleted = await this.likeRepository.delete(like.id);
+      return likedeleted;
     }
   }
 }
