@@ -51,12 +51,8 @@ export class CategoriasService {
     const isWithGames =
       typeof withGames === 'string' ? withGames === 'true' : withGames;
 
-    if (limit !== null && (typeof limit !== 'number' || limit <= 0)) {
+    if (limit !== null && limit <= 0) {
       throw new HttpException('Invalid limit value', HttpStatus.BAD_REQUEST);
-    }
-
-    if (offset < 0 || typeof offset !== 'number') {
-      throw new HttpException('Invalid offset value', HttpStatus.BAD_REQUEST);
     }
 
     if (order !== 'ASC' && order !== 'DESC') {

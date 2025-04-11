@@ -3,7 +3,7 @@ import { IsString, IsNotEmpty } from 'class-validator';
 export class CreateSolicitudDesarrolladorDto {
   @IsString()
   @IsNotEmpty()
-  nombre: string;
+  titulo: string;
 
   @IsString()
   @IsNotEmpty()

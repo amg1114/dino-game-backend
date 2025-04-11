@@ -55,6 +55,39 @@ export class SolicitudBadRequestResponseDto {
   message: string;
 }
 
+export class SolicitudesLimitBadRequestResponseDto {
+  @ApiProperty({
+    example: 400,
+  })
+  statusCode: number;
+  @ApiProperty({
+    example: 'Invalid limit value',
+  })
+  message: string;
+}
+
+export class SolicitudesOffsetBadRequestResponseDto {
+  @ApiProperty({
+    example: 400,
+  })
+  statusCode: number;
+  @ApiProperty({
+    example: 'Invalid offset value',
+  })
+  message: string;
+}
+
+export class SolicitudesOrderBadRequestResponseDto {
+  @ApiProperty({
+    example: 400,
+  })
+  statusCode: number;
+  @ApiProperty({
+    example: 'Invalid order value',
+  })
+  message: string;
+}
+
 //Para Usuarios
 
 export class UserNotFoundResponseDto {
