@@ -2,13 +2,14 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Sexo } from '../../config/enums/sexo.enum';
 import { Exclude } from 'class-transformer';
 import { UserVideoGame } from '../../video-games/entities/user-videogames.entity';
-import { Noticia } from '../../noticias/noticia.entity';
+import { Noticia } from '../../noticias/entities/noticia.entity';
 import { Role } from '../../config/enums/roles.enum';
 import {
   Calificacion,
   Comentario,
 } from '../../video-games/entities/calificacion.entity';
 import { Report } from '../../reports/entities/report.entity';
+import { Like } from '../../noticias/entities/like.entity';
 
 @Entity('users')
 export class User {
@@ -51,4 +52,7 @@ export class User {
 
   @OneToMany(() => Report, (report) => report.user)
   reports: Report[];
+
+  @OneToMany(() => Like, (like) => like.user)
+  like: Like[];
 }

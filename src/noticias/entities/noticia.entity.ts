@@ -1,6 +1,7 @@
 // import { Asset } from '../assets/asset.entity';
-import { Asset } from '../assets/asset.entity';
-import { User } from '../users/entities/user.entity';
+import { Like } from './like.entity';
+import { Asset } from '../../assets/asset.entity';
+import { User } from '../../users/entities/user.entity';
 import {
   PrimaryGeneratedColumn,
   Column,
@@ -8,6 +9,7 @@ import {
   ManyToOne,
   JoinColumn,
   OneToOne,
+  OneToMany,
 } from 'typeorm';
 
 @Entity('noticias')
@@ -35,4 +37,7 @@ export class Noticia {
 
   @ManyToOne(() => User, (user) => user.noticias)
   autor: User;
+
+  @OneToMany(() => Like, (like) => like.noticia)
+  like: Like[];
 }

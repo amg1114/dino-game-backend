@@ -1,19 +1,22 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateNoticiaDto } from './dto/create-noticia.dto';
-import { UpdateNoticiaDto } from './dto/update-noticia.dto';
+import { CreateNoticiaDto } from '../dto/create-noticia.dto';
+import { UpdateNoticiaDto } from '../dto/update-noticia.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Noticia } from './noticia.entity';
+import { Noticia } from '../entities/noticia.entity';
 import { Repository } from 'typeorm';
-import { UsersService } from '../users/services/users.service';
+import { UsersService } from '../../users/services/users.service';
 import slugify from 'slugify';
-import { QueriesNoticesDto } from './dto/queries-notices.dto';
+import { QueriesNoticesDto } from '../dto/queries-notices.dto';
 import { Order } from 'src/config/enums/order.enum';
 import { OrderBy } from 'src/config/enums/orderby.enum';
+import { Like } from '../entities/like.entity';
 
 @Injectable()
 export class NoticiasService {
   constructor(
     private readonly usersService: UsersService,
+    @InjectRepository(Like)
+    private readonly likeRepository: Repository<Like>,
     @InjectRepository(Noticia)
     private readonly noticiasRepository: Repository<Noticia>,
   ) {}
@@ -129,7 +132,16 @@ export class NoticiasService {
     if (!noticia) {
       throw new HttpException('Noticia not found', HttpStatus.NOT_FOUND);
     }
-    return noticia;
+
+    const cantidadLikes = await this.likeRepository
+      .createQueryBuilder('like')
+      .where('like.noticia_id = :id', { id })
+      .getCount();
+
+    return {
+      ...noticia,
+      cantidadLikes,
+    };
   }
 
   /**

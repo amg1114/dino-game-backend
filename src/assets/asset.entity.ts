@@ -1,4 +1,4 @@
-import { Noticia } from '../noticias/noticia.entity';
+import { Noticia } from '../noticias/entities/noticia.entity';
 import { VideoGame } from '../video-games/entities/video-game.entity';
 import {
   Column,

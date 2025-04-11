@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Noticia } from '../noticia.entity';
+import { Noticia } from '../entities/noticia.entity';
 
 export class NoticiasNotFoundResponseDto {
   @ApiProperty({

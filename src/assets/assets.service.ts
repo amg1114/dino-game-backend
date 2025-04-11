@@ -4,7 +4,7 @@ import { Asset } from './asset.entity';
 import { Repository } from 'typeorm';
 import { RegisterAssetDto } from './dto/register-asset.dto';
 import { VideoGamesService } from '../video-games/services/video-games.service';
-import { NoticiasService } from '../noticias/noticias.service';
+import { NoticiasService } from '../noticias/services/noticias.service';
 
 @Injectable()
 export class AssetsService {
