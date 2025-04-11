@@ -85,9 +85,10 @@ export class CategoriasService {
     }
 
     if (search) {
-      queriesResult.andWhere('categoria.titulo ILIKE :search', {
-        search: `%${search}%`,
-      });
+      queriesResult.andWhere(
+        '(categoria.titulo ILIKE :search OR categoria.descripcion ILIKE :search)',
+        { search: `%${search}%` },
+      );
     }
 
     if (limit !== null) {

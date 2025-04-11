@@ -99,9 +99,12 @@ export class NoticiasService {
     }
 
     if (search) {
-      queryBuilder.andWhere('noticia.titulo ILIKE :search', {
-        search: `%${search}%`,
-      });
+      queryBuilder.andWhere(
+        'noticia.titulo ILIKE :search OR noticia.descripcion ILIKE :search',
+        {
+          search: `%${search}%`,
+        },
+      );
     }
 
     if (limit !== null) {
