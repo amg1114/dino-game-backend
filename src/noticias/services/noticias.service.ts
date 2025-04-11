@@ -75,6 +75,7 @@ export class NoticiasService {
       offset = 0,
       limit = null,
       autor = null,
+      search = null,
     } = queries;
 
     if (!Object.values(Order).includes(order.toUpperCase() as Order)) {
@@ -98,6 +99,15 @@ export class NoticiasService {
 
     if (autor !== null) {
       queryBuilder.andWhere('noticia.autor = :autor', { autor });
+    }
+
+    if (search) {
+      queryBuilder.andWhere(
+        'noticia.titulo ILIKE :search OR noticia.descripcion ILIKE :search',
+        {
+          search: `%${search}%`,
+        },
+      );
     }
 
     if (limit !== null) {

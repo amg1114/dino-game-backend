@@ -45,6 +45,7 @@ export class CategoriasService {
       withGames = false,
       offset = 0,
       order = 'ASC',
+      search,
       ...queries
     } = urlQueries;
 
@@ -81,6 +82,13 @@ export class CategoriasService {
       queriesResult.andWhere('categoria.titulo ILIKE :title', {
         title: `%${queries.title}%`,
       });
+    }
+
+    if (search) {
+      queriesResult.andWhere(
+        '(categoria.titulo ILIKE :search OR categoria.descripcion ILIKE :search)',
+        { search: `%${search}%` },
+      );
     }
 
     if (limit !== null) {

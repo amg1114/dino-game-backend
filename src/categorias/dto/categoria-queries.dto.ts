@@ -31,4 +31,8 @@ export class CategoriaQueries {
   @IsOptional()
   @IsBoolean()
   withGames?: boolean;
+
+  @IsOptional()
+  @IsString()
+  search?: string;
 }
