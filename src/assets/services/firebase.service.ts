@@ -5,7 +5,12 @@ import {
   storage,
   VIDEO_GAMES_FILE_PATH,
 } from 'src/config/firebase.config';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import {
+  getDownloadURL,
+  ref,
+  uploadBytes,
+  deleteObject,
+} from 'firebase/storage';
 import { VideoGame } from 'src/video-games/entities/video-game.entity';
 import { Noticia } from 'src/noticias/entities/noticia.entity';
 import { Response } from 'express';
@@ -42,6 +47,16 @@ export class FirebaseService {
     noticia: Noticia,
   ): Promise<string> {
     return this.uploadFile(file, NOTICIAS_FILE_PATH, noticia.id);
+  }
+
+  async deleteFile(path: string) {
+    const fileRef = ref(storage, path);
+    try {
+      await deleteObject(fileRef);
+    } catch (error) {
+      console.error('Error deleting file from Firebase:', error);
+      throw new Error('Error deleting file');
+    }
   }
 
   async getFile(path: string, res: Response) {

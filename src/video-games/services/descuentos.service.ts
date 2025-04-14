@@ -24,6 +24,11 @@ export class DescuentosService {
    */
   async getDescuentosByVideoGame(id: number) {
     const videoGame = await this.videoGameService.softFindById(id);
+
+    if (!videoGame) {
+      throw new HttpException('Video game not found', HttpStatus.NOT_FOUND);
+    }
+
     const descuentos = await this.descuentoRepository.find({
       where: { videoGame },
       order: { fechaInicio: 'ASC', fechaFin: 'ASC' },
@@ -44,6 +49,11 @@ export class DescuentosService {
    */
   async addDescuentoToVideoGame(id: number, descuento: CreateDescuentoDto) {
     const videoGame = await this.videoGameService.softFindById(id);
+
+    if (!videoGame) {
+      throw new HttpException('Video game not found', HttpStatus.NOT_FOUND);
+    }
+
     const descuentoEntity = this.descuentoRepository.create(descuento);
 
     descuentoEntity.videoGame = videoGame;

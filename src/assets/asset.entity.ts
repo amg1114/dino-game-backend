@@ -1,9 +1,11 @@
+import { BaseEntity } from '../config/models/base-entity.entity';
 import { Noticia } from '../noticias/entities/noticia.entity';
 import { VideoGame } from '../video-games/entities/video-game.entity';
 import {
   Column,
   Entity,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -19,9 +21,6 @@ export class Asset {
   @Column()
   url: string;
 
-  @Column({ default: 0 })
-  index: number;
-
   @OneToOne(() => VideoGame, (videoGame) => videoGame.thumb)
   videoGameThumb: VideoGame;
 
@@ -31,9 +30,15 @@ export class Asset {
   @OneToOne(() => Noticia, (noticia) => noticia.thumb)
   noticiaThumb: Noticia;
 
-  @ManyToOne(() => VideoGame, (videoGame) => videoGame.assets, {
-    onDelete: 'CASCADE',
-    nullable: true,
-  })
+  @OneToMany(() => VideoGameAsset, (videoGameAsset) => videoGameAsset.asset)
+  videoGameAssets: VideoGameAsset[];
+}
+
+@Entity('video_game_assets')
+export class VideoGameAsset extends BaseEntity {
+  @ManyToOne(() => VideoGame, (videoGame) => videoGame.assets)
   videoGame: VideoGame;
+
+  @ManyToOne(() => Asset, (asset) => asset.id)
+  asset: Asset;
 }

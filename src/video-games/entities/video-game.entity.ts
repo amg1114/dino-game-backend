@@ -13,7 +13,7 @@ import { Descuento } from './descuento.entity';
 import { Version } from './version.entity';
 import { UserVideoGame } from './user-videogames.entity';
 import { User } from '../../users/entities/user.entity';
-import { Asset } from '../../assets/asset.entity';
+import { Asset, VideoGameAsset } from '../../assets/asset.entity';
 import { Calificacion, Comentario } from './calificacion.entity';
 import { Report } from '../../reports/entities/report.entity';
 
@@ -45,11 +45,11 @@ export class VideoGame {
   @JoinColumn()
   hero: Asset;
 
-  @OneToMany(() => Asset, (asset) => asset.videoGame, {
+  @OneToMany(() => VideoGameAsset, (asset) => asset.videoGame, {
     cascade: true,
     onDelete: 'CASCADE',
   })
-  assets: Asset[];
+  assets: VideoGameAsset[];
 
   @ManyToMany(() => Categoria, (categoria) => categoria.videoGames, {
     onDelete: 'CASCADE',

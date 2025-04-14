@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { AssetsService } from './assets.service';
 import { AssetsController } from './assets.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Asset } from './asset.entity';
+import { Asset, VideoGameAsset } from './asset.entity';
 import { VideoGamesModule } from '../video-games/video-games.module';
 import { VideoGamesService } from '../video-games/services/video-games.service';
 import { NoticiasModule } from '../noticias/noticias.module';
@@ -11,7 +11,7 @@ import { FirebaseService } from './services/firebase.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Asset]),
+    TypeOrmModule.forFeature([Asset, VideoGameAsset]),
     VideoGamesModule,
     NoticiasModule,
   ],
