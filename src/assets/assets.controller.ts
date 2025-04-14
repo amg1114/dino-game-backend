@@ -1,11 +1,22 @@
-import { Body, Controller, Delete, Param, Post } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Param,
+  ParseFilePipe,
+  ParseIntPipe,
+  Post,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 
-import { RegisterAssetDto } from './dto/register-asset.dto';
 import { AssetsService } from './assets.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ImageNotFoundResponseDto } from './dto/responses-dto';
 import { DeleteResultResponseDto } from 'src/config/responses-dto';
 import { Asset } from './asset.entity';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { FileTypeValidator } from './validators/filte-type.validator';
+import { FileRatioValidator } from './validators/file-ratio.validator';
 
 @ApiTags('Assets')
 @Controller('assets')
@@ -13,9 +24,10 @@ export class AssetsController {
   constructor(private readonly assetsService: AssetsService) {}
 
   /**
-   * Endpoint para crear un asset para un videojuego
-   * @param id id del videojuego asociado con el asset
-   * @param assetFields campos del asset que se va a crear
+   * EndPoint para crear el asset para un videojuego
+   * @param id id del videojuego
+   * @param field campo del asset que se va a crear [thumb, hero, asset]
+   * @param file archivo que se va a subir
    * @returns el asset del videojuego creado
    */
   @ApiOperation({
@@ -27,18 +39,26 @@ export class AssetsController {
     description: 'La imagen fue creada exitosamente',
     type: Asset,
   })
-  @Post('video-games/:videogame')
+  @UseInterceptors(FileInterceptor('file'))
+  @Post('video-games/:videogame/:field')
   createVideoGameAsset(
-    @Param('videogame') id: number,
-    @Body() assetFields: RegisterAssetDto,
+    @Param('videogame', ParseIntPipe) id: number,
+    @Param('field') field: string,
+
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [new FileTypeValidator(), new FileRatioValidator()],
+      }),
+    )
+    file: Express.Multer.File,
   ) {
-    return this.assetsService.createVideoGameAsset(id, assetFields);
+    return this.assetsService.createVideoGameAsset(id, file, field);
   }
 
   /**
    * EndPoint para crear el asset para una noticia
    * @param id id de la noticia
-   * @param assetFields campos del asset que se va a crear
+   * @param file archivo que se va a subir
    * @returns el asset de la noticia creado
    */
   @ApiOperation({
@@ -50,19 +70,24 @@ export class AssetsController {
     description: 'La imagen fue creada exitosamente',
     type: Asset,
   })
+  @UseInterceptors(FileInterceptor('file'))
   @Post('noticias/:noticia')
   createNoticiaAsset(
     @Param('noticia') id: number,
-    @Body() assetFields: RegisterAssetDto,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [new FileTypeValidator(), new FileRatioValidator()],
+      }),
+    )
+    file: Express.Multer.File,
   ) {
-    console.log('Create noticia asset');
-    return this.assetsService.createNoticiaAsset(id, assetFields);
+    return this.assetsService.createNoticiaAsset(id, file);
   }
 
   /**
-   * EndPoint para eliminar una Asset
-   * @param id id de la imagen a eliminar
-   * @returns imagen eliminada
+   * EndPoint para eliminar un asset
+   * @param id id del asset
+   * @returns el asset eliminado
    */
   @ApiOperation({
     summary: 'Eliminar un asset',

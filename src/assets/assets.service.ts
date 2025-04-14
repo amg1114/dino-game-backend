@@ -1,18 +1,21 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Asset } from './asset.entity';
+import { Asset, VideoGameAsset } from './asset.entity';
 import { Repository } from 'typeorm';
-import { RegisterAssetDto } from './dto/register-asset.dto';
 import { VideoGamesService } from '../video-games/services/video-games.service';
 import { NoticiasService } from '../noticias/services/noticias.service';
+import { FirebaseService } from './services/firebase.service';
 
 @Injectable()
 export class AssetsService {
   constructor(
     @InjectRepository(Asset)
     private readonly assetsRepository: Repository<Asset>,
+    @InjectRepository(VideoGameAsset)
+    private readonly videoGameAssetsRepository: Repository<VideoGameAsset>,
     private readonly videoGamesService: VideoGamesService,
     private readonly noticiasService: NoticiasService,
+    private readonly firebaseService: FirebaseService,
   ) {}
 
   /**
@@ -21,14 +24,49 @@ export class AssetsService {
    * @param assetFields Datos del asset
    * @returns El asset creado
    */
-  async createVideoGameAsset(owner: number, assetFields: RegisterAssetDto) {
+  async createVideoGameAsset(
+    owner: number,
+    file: Express.Multer.File,
+    field: string,
+  ) {
+    const availableFields = ['thumb', 'hero', 'asset'];
+    if (availableFields.indexOf(field) === -1) {
+      throw new HttpException(
+        `Field must be one of ${availableFields.join(', ')}`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     const videoGame = await this.videoGamesService.softFindById(owner);
+
+    if (!videoGame) {
+      throw new HttpException('Video game not found', HttpStatus.NOT_FOUND);
+    }
+
+    const url = await this.firebaseService.uploadGameImage(file, videoGame);
+
     const asset = this.assetsRepository.create({
-      ...assetFields,
-      videoGameThumb: videoGame,
-      videoGameHero: videoGame,
+      url,
+      title: file.originalname,
     });
-    return this.assetsRepository.save(asset);
+
+    if (field === 'thumb') {
+      asset.videoGameThumb = videoGame;
+    } else if (field === 'hero') {
+      asset.videoGameHero = videoGame;
+    }
+
+    await this.assetsRepository.save(asset);
+
+    if (field === 'asset') {
+      const videoGameAsset = this.videoGameAssetsRepository.create({
+        videoGame,
+        asset,
+      });
+      return await this.videoGameAssetsRepository.save(videoGameAsset);
+    }
+
+    return asset;
   }
 
   /**
@@ -37,11 +75,13 @@ export class AssetsService {
    * @param assetFields Datos del asset
    * @returns El asset creado
    */
-  async createNoticiaAsset(owner: number, assetFields: RegisterAssetDto) {
+  async createNoticiaAsset(owner: number, file: Express.Multer.File) {
     const noticia = await this.noticiasService.findOne(owner);
+    const url = await this.firebaseService.uploadNoticiaImage(file, noticia);
     const asset = this.assetsRepository.create({
-      ...assetFields,
-      noticiaThumb: noticia,
+      url,
+
+      title: file.originalname,
     });
     return this.assetsRepository.save(asset);
   }
@@ -52,12 +92,15 @@ export class AssetsService {
    * @returns El asset eliminado
    */
   async deleteAsset(id: number) {
+    const asset = await this.assetsRepository.findOne({
+      where: { id },
+    });
     const result = await this.assetsRepository.delete(id);
 
     if (result.affected === 0) {
       throw new HttpException('Asset was not found', HttpStatus.NOT_FOUND);
     }
-
+    await this.firebaseService.deleteFile(asset.url);
     return result;
   }
 }

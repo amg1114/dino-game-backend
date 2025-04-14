@@ -10,27 +10,29 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { VideoGamesService } from '../services/video-games.service';
-import { CreateVideoGameDto } from '../dto/video-games/create-video-game.dto';
-import { UpdateVideoGameDto } from '../dto/video-games/update-video-game.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { VideoGameQueries } from '../dto/queries/video-game-queries.dto';
+
+import { Public } from '../../auth/decorators/public.decorator';
+import { Roles } from '../../auth/decorators/roles.decorator';
 import { AuthGuard } from '../../auth/guards/auth.guard';
 import { RolesGuard } from '../../auth/guards/roles.guard';
 import { Role } from '../../config/enums/roles.enum';
-import { Roles } from '../../auth/decorators/roles.decorator';
-import { Public } from '../../auth/decorators/public.decorator';
-import { VideoGame } from '../entities/video-game.entity';
+import {
+  DeleteResultResponseDto,
+  UpdateResultResponseDto,
+} from 'src/config/responses-dto';
+
+import { VideoGameQueries } from '../dto/queries/video-game-queries.dto';
+import { CreateVideoGameDto } from '../dto/video-games/create-video-game.dto';
 import {
   DeleteVideoGameResponseDto,
   UpdateVideoGameResponseDto,
   VideoGameNotFoundResponseDto,
   VideoGamesNotFoundResponseDto,
 } from '../dto/video-games/responses-dto';
-import {
-  DeleteResultResponseDto,
-  UpdateResultResponseDto,
-} from 'src/config/responses-dto';
+import { UpdateVideoGameDto } from '../dto/video-games/update-video-game.dto';
+import { VideoGame } from '../entities/video-game.entity';
+import { VideoGamesService } from '../services/video-games.service';
 
 @ApiTags('VideoGames')
 @Controller('video-games')
@@ -80,10 +82,7 @@ export class VideoGamesController {
   })
   @Post()
   @Roles(Role.ADMINISTRATOR, Role.DEVELOPER)
-  createVideoGame(
-    @Request() req: any,
-    @Body() videoGameFields: CreateVideoGameDto,
-  ) {
+  createVideoGame(videoGameFields: CreateVideoGameDto, @Request() req: any) {
     return this.videoGamesService.createVideoGame(req.user.id, videoGameFields);
   }
 

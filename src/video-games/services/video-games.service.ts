@@ -16,6 +16,7 @@ import { CreateVersionDto } from '../dto/versions/create-version.dto';
 import { DevelopersService } from 'src/users/services/developers.service';
 import slugify from 'slugify';
 import { PaginatedDataResponse } from 'src/config/models/paginatedData-response.interface';
+import { VideoGameAsset } from 'src/assets/asset.entity';
 
 @Injectable()
 export class VideoGamesService {
@@ -43,7 +44,12 @@ export class VideoGamesService {
       .createQueryBuilder('videoGame')
       .leftJoinAndSelect('videoGame.thumb', 'thumb')
       .leftJoinAndSelect('videoGame.hero', 'hero')
-      .leftJoinAndSelect('videoGame.assets', 'assets')
+      .leftJoinAndMapMany(
+        'videoGame.assets',
+        VideoGameAsset,
+        'assets',
+        'assets.videoGame = videoGame.id',
+      )
       .leftJoinAndSelect('videoGame.versions', 'versions')
       .leftJoinAndSelect('versions.requisitos', 'requisitos')
       .leftJoinAndSelect('videoGame.descuentos', 'descuentos')
@@ -229,6 +235,10 @@ export class VideoGamesService {
     const user = await this.usersService.findById(userId);
     const videoGame = await this.softFindById(videoGameId);
 
+    if (!videoGame) {
+      throw new HttpException('Videogame was not found', HttpStatus.NOT_FOUND);
+    }
+
     const userVideoGame = await this.userVideoGameRepository
       .createQueryBuilder('userVideoGame')
       .leftJoinAndSelect('userVideoGame.videoGame', 'videoGame')
@@ -255,6 +265,10 @@ export class VideoGamesService {
   async deleteUserVideoGame(userId: number, videoGameId: number) {
     const user = await this.usersService.findById(userId);
     const videoGame = await this.softFindById(videoGameId);
+
+    if (!videoGame) {
+      throw new HttpException('Videogame was not found', HttpStatus.NOT_FOUND);
+    }
 
     const userVideoGame = await this.userVideoGameRepository.findOne({
       where: { user, videoGame },
@@ -334,6 +348,14 @@ export class VideoGamesService {
 
     if (categorias) {
       const videoGame = await this.softFindById(id);
+
+      if (!videoGame) {
+        throw new HttpException(
+          'Videogame was not found',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
       await this.categoriasService.removeVideoGameFromCategorias(videoGame.id);
       const promises = categorias.map(async (categoria) => {
         return await this.categoriasService.addVideoGameToCategoria(
@@ -377,6 +399,11 @@ export class VideoGamesService {
     { requisitos, ...versionFields }: CreateVersionDto,
   ) {
     const videoGame = await this.softFindById(videoGameId);
+
+    if (!videoGame) {
+      throw new HttpException('Videogame was not found', HttpStatus.NOT_FOUND);
+    }
+
     const version = await this.versionRepository.save({
       ...versionFields,
       videoGame,
@@ -406,6 +433,11 @@ export class VideoGamesService {
     compraFields: AddVideoGameToUserDto,
   ) {
     const user = await this.usersService.findById(userId);
+
+    if (!user) {
+      throw new HttpException('User was not found', HttpStatus.NOT_FOUND);
+    }
+
     const videoGame = await this.softFindById(videoGameId);
 
     return this.userVideoGameRepository.save({
