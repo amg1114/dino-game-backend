@@ -7,6 +7,7 @@ import { VideoGamesModule } from '../video-games/video-games.module';
 import { VideoGamesService } from '../video-games/services/video-games.service';
 import { NoticiasModule } from '../noticias/noticias.module';
 import { NoticiasService } from '../noticias/services/noticias.service';
+import { FirebaseService } from './services/firebase.service';
 
 @Module({
   imports: [
@@ -14,7 +15,12 @@ import { NoticiasService } from '../noticias/services/noticias.service';
     VideoGamesModule,
     NoticiasModule,
   ],
-  providers: [AssetsService, VideoGamesService, NoticiasService],
+  providers: [
+    AssetsService,
+    VideoGamesService,
+    NoticiasService,
+    FirebaseService,
+  ],
   controllers: [AssetsController],
 })
 export class AssetsModule {}

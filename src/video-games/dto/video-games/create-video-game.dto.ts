@@ -1,3 +1,4 @@
+import { MulterField } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
 import {
   IsNotEmpty,
   IsOptional,
@@ -28,3 +29,15 @@ export class CreateVideoGameDto {
   @IsOptional()
   categorias?: number[];
 }
+
+export class VideoGameAssetsDto {
+  thumb: Express.Multer.File;
+  hero: Express.Multer.File;
+  assets: Express.Multer.File[];
+}
+
+export const videoGameAssetsFieldInterceptor: MulterField[] = [
+  { name: 'thumb', maxCount: 1 },
+  { name: 'hero', maxCount: 1 },
+  { name: 'assets', maxCount: 5 },
+];
