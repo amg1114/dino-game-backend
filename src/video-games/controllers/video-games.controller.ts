@@ -7,10 +7,9 @@ import {
   Patch,
   Post,
   Query,
+  Request,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
-import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { Public } from '../../auth/decorators/public.decorator';
@@ -22,11 +21,9 @@ import {
   DeleteResultResponseDto,
   UpdateResultResponseDto,
 } from 'src/config/responses-dto';
-import { FileRatioValidator } from 'src/assets/validators/file-ratio.validator';
-import { FileTypeValidator } from 'src/assets/validators/filte-type.validator';
 
 import { VideoGameQueries } from '../dto/queries/video-game-queries.dto';
-import { videoGameAssetsFieldInterceptor } from '../dto/video-games/create-video-game.dto';
+import { CreateVideoGameDto } from '../dto/video-games/create-video-game.dto';
 import {
   DeleteVideoGameResponseDto,
   UpdateVideoGameResponseDto,
@@ -34,10 +31,6 @@ import {
   VideoGamesNotFoundResponseDto,
 } from '../dto/video-games/responses-dto';
 import { UpdateVideoGameDto } from '../dto/video-games/update-video-game.dto';
-import {
-  UploadedAssets,
-  ValidatedAssets,
-} from '../decorators/validate-assets.decorator';
 import { VideoGame } from '../entities/video-game.entity';
 import { VideoGamesService } from '../services/video-games.service';
 
@@ -89,13 +82,8 @@ export class VideoGamesController {
   })
   @Post()
   @Roles(Role.ADMINISTRATOR, Role.DEVELOPER)
-  @UseInterceptors(FileFieldsInterceptor(videoGameAssetsFieldInterceptor))
-  createVideoGame(
-    @UploadedAssets([new FileRatioValidator(), new FileTypeValidator()])
-    assets: ValidatedAssets,
-  ) {
-    return assets;
-    // return this.videoGamesService.createVideoGame(req.user.id, videoGameFields);
+  createVideoGame(videoGameFields: CreateVideoGameDto, @Request() req: any) {
+    return this.videoGamesService.createVideoGame(req.user.id, videoGameFields);
   }
 
   /**
