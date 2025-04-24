@@ -10,6 +10,12 @@ export enum SolicitudOrderBy {
   STATUS = 'estado',
 }
 
+export enum DesalloradorOrderBy {
+  ID = 'id',
+  NAME = 'nombre',
+  DATE = 'fecha',
+}
+
 export enum GameOrderBy {
   TITLE = 'titulo',
   PRICE = 'precio',
