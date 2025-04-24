@@ -154,6 +154,27 @@ export class NoticiasService {
     };
   }
 
+  async findBySlug(slug: string) {
+    const slugNoticia = await this.noticiasRepository.findOne({
+      where: { slug },
+    });
+
+    if (!slugNoticia) {
+      throw new HttpException('news not found', HttpStatus.NOT_FOUND);
+    }
+
+    const cantidadLikes = await this.likeRepository
+      .createQueryBuilder('like')
+      .leftJoin('like.noticia', 'noticia')
+      .where('noticia.slug = :slug', { slug })
+      .getCount();
+
+    return {
+      ...slugNoticia,
+      cantidadLikes,
+    };
+  }
+
   /**
    * Update a noticia by id
    * @param id The id of the noticia
