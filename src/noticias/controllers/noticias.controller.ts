@@ -125,6 +125,31 @@ export class NoticiasController {
   }
 
   /**
+   * Endpoint para obtener una noticia por slug
+   * @param slug El slug de la noticia
+   * @returns La noticia con el slug dado
+   */
+  @ApiOperation({
+    summary: 'Obtener una noticia',
+    description: 'Obtiene una noticia basado en el slug de la noticia',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'La noticia fue encontrada exitosamente',
+    type: Noticia,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'La noticia no fue encontrada',
+    type: NoticiaNotFoundResponseDto,
+  })
+  @Get('noticia/:slug')
+  @Public()
+  findBySlug(@Param('slug') slug: string) {
+    return this.noticiasService.findBySlug(slug);
+  }
+
+  /**
    * Endpoint para actualizar una noticia por id
    * @param id El id de la noticia
    * @param noticiaFields Los datos para actualizar la noticia
