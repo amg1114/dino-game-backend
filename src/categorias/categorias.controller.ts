@@ -18,12 +18,12 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
   CategoriaConflictResponseDto,
   CategoriaNotFoundResponseDto,
-  CategoriasLimitBadRequestResponseDto,
   CategoriasNotFoundResponseDto,
-  CategoriasOffsetBadRequestResponseDto,
-  CategoriasOrderBadRequestResponseDto,
   CategoriasTitleBadRequestResponseDto,
   DeleteCategoriaResponseDto,
+  LimitBadRequestResponseDto,
+  OffsetBadRequestResponseDto,
+  OrderBadRequestResponseDto,
   ResponseCategoriasDto,
 } from './dto/responses-dto';
 import {
@@ -57,17 +57,17 @@ export class CategoriasController {
   @ApiResponse({
     status: 400,
     description: 'Invalid limit value',
-    type: CategoriasLimitBadRequestResponseDto,
+    type: LimitBadRequestResponseDto,
   })
   @ApiResponse({
     status: 400,
     description: 'Invalid offset value',
-    type: CategoriasOffsetBadRequestResponseDto,
+    type: OffsetBadRequestResponseDto,
   })
   @ApiResponse({
     status: 400,
     description: 'Invalid order value',
-    type: CategoriasOrderBadRequestResponseDto,
+    type: OrderBadRequestResponseDto,
   })
   @ApiResponse({
     status: 400,

@@ -15,6 +15,8 @@ import { Role } from '../../config/enums/roles.enum';
 import { User } from '../entities/user.entity';
 import { SolicitudDesarrolladorQueries } from '../dto/SolicitudDesarrollador-queries.dto';
 import { PaginatedDataResponse } from 'src/config/models/paginatedData-response.interface';
+import { DesarrolladorQueries } from '../dto/desarrollador-queries.dto';
+import { VideoGame } from 'src/video-games/entities/video-game.entity';
 
 @Injectable()
 export class DevelopersService {
@@ -24,6 +26,8 @@ export class DevelopersService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(SolicitudDesarrollador)
     private readonly solicitudDesarrolladorRepository: Repository<SolicitudDesarrollador>,
+    @InjectRepository(VideoGame)
+    private readonly videoGameRepository: Repository<VideoGame>,
   ) {}
 
   /**
@@ -216,15 +220,54 @@ export class DevelopersService {
    * Obtener lista de desarrolladores
    * @returns Lista de desarrolladores
    */
-  async getDevelopers(): Promise<User[]> {
-    const developers = await this.userRepository.find({
-      where: { tipo: Role.DEVELOPER },
-    });
+  async getDevelopers(
+    urlQueries: DesarrolladorQueries,
+  ): Promise<PaginatedDataResponse<User>> {
+    const { limit = null, offset = 0, order = 'ASC', ...queries } = urlQueries;
 
-    if (!developers) {
-      throw new HttpException('No hay desarrolladores', HttpStatus.NOT_FOUND);
+    const queryBuilder = this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.userDevelopedVideoGames', 'videoGame')
+      .where('user.tipo = :tipo', { tipo: Role.DEVELOPER });
+
+    if (queries.search) {
+      queryBuilder.andWhere('user.nombre ILIKE :search', {
+        search: `%${queries.search}%`,
+      });
     }
-    return developers;
+
+    if (limit !== null && limit <= 0) {
+      throw new HttpException('Invalid limit value', HttpStatus.BAD_REQUEST);
+    }
+
+    if (offset < 0) {
+      throw new HttpException('Invalid offset value', HttpStatus.BAD_REQUEST);
+    }
+
+    if (order !== 'ASC' && order !== 'DESC') {
+      throw new HttpException('Invalid order value', HttpStatus.BAD_REQUEST);
+    }
+
+    if (limit !== null) {
+      queryBuilder.take(limit).skip(offset * limit);
+    }
+
+    queryBuilder.addOrderBy('user.nombre', order);
+
+    const developers = await queryBuilder.getMany();
+
+    const total = await queryBuilder.getCount();
+
+    const developersWithVideoGames = developers.map((developer) => ({
+      ...developer,
+      videoGames: developer.userDevelopedVideoGames || [],
+    }));
+
+    return {
+      data: developersWithVideoGames,
+      offset,
+      total,
+    };
   }
 
   /**
