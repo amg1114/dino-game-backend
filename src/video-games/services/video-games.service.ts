@@ -438,7 +438,11 @@ export class VideoGamesService {
       throw new HttpException('User was not found', HttpStatus.NOT_FOUND);
     }
 
-    const videoGame = await this.softFindById(videoGameId);
+    const videoGame = await this.softFindById(+videoGameId);
+
+    if (!videoGame) {
+      throw new HttpException('Videogame was not found', HttpStatus.NOT_FOUND);
+    }
 
     return this.userVideoGameRepository.save({
       precio: compraFields.precio,
