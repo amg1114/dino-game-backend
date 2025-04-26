@@ -56,7 +56,9 @@ export class VideoGame {
   })
   categorias: Categoria[];
 
-  @ManyToOne(() => User, (User) => User.id, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (user) => user.userDevelopedVideoGames, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'developerId' })
   developer: User;
 

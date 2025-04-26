@@ -11,6 +11,7 @@ import {
 import { Report } from '../../reports/entities/report.entity';
 import { Like } from '../../noticias/entities/like.entity';
 import { BaseEntity } from '../../config/models/base-entity.entity';
+import { VideoGame } from '../../video-games/entities/video-game.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -35,6 +36,9 @@ export class User extends BaseEntity {
   @Exclude()
   @Column()
   password: string;
+
+  @OneToMany(() => VideoGame, (videoGame) => videoGame.developer)
+  userDevelopedVideoGames: VideoGame[];
 
   @OneToMany(() => UserVideoGame, (userVideoGame) => userVideoGame.user)
   userVideoGames: UserVideoGame[];

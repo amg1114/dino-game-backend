@@ -217,27 +217,6 @@ export class DevelopersService {
   }
 
   /**
-   * Obtiene la lista de videojuegos de un desarrollador
-   * @param developerId ID del desarrollador
-   * @returns Lista de videojuegos del desarrollador
-   */
-  async getVideoGamesByDeveloper(developerId: number): Promise<VideoGame[]> {
-    const videoGames = await this.videoGameRepository.find({
-      where: { developer: { id: developerId } },
-      relations: ['developer'], // Incluye relaciones si es necesario
-    });
-
-    if (!videoGames || videoGames.length === 0) {
-      throw new HttpException(
-        'No se encontraron videojuegos para este desarrollador',
-        HttpStatus.NOT_FOUND,
-      );
-    }
-
-    return videoGames;
-  }
-
-  /**
    * Obtener lista de desarrolladores
    * @returns Lista de desarrolladores
    */
@@ -248,6 +227,7 @@ export class DevelopersService {
 
     const queryBuilder = this.userRepository
       .createQueryBuilder('user')
+      .leftJoinAndSelect('user.userDevelopedVideoGames', 'videoGame')
       .where('user.tipo = :tipo', { tipo: Role.DEVELOPER });
 
     if (queries.search) {
@@ -275,25 +255,13 @@ export class DevelopersService {
     queryBuilder.addOrderBy('user.nombre', order);
 
     const developers = await queryBuilder.getMany();
-    console.log(developers);
+
     const total = await queryBuilder.getCount();
 
-    const developersWithVideoGames = await Promise.all(
-      developers.map(async (developer) => {
-        try {
-          const videoGames = await this.getVideoGamesByDeveloper(developer.id);
-          return { ...developer, videoGames };
-        } catch (error) {
-          if (
-            error instanceof HttpException &&
-            error.getStatus() === HttpStatus.NOT_FOUND
-          ) {
-            return { ...developer, videoGames: [] };
-          }
-          throw error;
-        }
-      }),
-    );
+    const developersWithVideoGames = developers.map((developer) => ({
+      ...developer,
+      videoGames: developer.userDevelopedVideoGames || [],
+    }));
 
     return {
       data: developersWithVideoGames,
