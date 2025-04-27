@@ -37,11 +37,15 @@ export class VideoGame {
   @Column({ unique: true })
   slug: string;
 
-  @OneToOne(() => Asset, (asset) => asset.id, { onDelete: 'CASCADE' })
+  @OneToOne(() => Asset, (asset) => asset.videoGameThumb, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   thumb: Asset;
 
-  @OneToOne(() => Asset, (asset) => asset.id, { onDelete: 'CASCADE' })
+  @OneToOne(() => Asset, (asset) => asset.videoGameHero, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   hero: Asset;
 
