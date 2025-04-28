@@ -49,6 +49,8 @@ export class VideoGame {
   @JoinColumn()
   hero: Asset;
 
+  puntaje?: number;
+
   @OneToMany(() => VideoGameAsset, (asset) => asset.videoGame, {
     cascade: true,
     onDelete: 'CASCADE',

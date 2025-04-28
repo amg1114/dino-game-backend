@@ -17,6 +17,7 @@ import { DevelopersService } from 'src/users/services/developers.service';
 import slugify from 'slugify';
 import { PaginatedDataResponse } from 'src/config/models/paginatedData-response.interface';
 import { VideoGameAsset } from 'src/assets/asset.entity';
+import { GameOrderBy } from 'src/config/enums/orderby.enum';
 
 @Injectable()
 export class VideoGamesService {
@@ -132,6 +133,7 @@ export class VideoGamesService {
         now: new Date(),
       });
     }
+
     if (queries.precio) {
       videoGames = videoGames.andWhere('videoGame.precio <= :precio', {
         precio: queries.precio,
@@ -149,6 +151,16 @@ export class VideoGamesService {
         'videoGame.titulo',
         queries.order || 'ASC',
       );
+    } else if (queries.orderBy === GameOrderBy.FEATURED) {
+      videoGames = videoGames
+        .leftJoin('videoGame.calificaciones', 'calificaciones')
+        .addSelect('COALESCE(AVG(calificaciones.puntaje), 0)', 'puntaje')
+        .groupBy('videoGame.id')
+        .addGroupBy('thumb.id')
+        .addGroupBy('hero.id')
+        .addGroupBy('categorias.id')
+        .addGroupBy('descuentos.id')
+        .addOrderBy(`puntaje`, queries.order || 'ASC');
     } else {
       videoGames = videoGames.addOrderBy(
         `videoGame.${queries.orderBy}`,
@@ -168,10 +180,29 @@ export class VideoGamesService {
       throw new HttpException('Videogames was not found', HttpStatus.NOT_FOUND);
     }
 
-    const [videoGamesList, total] = await videoGames.getManyAndCount();
+    // Usamos getRawAndEntities() para obtener los datos crudos y las entidades
+    let data: VideoGame[];
+    let total: number;
+
+    if (queries.orderBy === GameOrderBy.FEATURED) {
+      const { raw, entities } = await videoGames.getRawAndEntities();
+
+      // Fusionamos las entidades con el puntaje calculado
+      data = entities.map((entity, index) => {
+        const puntaje = parseFloat(raw[index]['puntaje']);
+        entity.puntaje = puntaje; // Asignamos el puntaje al videojuego
+        return entity;
+      });
+
+      total = data.length; // O puedes usar entities.length o hacer otro count si lo prefieres
+    } else {
+      const result = await videoGames.getManyAndCount();
+      data = result[0];
+      total = result[1];
+    }
 
     return {
-      data: videoGamesList,
+      data,
       offset: queries.offset,
       total,
     };
