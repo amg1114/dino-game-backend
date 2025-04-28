@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MoreThanOrEqual, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Descuento } from '../entities/descuento.entity';
 import { VideoGame } from '../entities/video-game.entity';
 import { VideoGamesService } from './video-games.service';
@@ -23,7 +23,12 @@ export class DescuentosService {
    * @returns Descuentos del videojuego
    */
   async getDescuentosByVideoGame(id: number) {
-    const videoGame = await this.videoGameService.findById(id);
+    const videoGame = await this.videoGameService.softFindById(id);
+
+    if (!videoGame) {
+      throw new HttpException('Video game not found', HttpStatus.NOT_FOUND);
+    }
+
     const descuentos = await this.descuentoRepository.find({
       where: { videoGame },
       order: { fechaInicio: 'ASC', fechaFin: 'ASC' },
@@ -43,7 +48,12 @@ export class DescuentosService {
    * @returns Descuento agregado
    */
   async addDescuentoToVideoGame(id: number, descuento: CreateDescuentoDto) {
-    const videoGame = await this.videoGameService.findById(id);
+    const videoGame = await this.videoGameService.softFindById(id);
+
+    if (!videoGame) {
+      throw new HttpException('Video game not found', HttpStatus.NOT_FOUND);
+    }
+
     const descuentoEntity = this.descuentoRepository.create(descuento);
 
     descuentoEntity.videoGame = videoGame;

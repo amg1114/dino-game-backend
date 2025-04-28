@@ -13,6 +13,8 @@ import { AssetsModule } from './assets/assets.module';
 import { CategoriasModule } from './categorias/categorias.module';
 import { NoticiasModule } from './noticias/noticias.module';
 import { AuthModule } from './auth/auth.module';
+import { ReportsModule } from './reports/reports.module';
+import { StatisticsModule } from './statistics/statistics.module';
 
 @Module({
   imports: [
@@ -26,6 +28,8 @@ import { AuthModule } from './auth/auth.module';
     CategoriasModule,
     NoticiasModule,
     AuthModule,
+    ReportsModule,
+    StatisticsModule,
   ],
   controllers: [],
   providers: [AppService],

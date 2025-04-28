@@ -1,11 +1,11 @@
-import { IsString, IsNotEmpty } from "class-validator";
+import { IsString, IsNotEmpty } from 'class-validator';
 
 export class CreateSolicitudDesarrolladorDto {
-    @IsString()
-    @IsNotEmpty()
-    nombre: string;
+  @IsString()
+  @IsNotEmpty()
+  titulo: string;
 
-    @IsString()
-    @IsNotEmpty()
-    mensaje: string;
+  @IsString()
+  @IsNotEmpty()
+  mensaje: string;
 }

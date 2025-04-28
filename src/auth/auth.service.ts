@@ -9,7 +9,7 @@ import { CreateUserDto } from '../users/dto/create-user.dto';
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
-    private readonly JwtService: JwtService,
+    private readonly jwtService: JwtService,
   ) {}
 
   /**
@@ -31,7 +31,7 @@ export class AuthService {
     };
 
     return {
-      access_token: await this.JwtService.signAsync(payload),
+      access_token: await this.jwtService.signAsync(payload),
     };
   }
 
@@ -46,7 +46,7 @@ export class AuthService {
       password: userFields.password,
     };
     const user = await this.usersService.createUser(userFields);
-    
+
     if (!user) {
       throw new HttpException(
         'User not created',
@@ -65,6 +65,6 @@ export class AuthService {
   async profile(id: number) {
     const user = await this.usersService.findById(id);
     const role = await this.usersService.getRole(id);
-    return { ...user, role};
+    return { ...user, role };
   }
 }

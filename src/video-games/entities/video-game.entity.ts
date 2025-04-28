@@ -1,17 +1,21 @@
-import { AssetVideoGame } from '../../assets/asset.entity';
 import { Categoria } from '../../categorias/categoria.entity';
-import { Developer } from '../../users/entities/user.entity';
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToMany,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Descuento } from './descuento.entity';
 import { Version } from './version.entity';
 import { UserVideoGame } from './user-videogames.entity';
+import { User } from '../../users/entities/user.entity';
+import { Asset, VideoGameAsset } from '../../assets/asset.entity';
+import { Calificacion, Comentario } from './calificacion.entity';
+import { Report } from '../../reports/entities/report.entity';
 
 @Entity('videogames')
 export class VideoGame {
@@ -30,14 +34,39 @@ export class VideoGame {
   @Column({ type: 'date' })
   fechaLanzamiento: Date;
 
-  @OneToMany(() => AssetVideoGame, (asset) => asset.videoGame, {cascade: true, onDelete: 'CASCADE'})
-  assets: AssetVideoGame[];
+  @Column({ unique: true })
+  slug: string;
 
-  @ManyToMany(() => Categoria, (categoria) => categoria.videoGames, {onDelete: 'CASCADE'})
+  @OneToOne(() => Asset, (asset) => asset.videoGameThumb, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn()
+  thumb: Asset;
+
+  @OneToOne(() => Asset, (asset) => asset.videoGameHero, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn()
+  hero: Asset;
+
+  puntaje?: number;
+
+  @OneToMany(() => VideoGameAsset, (asset) => asset.videoGame, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  assets: VideoGameAsset[];
+
+  @ManyToMany(() => Categoria, (categoria) => categoria.videoGames, {
+    onDelete: 'CASCADE',
+  })
   categorias: Categoria[];
 
-  @ManyToOne(() => Developer, (developer) => developer.videoGames, {onDelete: 'CASCADE'})
-  developer: Developer;
+  @ManyToOne(() => User, (user) => user.userDevelopedVideoGames, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'developerId' })
+  developer: User;
 
   @OneToMany(() => Version, (version) => version.videoGame)
   versions: Version[];
@@ -47,4 +76,13 @@ export class VideoGame {
 
   @OneToMany(() => UserVideoGame, (userVideoGame) => userVideoGame.videoGame)
   userVideoGames: UserVideoGame[];
+
+  @OneToMany(() => Calificacion, (calificacion) => calificacion.videoGame)
+  calificaciones: Calificacion[];
+
+  @OneToMany(() => Comentario, (comentario) => comentario.videoGame)
+  comentarios: Comentario[];
+
+  @OneToMany(() => Report, (report) => report.videoGame)
+  reports: Report[];
 }

@@ -14,6 +14,10 @@ import { AddVideoGameToUserDto } from '../dto/video-games/add-videogame-to-user.
 import { CategoriasService } from '../../categorias/categorias.service';
 import { CreateVersionDto } from '../dto/versions/create-version.dto';
 import { DevelopersService } from 'src/users/services/developers.service';
+import slugify from 'slugify';
+import { PaginatedDataResponse } from 'src/config/models/paginatedData-response.interface';
+import { VideoGameAsset } from 'src/assets/asset.entity';
+import { GameOrderBy } from 'src/config/enums/orderby.enum';
 
 @Injectable()
 export class VideoGamesService {
@@ -39,27 +43,57 @@ export class VideoGamesService {
   async findById(id: number) {
     const videogame = await this.videoGameRepository
       .createQueryBuilder('videoGame')
-      .leftJoinAndSelect('videoGame.assets', 'assets')
-      .leftJoinAndSelect('assets.asset', 'asset')
+      .leftJoinAndSelect('videoGame.thumb', 'thumb')
+      .leftJoinAndSelect('videoGame.hero', 'hero')
+      .leftJoinAndMapMany(
+        'videoGame.assets',
+        VideoGameAsset,
+        'assets',
+        'assets.videoGame = videoGame.id',
+      )
       .leftJoinAndSelect('videoGame.versions', 'versions')
       .leftJoinAndSelect('versions.requisitos', 'requisitos')
       .leftJoinAndSelect('videoGame.descuentos', 'descuentos')
       .leftJoinAndSelect('videoGame.categorias', 'categorias')
       .leftJoinAndSelect('videoGame.developer', 'developer')
-      .leftJoinAndSelect('developer.user', 'user')
+      .leftJoinAndSelect('videoGame.comentarios', 'comentarios')
+      .leftJoinAndSelect('comentarios.user', 'userComentario')
       .where('videoGame.id = :id', { id })
-      .addOrderBy('asset.index', 'ASC')
       .addOrderBy('versions.releaseDate', 'DESC')
       .addOrderBy('descuentos.fechaInicio', 'ASC')
       .addOrderBy('descuentos.fechaFin', 'ASC')
       .addOrderBy('categorias.titulo', 'ASC')
+      .addOrderBy('comentarios.createdAt', 'DESC')
       .getOne();
 
     if (videogame === null) {
       throw new HttpException('Videogame was not found', HttpStatus.NOT_FOUND);
     }
 
-    return videogame;
+    const calificaciones = await this.videoGameRepository
+      .createQueryBuilder('videoGame')
+      .leftJoinAndSelect('videoGame.calificaciones', 'calificaciones')
+      .where('videoGame.id = :id', { id })
+      .select('ROUND(AVG(calificaciones.puntaje)::numeric, 1)', 'promedio')
+      .addSelect('COUNT(calificaciones.id)', 'cantidad')
+      .groupBy('videoGame.id')
+      .getRawOne();
+
+    return { ...videogame, calificaciones };
+  }
+
+  /**
+   * Busca un video juego basado en el slug recibido
+   * @param slug Slug del videojuego a buscar
+   * @returns VideoJuego encontrado
+   */
+  async softFindById(id: number | string) {
+    return this.videoGameRepository.findOne({
+      where: [
+        ...(typeof id === 'number' ? [{ id }] : []),
+        ...(typeof id === 'string' ? [{ slug: id }] : []),
+      ],
+    });
   }
 
   /**
@@ -67,26 +101,36 @@ export class VideoGamesService {
    * @param queries Queries para filtrar los videojuegos
    * @returns Videojuegos encontrados
    */
-  async findAll(queries: VideoGameQueries) {
+  async findAll(
+    queries: VideoGameQueries,
+  ): Promise<PaginatedDataResponse<VideoGame>> {
     let videoGames = this.videoGameRepository
       .createQueryBuilder('videoGame')
-      .leftJoinAndSelect('videoGame.assets', 'assets')
-      .leftJoinAndSelect('assets.asset', 'asset')
+      .leftJoinAndSelect('videoGame.thumb', 'thumb')
+      .leftJoinAndSelect('videoGame.hero', 'hero')
       .leftJoinAndSelect('videoGame.categorias', 'categorias')
-      .leftJoinAndSelect('videoGame.developer', 'developer')
-      .leftJoinAndSelect('developer.user', 'user');
+      .leftJoinAndSelect('videoGame.descuentos', 'descuentos')
+      .leftJoin('videoGame.developer', 'developer');
 
     if (queries.search) {
-      videoGames = videoGames.where('videoGame.titulo ILIKE :search', {
-        search: `%${queries.search}%`,
-      }).orWhere('videoGame.descripcion ILIKE :search', {
-        search: `%${queries.search}%`,
-      });
+      videoGames = videoGames
+        .where('videoGame.titulo ILIKE :search', {
+          search: `%${queries.search}%`,
+        })
+        .orWhere('videoGame.descripcion ILIKE :search', {
+          search: `%${queries.search}%`,
+        });
     }
 
     if (queries.categoria) {
       videoGames = videoGames.andWhere('categorias.id = :categoria', {
         categoria: queries.categoria,
+      });
+    }
+
+    if (queries.descuentos) {
+      videoGames = videoGames.andWhere('descuentos.fechaFin >= :now', {
+        now: new Date(),
       });
     }
 
@@ -96,19 +140,72 @@ export class VideoGamesService {
       });
     }
 
-    videoGames = videoGames
-      .addOrderBy('asset.index', 'ASC')
-      .addOrderBy('videoGame.titulo', 'ASC');
+    if (queries.developer) {
+      videoGames = videoGames.andWhere('developer.id = :developer', {
+        developer: queries.developer,
+      });
+    }
+
+    if (!queries.orderBy) {
+      videoGames = videoGames.addOrderBy(
+        'videoGame.titulo',
+        queries.order || 'ASC',
+      );
+    } else if (queries.orderBy === GameOrderBy.FEATURED) {
+      videoGames = videoGames
+        .leftJoin('videoGame.calificaciones', 'calificaciones')
+        .addSelect('COALESCE(AVG(calificaciones.puntaje), 0)', 'puntaje')
+        .groupBy('videoGame.id')
+        .addGroupBy('thumb.id')
+        .addGroupBy('hero.id')
+        .addGroupBy('categorias.id')
+        .addGroupBy('descuentos.id')
+        .addOrderBy(`puntaje`, queries.order || 'ASC');
+    } else {
+      videoGames = videoGames.addOrderBy(
+        `videoGame.${queries.orderBy}`,
+        queries.order || 'ASC',
+      );
+    }
 
     if (queries.limit) {
       videoGames = videoGames.take(queries.limit);
+    }
+
+    if (queries.offset) {
+      videoGames = videoGames.skip(queries.offset * queries.limit);
     }
 
     if ((await videoGames.getCount()) === 0) {
       throw new HttpException('Videogames was not found', HttpStatus.NOT_FOUND);
     }
 
-    return videoGames.getMany();
+    // Usamos getRawAndEntities() para obtener los datos crudos y las entidades
+    let data: VideoGame[];
+    let total: number;
+
+    if (queries.orderBy === GameOrderBy.FEATURED) {
+      const { raw, entities } = await videoGames.getRawAndEntities();
+
+      // Fusionamos las entidades con el puntaje calculado
+      data = entities.map((entity, index) => {
+        const puntaje = parseFloat(raw[index]['puntaje']);
+        entity.puntaje = puntaje; // Asignamos el puntaje al videojuego
+        return entity;
+      });
+
+      total = data.length; // O puedes usar entities.length o hacer otro count si lo prefieres
+    } else {
+      const result = await videoGames.getManyAndCount();
+      data = result[0];
+      total = result[1];
+    }
+
+    return {
+      data,
+      offset: queries.offset,
+      total,
+    };
   }
 
   /**
@@ -119,15 +216,14 @@ export class VideoGamesService {
   async findDeveloperVideoGames(developerId: number) {
     const videoGames = await this.videoGameRepository
       .createQueryBuilder('videoGame')
-      .leftJoinAndSelect('videoGame.assets', 'assets')
-      .leftJoinAndSelect('assets.asset', 'asset')
+      .leftJoinAndSelect('videoGame.thumb', 'thumb')
+      .leftJoinAndSelect('videoGame.hero', 'hero')
       .leftJoinAndSelect('videoGame.descuentos', 'descuentos')
       .addOrderBy('descuentos.fechaInicio', 'ASC')
       .addOrderBy('descuentos.fechaFin', 'ASC')
       .leftJoinAndSelect('videoGame.developer', 'developer')
       .leftJoinAndSelect('developer.user', 'user')
       .where('developer.id = :developer', { developer: developerId })
-      .addOrderBy('asset.index', 'ASC')
       .addOrderBy('videoGame.titulo', 'ASC')
       .getMany();
 
@@ -148,10 +244,8 @@ export class VideoGamesService {
     const userVideoGames = await this.userVideoGameRepository
       .createQueryBuilder('userVideoGame')
       .leftJoinAndSelect('userVideoGame.videoGame', 'videoGame')
-      .leftJoinAndSelect('videoGame.assets', 'assets')
-      .leftJoinAndSelect('assets.asset', 'asset')
+      .leftJoinAndSelect('videoGame.thumb', 'thumb')
       .where('userVideoGame.user = :user', { user: user.id })
-      .addOrderBy('asset.index', 'ASC')
       .addOrderBy('videoGame.titulo', 'ASC')
       .getMany();
 
@@ -170,18 +264,20 @@ export class VideoGamesService {
    */
   async findUserVideoGame(userId: number, videoGameId: number) {
     const user = await this.usersService.findById(userId);
-    const videoGame = await this.findById(videoGameId);
+    const videoGame = await this.softFindById(videoGameId);
+
+    if (!videoGame) {
+      throw new HttpException('Videogame was not found', HttpStatus.NOT_FOUND);
+    }
 
     const userVideoGame = await this.userVideoGameRepository
       .createQueryBuilder('userVideoGame')
       .leftJoinAndSelect('userVideoGame.videoGame', 'videoGame')
-      .leftJoinAndSelect('videoGame.assets', 'assets')
-      .leftJoinAndSelect('assets.asset', 'asset')
+      .leftJoinAndSelect('videoGame.thumb', 'thumb')
       .where('userVideoGame.user = :user', { user: user.id })
       .andWhere('userVideoGame.videoGame = :videoGame', {
         videoGame: videoGame.id,
       })
-      .addOrderBy('asset.index', 'ASC')
       .getOne();
 
     if (userVideoGame === null) {
@@ -199,7 +295,11 @@ export class VideoGamesService {
    */
   async deleteUserVideoGame(userId: number, videoGameId: number) {
     const user = await this.usersService.findById(userId);
-    const videoGame = await this.findById(videoGameId);
+    const videoGame = await this.softFindById(videoGameId);
+
+    if (!videoGame) {
+      throw new HttpException('Videogame was not found', HttpStatus.NOT_FOUND);
+    }
 
     const userVideoGame = await this.userVideoGameRepository.findOne({
       where: { user, videoGame },
@@ -222,6 +322,22 @@ export class VideoGamesService {
     videogameFields: CreateVideoGameDto,
   ) {
     let categorias = [];
+    let slug = slugify(videogameFields.titulo, {
+      strict: true,
+      lower: true,
+      trim: true,
+    });
+    let existeSlug = await this.videoGameRepository.findOne({
+      where: { slug },
+    });
+    let count = 1;
+
+    while (existeSlug) {
+      slug = `${slug}-${count}`;
+      existeSlug = await this.videoGameRepository.findOne({ where: { slug } });
+      count++;
+    }
+
     const developer =
       await this.developersService.getDeveloperById(idDeveloper);
     if (videogameFields.categorias) {
@@ -234,6 +350,7 @@ export class VideoGamesService {
       ...videogameFields,
       categorias,
       developer,
+      slug,
     });
     return this.videoGameRepository.save(videoGame);
   }
@@ -261,10 +378,21 @@ export class VideoGamesService {
     }
 
     if (categorias) {
-      const videoGame = await this.findById(id);
+      const videoGame = await this.softFindById(id);
+
+      if (!videoGame) {
+        throw new HttpException(
+          'Videogame was not found',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
       await this.categoriasService.removeVideoGameFromCategorias(videoGame.id);
       const promises = categorias.map(async (categoria) => {
-        return await this.categoriasService.addVideoGameToCategoria(categoria, videoGame);
+        return await this.categoriasService.addVideoGameToCategoria(
+          categoria,
+          videoGame,
+        );
       });
 
       await Promise.all(promises);
@@ -301,7 +429,12 @@ export class VideoGamesService {
     videoGameId: number,
     { requisitos, ...versionFields }: CreateVersionDto,
   ) {
-    const videoGame = await this.findById(videoGameId);
+    const videoGame = await this.softFindById(videoGameId);
+
+    if (!videoGame) {
+      throw new HttpException('Videogame was not found', HttpStatus.NOT_FOUND);
+    }
+
     const version = await this.versionRepository.save({
       ...versionFields,
       videoGame,
@@ -331,7 +464,16 @@ export class VideoGamesService {
     compraFields: AddVideoGameToUserDto,
   ) {
     const user = await this.usersService.findById(userId);
-    const videoGame = await this.findById(videoGameId);
+
+    if (!user) {
+      throw new HttpException('User was not found', HttpStatus.NOT_FOUND);
+    }
+
+    const videoGame = await this.softFindById(+videoGameId);
+
+    if (!videoGame) {
+      throw new HttpException('Videogame was not found', HttpStatus.NOT_FOUND);
+    }
 
     return this.userVideoGameRepository.save({
       precio: compraFields.precio,

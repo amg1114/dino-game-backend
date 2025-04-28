@@ -1,12 +1,12 @@
-import { Noticia } from '../noticias/noticia.entity';
-import { VideoGame } from '..//video-games/entities/video-game.entity';
+import { BaseEntity } from '../config/models/base-entity.entity';
+import { Noticia } from '../noticias/entities/noticia.entity';
+import { VideoGame } from '../video-games/entities/video-game.entity';
 import {
   Column,
   Entity,
-  JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
-  PrimaryColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -21,37 +21,24 @@ export class Asset {
   @Column()
   url: string;
 
-  @Column({ default: 0 })
-  index: number;
+  @OneToOne(() => VideoGame, (videoGame) => videoGame.thumb)
+  videoGameThumb: VideoGame;
+
+  @OneToOne(() => VideoGame, (videoGame) => videoGame.hero)
+  videoGameHero: VideoGame;
+
+  @OneToOne(() => Noticia, (noticia) => noticia.thumb)
+  noticiaThumb: Noticia;
+
+  @OneToMany(() => VideoGameAsset, (videoGameAsset) => videoGameAsset.asset)
+  videoGameAssets: VideoGameAsset[];
 }
 
-@Entity('assets_videogames')
-export class AssetVideoGame {
-  @PrimaryColumn()
-  assetID: number;
-
-  @OneToOne(() => Asset, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'assetID' })
-  asset: Asset;
-
-  @ManyToOne(() => VideoGame, (videoGame) => videoGame.assets, {
-    onDelete: 'CASCADE',
-  
-  })
+@Entity('video_game_assets')
+export class VideoGameAsset extends BaseEntity {
+  @ManyToOne(() => VideoGame, (videoGame) => videoGame.assets)
   videoGame: VideoGame;
-}
 
-@Entity('assets_noticias')
-export class AssetNoticia {
-  @PrimaryColumn()
-  assetID: number;
-
-  @OneToOne(() => Asset, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'assetID' })
+  @ManyToOne(() => Asset, (asset) => asset.id)
   asset: Asset;
-
-  @ManyToOne(() => Noticia, (noticia) => noticia.assets, {
-    onDelete: 'CASCADE',
-  })
-  noticia: Noticia;
 }

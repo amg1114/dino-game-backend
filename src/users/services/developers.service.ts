@@ -6,36 +6,91 @@ import {
   EstadoSolicitud,
   SolicitudDesarrollador,
 } from '../entities/solicitud-desarrollador.entity';
-import { Developer, Administrator } from '../entities/user.entity';
 
 import { UsersService } from '../services/users.service';
 
 import { CreateSolicitudDesarrolladorDto } from '../dto/create-solicitud-desarrollador.dto';
 import { UpdateSolicitudDesarrolladorDto } from '../dto/update-solicitud-desarrollador.dto';
+import { Role } from '../../config/enums/roles.enum';
+import { User } from '../entities/user.entity';
+import { SolicitudDesarrolladorQueries } from '../dto/SolicitudDesarrollador-queries.dto';
+import { PaginatedDataResponse } from 'src/config/models/paginatedData-response.interface';
+import { DesarrolladorQueries } from '../dto/desarrollador-queries.dto';
+import { VideoGame } from 'src/video-games/entities/video-game.entity';
 
 @Injectable()
 export class DevelopersService {
   constructor(
     private readonly userService: UsersService,
-    @InjectRepository(Developer)
-    private readonly developersRepository: Repository<Developer>,
-    @InjectRepository(Administrator)
-    private readonly administratorsRepository: Repository<Administrator>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
     @InjectRepository(SolicitudDesarrollador)
     private readonly solicitudDesarrolladorRepository: Repository<SolicitudDesarrollador>,
+    @InjectRepository(VideoGame)
+    private readonly videoGameRepository: Repository<VideoGame>,
   ) {}
 
   /**
    * Obtiene todas las solicitudes
    * @returns {Promise <SolicitudDesarrollador[]> } Lista de solicitudes
    */
-  async getSolicitudes(): Promise<SolicitudDesarrollador[]> {
-    return this.solicitudDesarrolladorRepository.find({
-      relations: ['user'],
-      order: {
-        estado: 'ASC',
-      },
-    });
+  async getSolicitudes(
+    urlQueries: SolicitudDesarrolladorQueries,
+  ): Promise<PaginatedDataResponse<SolicitudDesarrollador>> {
+    const { limit = null, offset = 0, order = 'ASC', ...queries } = urlQueries;
+
+    let queryBuilder =
+      this.solicitudDesarrolladorRepository.createQueryBuilder('solicitud');
+    queryBuilder.leftJoinAndSelect('solicitud.user', 'user');
+
+    if (queries.search) {
+      queryBuilder
+        .where('solicitud.titulo ILIKE :search', {
+          search: `%${queries.search}%`,
+        })
+        .orWhere('solicitud.mensaje ILIKE :search', {
+          search: `%${queries.search}%`,
+        });
+    }
+
+    if (limit !== null && limit <= 0) {
+      throw new HttpException('Invalid limit value', HttpStatus.BAD_REQUEST);
+    }
+
+    if (offset < 0) {
+      throw new HttpException('Invalid offset value', HttpStatus.BAD_REQUEST);
+    }
+
+    if (order !== 'ASC' && order !== 'DESC') {
+      throw new HttpException('Invalid order value', HttpStatus.BAD_REQUEST);
+    }
+
+    if (limit !== null) {
+      queryBuilder.take(limit).skip(offset * limit);
+    }
+
+    if (!queries.orderBy) {
+      queryBuilder = queryBuilder.addOrderBy(
+        'solicitud.titulo',
+        order || 'ASC',
+      );
+    } else if (queries.orderBy === 'fecha') {
+      queryBuilder = queryBuilder.addOrderBy(
+        'solicitud.createdAt',
+        order || 'ASC',
+      );
+    } else {
+      queryBuilder = queryBuilder.addOrderBy(
+        `solicitud.${queries.orderBy}`,
+        order || 'ASC',
+      );
+    }
+
+    return {
+      data: await queryBuilder.getMany(),
+      offset,
+      total: await queryBuilder.getCount(),
+    };
   }
 
   /**
@@ -130,9 +185,9 @@ export class DevelopersService {
    * @param user_id El id del usuario
    * @returns {Promise<Developer>} Desarrollador creado
    */
-  async createDeveloper(user_id: number): Promise<Developer> {
-    const user = await this.userService.findById(user_id);
-    return this.developersRepository.save({ id: user.id, user });
+  async createDeveloper(user_id: number): Promise<any> {
+    const tipo = { tipo: Role.DEVELOPER };
+    return this.userService.updateUser(user_id, tipo);
   }
 
   /**
@@ -141,9 +196,7 @@ export class DevelopersService {
    * @returns {Promise<DeleteResult>} Resultado de la eliminación
    */
   async deleteDeveloper(id: number): Promise<DeleteResult> {
-    const developer = await this.developersRepository.findOne({
-      where: { id },
-    });
+    const developer = await this.userService.findById(id);
 
     if (!developer) {
       throw new HttpException(
@@ -152,7 +205,7 @@ export class DevelopersService {
       );
     }
 
-    const resultado = await this.developersRepository.delete(developer.id);
+    const resultado = await this.userService.deleteUser(developer.id);
 
     if (resultado.affected === 0) {
       throw new HttpException(
@@ -167,23 +220,54 @@ export class DevelopersService {
    * Obtener lista de desarrolladores
    * @returns Lista de desarrolladores
    */
-  async getDevelopers(): Promise<Developer[]> {
-    const developers = await this.developersRepository.find({
-      relations: ['user'],
-      order: {
-        user: {
-          nombre: 'ASC',
-        },
-      },
-    });
+  async getDevelopers(
+    urlQueries: DesarrolladorQueries,
+  ): Promise<PaginatedDataResponse<User>> {
+    const { limit = null, offset = 0, order = 'ASC', ...queries } = urlQueries;
 
-    if (!developers)
-      throw new HttpException(
-        'No se encontraron desarrolladores',
-        HttpStatus.NOT_FOUND,
-      );
+    const queryBuilder = this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.userDevelopedVideoGames', 'videoGame')
+      .where('user.tipo = :tipo', { tipo: Role.DEVELOPER });
 
-    return developers;
+    if (queries.search) {
+      queryBuilder.andWhere('user.nombre ILIKE :search', {
+        search: `%${queries.search}%`,
+      });
+    }
+
+    if (limit !== null && limit <= 0) {
+      throw new HttpException('Invalid limit value', HttpStatus.BAD_REQUEST);
+    }
+
+    if (offset < 0) {
+      throw new HttpException('Invalid offset value', HttpStatus.BAD_REQUEST);
+    }
+
+    if (order !== 'ASC' && order !== 'DESC') {
+      throw new HttpException('Invalid order value', HttpStatus.BAD_REQUEST);
+    }
+
+    if (limit !== null) {
+      queryBuilder.take(limit).skip(offset * limit);
+    }
+
+    queryBuilder.addOrderBy('user.nombre', order);
+
+    const developers = await queryBuilder.getMany();
+
+    const total = await queryBuilder.getCount();
+
+    const developersWithVideoGames = developers.map((developer) => ({
+      ...developer,
+      videoGames: developer.userDevelopedVideoGames || [],
+    }));
+
+    return {
+      data: developersWithVideoGames,
+      offset,
+      total,
+    };
   }
 
   /**
@@ -191,10 +275,9 @@ export class DevelopersService {
    * @param id Id del desarrollador
    * @returns Desarrollador encontrado
    */
-  async getDeveloperById(id: number): Promise<Developer> {
-    const developer = await this.developersRepository.findOne({
-      where: { id },
-      relations: ['user'],
+  async getDeveloperById(id: number): Promise<User> {
+    const developer = await this.userRepository.findOne({
+      where: { id, tipo: Role.DEVELOPER },
     });
 
     if (!developer)

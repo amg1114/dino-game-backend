@@ -1,4 +1,11 @@
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsIn,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+} from 'class-validator';
 import { FindOperator } from 'typeorm';
 
 export class CategoriaQueries {
@@ -6,7 +13,26 @@ export class CategoriaQueries {
   @IsOptional()
   title?: string | FindOperator<string>;
 
-  @IsNumber()
+  @IsNumber({ allowInfinity: false, maxDecimalPlaces: 0 })
   @IsOptional()
+  @Min(0)
   limit?: number;
+
+  @IsOptional()
+  @IsString()
+  @IsIn(['ASC', 'DESC'])
+  order?: 'ASC' | 'DESC';
+
+  @IsNumber({ allowInfinity: false, maxDecimalPlaces: 0 })
+  @IsOptional()
+  @Min(0)
+  offset?: number;
+
+  @IsOptional()
+  @IsBoolean()
+  withGames?: boolean;
+
+  @IsOptional()
+  @IsString()
+  search?: string;
 }

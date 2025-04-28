@@ -8,7 +8,7 @@ export class UpdateNoticiaDto {
   @IsString()
   @IsOptional()
   descripcion?: string;
-  
+
   @IsDate()
   @IsOptional()
   fecha?: Date;

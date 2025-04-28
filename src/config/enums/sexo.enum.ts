@@ -1,5 +1,5 @@
 export enum Sexo {
-    Masculino= 'M',
-    Femenino = 'F',
-    Dinosaurio = 'D'
+  Masculino = 'M',
+  Femenino = 'F',
+  Dinosaurio = 'D',
 }
