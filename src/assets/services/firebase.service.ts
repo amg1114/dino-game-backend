@@ -28,7 +28,7 @@ export class FirebaseService {
     );
     try {
       await uploadBytes(fileRef, new Uint8Array(file.buffer));
-      return fileRef.fullPath;
+      return await getDownloadURL(fileRef);
     } catch (error) {
       console.error('Error uploading file to Firebase:', error);
       throw new Error('Error uploading file');
