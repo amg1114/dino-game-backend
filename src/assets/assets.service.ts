@@ -80,7 +80,7 @@ export class AssetsService {
     const url = await this.firebaseService.uploadNoticiaImage(file, noticia);
     const asset = this.assetsRepository.create({
       url,
-
+      noticiaThumb: noticia,
       title: file.originalname,
     });
     return this.assetsRepository.save(asset);
