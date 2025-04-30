@@ -157,7 +157,7 @@ export class NoticiasService {
   async findBySlug(slug: string) {
     const slugNoticia = await this.noticiasRepository.findOne({
       where: { slug },
-      relations: ['thumb'],
+      relations: ['thumb', 'autor'],
     });
 
     if (!slugNoticia) {
