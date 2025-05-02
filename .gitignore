@@ -29,3 +29,6 @@ jspm_packages/
 
 # DB
 db/
+dumps/*.dump
+dumps/*.sql
+dumps/*.sql.gz

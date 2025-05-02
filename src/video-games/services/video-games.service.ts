@@ -128,10 +128,15 @@ export class VideoGamesService {
       });
     }
 
+    console.log('Descuentos', queries.descuentos);
     if (queries.descuentos) {
       videoGames = videoGames.andWhere('descuentos.fechaFin >= :now', {
         now: new Date(),
       });
+    }
+
+    if (queries.onlyPaidGames) {
+      videoGames = videoGames.andWhere('videoGame.precio > 0');
     }
 
     if (queries.precio) {
@@ -263,7 +268,7 @@ export class VideoGamesService {
    */
   async findUserVideoGame(userId: number, videoGameId: number) {
     const user = await this.usersService.findById(userId);
-    const videoGame = await this.softFindById(videoGameId);
+    const videoGame = await this.softFindById(+videoGameId);
 
     if (!videoGame) {
       throw new HttpException('Videogame was not found', HttpStatus.NOT_FOUND);
@@ -294,7 +299,7 @@ export class VideoGamesService {
    */
   async deleteUserVideoGame(userId: number, videoGameId: number) {
     const user = await this.usersService.findById(userId);
-    const videoGame = await this.softFindById(videoGameId);
+    const videoGame = await this.softFindById(+videoGameId);
 
     if (!videoGame) {
       throw new HttpException('Videogame was not found', HttpStatus.NOT_FOUND);
@@ -377,7 +382,7 @@ export class VideoGamesService {
     }
 
     if (categorias) {
-      const videoGame = await this.softFindById(id);
+      const videoGame = await this.softFindById(+id);
 
       if (!videoGame) {
         throw new HttpException(
@@ -428,7 +433,7 @@ export class VideoGamesService {
     videoGameId: number,
     { requisitos, ...versionFields }: CreateVersionDto,
   ) {
-    const videoGame = await this.softFindById(videoGameId);
+    const videoGame = await this.softFindById(+videoGameId);
 
     if (!videoGame) {
       throw new HttpException('Videogame was not found', HttpStatus.NOT_FOUND);
