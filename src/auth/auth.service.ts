@@ -73,7 +73,8 @@ export class AuthService {
    * @returns Campos del usuario
    */
   async profile(id: number) {
-    const user = await this.usersService.findById(id);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...user } = await this.usersService.findById(id);
     const role = await this.usersService.getRole(id);
     const videogames = await this.videoGameService.findUserVideoGames(id);
 

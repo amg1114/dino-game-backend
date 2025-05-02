@@ -250,9 +250,6 @@ export class VideoGamesService {
       .createQueryBuilder('userVideoGame')
       .leftJoinAndSelect('userVideoGame.videoGame', 'videoGame')
       .leftJoinAndSelect('videoGame.thumb', 'thumb')
-      .leftJoinAndSelect('videoGame.hero', 'hero')
-      .leftJoinAndSelect('videoGame.categorias', 'categorias')
-      .leftJoinAndSelect('videoGame.descuentos', 'descuentos')
       .where('userVideoGame.user = :user', { user: user.id })
       .addOrderBy('videoGame.titulo', 'ASC')
       .getMany();
