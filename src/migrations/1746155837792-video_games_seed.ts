@@ -184,7 +184,17 @@ export class VideoGamesSeed1746155837792 implements MigrationInterface {
     (5, 18),
     (13, 18),
     (10, 18)
-`);
+    `);
+
+    await queryRunner.query(`TRUNCATE TABLE descuentos CASCADE;`);
+
+    await queryRunner.query(`
+        INSERT INTO descuentos (id, porcentaje, fecha_inicio, fecha_fin, video_game_id)
+        VALUES
+        (6,	0.5, '2024-05-11', '2026-05-14', 16),
+        (7,	0.5, '2024-05-11', '2026-05-14', 17),
+        (8,	0.5, '2024-05-11', '2026-05-14', 18)
+    `);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
@@ -193,5 +203,6 @@ export class VideoGamesSeed1746155837792 implements MigrationInterface {
     await queryRunner.query(`TRUNCATE TABLE assets CASCADE;`);
     await queryRunner.query(`TRUNCATE TABLE videogames CASCADE;`);
     await queryRunner.query(`TRUNCATE TABLE categorias_videogames CASCADE;`);
+    await queryRunner.query(`TRUNCATE TABLE descuentos CASCADE;`);
   }
 }
