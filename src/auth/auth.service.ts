@@ -4,12 +4,22 @@ import { LoginDto } from './dto/login.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from '../users/dto/create-user.dto';
+import { VideoGamesService } from 'src/video-games/services/video-games.service';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Calificacion } from 'src/video-games/entities/calificacion.entity';
+import { Like } from 'src/noticias/entities/like.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
+    @InjectRepository(Calificacion)
+    private readonly calficacionRepository: Repository<Calificacion>,
+    @InjectRepository(Like)
+    private readonly likesRepository: Repository<Like>,
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
+    private readonly videoGameService: VideoGamesService,
   ) {}
 
   /**
@@ -65,6 +75,24 @@ export class AuthService {
   async profile(id: number) {
     const user = await this.usersService.findById(id);
     const role = await this.usersService.getRole(id);
-    return { ...user, role };
+    const videogames = await this.videoGameService.findUserVideoGames(id);
+
+    const calificacion = await this.calficacionRepository
+      .createQueryBuilder('calificacion')
+      .leftJoin('calificacion.user', 'user')
+      .leftJoin('calificacion.videoGame', 'videoGame')
+      .where('user_id = :id', { id })
+      .select(['video_game_id AS "videoGameID"', 'puntaje AS calificacion'])
+      .getRawMany();
+
+    const likes = await this.likesRepository
+      .createQueryBuilder('likes')
+      .leftJoin('likes.user', 'user')
+      .leftJoin('likes.noticia', 'noticia')
+      .where('likes.user_id = :id', { id })
+      .select('likes.noticia_id AS "noticiaID"')
+      .getRawMany();
+
+    return { ...user, role, videogames, calificacion, likes };
   }
 }
