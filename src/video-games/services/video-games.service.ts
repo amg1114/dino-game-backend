@@ -254,10 +254,6 @@ export class VideoGamesService {
       .addOrderBy('videoGame.titulo', 'ASC')
       .getMany();
 
-    if (userVideoGames.length === 0) {
-      throw new HttpException('Videogames was not found', HttpStatus.NOT_FOUND);
-    }
-
     return userVideoGames;
   }
 
