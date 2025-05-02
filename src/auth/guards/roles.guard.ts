@@ -24,6 +24,7 @@ export class RolesGuard implements CanActivate {
 
     const { user } = context.switchToHttp().getRequest();
 
+    console.log('user', user);
     if (!user) {
       return false;
     }
@@ -33,11 +34,13 @@ export class RolesGuard implements CanActivate {
       context.getClass(),
     ]);
 
+    console.log('roles', roles);
     if (!roles) {
       return true;
     }
 
     const userRole = await this.usersService.getRole(user.id);
+    console.log('userRole', userRole);
     return roles.some((role) => userRole == role);
   }
 }
