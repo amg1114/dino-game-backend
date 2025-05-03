@@ -25,7 +25,6 @@ const configService = new ConfigService();
     UsersModule,
     VideoGamesModule,
     TypeOrmModule.forFeature([Like, Calificacion]),
-    ,
     MailerModule.forRoot({
       transport: {
         host: configService.getOrThrow('EMAIL_HOST'),
