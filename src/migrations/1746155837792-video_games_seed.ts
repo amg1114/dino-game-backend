@@ -218,13 +218,16 @@ export class VideoGamesSeed1746155837792 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`TRUNCATE TABLE users IDENTITY CASCADE;`);
-    await queryRunner.query(`TRUNCATE TABLE categorias IDENTITY CASCADE;`);
-    await queryRunner.query(`TRUNCATE TABLE assets IDENTITY CASCADE;`);
-    await queryRunner.query(`TRUNCATE TABLE videogames IDENTITY CASCADE;`);
+    await queryRunner.query(`TRUNCATE TABLE users RESTART IDENTITY CASCADE;`);
     await queryRunner.query(
-      `TRUNCATE TABLE categorias_videogames IDENTITY CASCADE;`,
+      `TRUNCATE TABLE categorias RESTART IDENTITY CASCADE;`,
     );
-    await queryRunner.query(`TRUNCATE TABLE descuentos IDENTITY CASCADE;`);
+    await queryRunner.query(`TRUNCATE TABLE assets RESTART IDENTITY CASCADE;`);
+    await queryRunner.query(
+      `TRUNCATE TABLE videogames RESTART IDENTITY CASCADE;`,
+    );
+    await queryRunner.query(
+      `TRUNCATE TABLE descuentos RESTART IDENTITY CASCADE;`,
+    );
   }
 }
