@@ -37,7 +37,7 @@ export class AssetsService {
       );
     }
 
-    const videoGame = await this.videoGamesService.softFindById(owner);
+    const videoGame = await this.videoGamesService.softFindById(+owner);
 
     if (!videoGame) {
       throw new HttpException('Video game not found', HttpStatus.NOT_FOUND);

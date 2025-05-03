@@ -65,7 +65,7 @@ export class VideoGame {
   @ManyToOne(() => User, (user) => user.userDevelopedVideoGames, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'developerId' })
+  @JoinColumn({ name: 'developer_id' })
   developer: User;
 
   @OneToMany(() => Version, (version) => version.videoGame)
