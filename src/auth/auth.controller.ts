@@ -19,6 +19,8 @@ import {
   UnauthorizedResponseDto,
 } from './dto/responses-dto';
 import { MailerService } from '@nestjs-modules/mailer';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -143,7 +145,7 @@ export class AuthController {
     description: 'Usuario no encontrado.',
   })
   @Post('reset-password')
-  async resetPassword(@Body() body: { token: string; newPassword: string }) {
+  async resetPassword(@Body() body: ResetPasswordDto) {
     return await this.authService.resetPassword(body.token, body.newPassword);
   }
 
@@ -175,10 +177,7 @@ export class AuthController {
   })
   @Post('change-password')
   @UseGuards(AuthGuard)
-  async changePassword(
-    @Req() req,
-    @Body() body: { currentPassword: string; newPassword: string },
-  ) {
+  async changePassword(@Req() req, @Body() body: ChangePasswordDto) {
     return await this.authService.changePassword(
       req.user.id,
       body.currentPassword,

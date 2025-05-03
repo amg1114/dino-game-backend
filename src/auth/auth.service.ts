@@ -155,26 +155,62 @@ export class AuthService {
    * @returns Un objeto con el token de acceso del usuario autenticado.
    * @throws HttpException si el usuario no es encontrado o si el token es inválido o ha expirado.
    */
-  async resetPassword(
-    token: string,
-    newPassword: string,
-  ): Promise<{ access_token: string }> {
+  async resetPassword(token: string, newPassword: string) {
     try {
+      if (!token) {
+        throw new HttpException(
+          'Token no proporcionado',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      if (!newPassword || newPassword.trim().length === 0) {
+        throw new HttpException(
+          'La nueva contraseña no puede estar vacía',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      if (newPassword.length < 8) {
+        throw new HttpException(
+          'La nueva contraseña debe tener al menos 8 caracteres',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
       const payload = this.jwtService.verify(token);
+      if (!payload || !payload.sub) {
+        throw new HttpException('Token inválido', HttpStatus.BAD_REQUEST);
+      }
+
       const user = await this.usersService.findById(payload.sub);
       if (!user) {
         throw new HttpException('Usuario no encontrado', HttpStatus.NOT_FOUND);
       }
 
+      if (await bcrypt.compare(newPassword, user.password)) {
+        throw new HttpException(
+          'La nueva contraseña no puede ser igual a la contraseña actual',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
       await this.usersService.updatePassword(payload.sub, newPassword);
-      return this.login({
-        correo: user.correo,
-        password: newPassword,
-      });
     } catch (error) {
+      if (error.name === 'TokenExpiredError') {
+        throw new HttpException(
+          'El token ha expirado',
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
+
+      if (error.name === 'JsonWebTokenError') {
+        throw new HttpException('Token inválido', HttpStatus.BAD_REQUEST);
+      }
+
       throw new HttpException(
-        'Token inválido o expirado',
-        HttpStatus.BAD_REQUEST,
+        error.message || 'Error al restablecer la contraseña',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }

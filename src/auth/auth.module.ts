@@ -39,7 +39,7 @@ const configService = new ConfigService();
         from: `"DinoGame" <${configService.getOrThrow('EMAIL_SENDER_ADDRESS')}>`,
       },
       template: {
-        dir: path.resolve(process.cwd(), 'src', 'auth', 'templates'), // Cambiar a process.cwd() para desarrollo
+        dir: path.resolve(process.cwd(), 'src', 'auth', 'templates'),
         adapter: new HandlebarsAdapter(),
         options: {
           strict: true,
