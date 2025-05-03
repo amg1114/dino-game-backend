@@ -27,6 +27,10 @@ export class VideoGamesSeed1746155837792 implements MigrationInterface {
         (17, 'Bethesda Game Studios', '1998-12-31', 'D', 'US', 'bethesda-game-studios@company.com', '$2b$10$7IM19zxo4tvlj42qnT.tVOymZjwwKAFr1As1Bjl/hdlRTeatH89ve', 'DEVELOPER');
     `);
 
+    await queryRunner.query(`
+      SELECT setval('public.users_id_seq', (SELECT MAX(id) FROM users) + 1);
+    `);
+
     await queryRunner.query(`TRUNCATE TABLE categorias CASCADE;`);
 
     await queryRunner.query(`
@@ -50,6 +54,10 @@ export class VideoGamesSeed1746155837792 implements MigrationInterface {
         (16,'Historia', null, 'historia'),
         (17,'Terror', null, 'terror'),
         (18,'Supervivencia', null, 'supervivencia');
+    `);
+
+    await queryRunner.query(`
+      SELECT setval('public.categorias_id_seq', (SELECT MAX(id) FROM categorias) + 1);
     `);
 
     await queryRunner.query(`TRUNCATE TABLE assets CASCADE;`);
@@ -101,6 +109,10 @@ export class VideoGamesSeed1746155837792 implements MigrationInterface {
         (42, 'starfield-thumb.jpg', 'https://firebasestorage.googleapis.com/v0/b/dinogame-6bcaa.appspot.com/o/uploads%2Fvideo-games%2F21%2Fstarfield-thumb.jpg?alt=media&token=b002d9dc-913f-4b6a-a96a-025004e8edd7');
     `);
 
+    await queryRunner.query(`
+      SELECT setval('public.assets_id_seq', (SELECT MAX(id) FROM assets) + 1);
+    `);
+
     await queryRunner.query(`TRUNCATE TABLE videogames CASCADE;`);
 
     await queryRunner.query(`
@@ -124,6 +136,10 @@ export class VideoGamesSeed1746155837792 implements MigrationInterface {
         (16, 129000, 'Resident Evil 4 Remake', ' Remake del clásico de horror con jugabilidad renovada, mejoras visuales y atmósfera intensa.', '2023-03-24', 15, 'resident-evil-4-remake', 36, 37),
         (17, 159000, 'Final Fantasy VII Rebirth', 'Segunda parte del remake de FFVII. Aventura épica con batallas en tiempo real y una historia emotiva.', '2024-02-19', 16, 'final-fantasy-vii-rebirth', 39, 38),
         (18, 149000, 'Starfield', 'Un RPG espacial de mundo abierto creado por los desarrolladores de Skyrim y Fallout. Explora cientos de planetas, únete a facciones, y construye tu propia nave en esta ambiciosa aventura interestelar.', '2023-06-09', 17, 'starfield', 42, 41);
+    `);
+
+    await queryRunner.query(`
+      SELECT setval('public.videogames_id_seq', (SELECT MAX(id) FROM videogames) + 1);
     `);
 
     await queryRunner.query(`TRUNCATE TABLE categorias_videogames CASCADE;`);
@@ -195,14 +211,20 @@ export class VideoGamesSeed1746155837792 implements MigrationInterface {
         (7,	0.5, '2024-05-11', '2026-05-14', 17),
         (8,	0.5, '2024-05-11', '2026-05-14', 18)
     `);
+
+    await queryRunner.query(`
+      SELECT setval('public.descuentos_id_seq', (SELECT MAX(id) FROM descuentos) + 1);
+    `);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`TRUNCATE TABLE users CASCADE;`);
-    await queryRunner.query(`TRUNCATE TABLE categorias CASCADE;`);
-    await queryRunner.query(`TRUNCATE TABLE assets CASCADE;`);
-    await queryRunner.query(`TRUNCATE TABLE videogames CASCADE;`);
-    await queryRunner.query(`TRUNCATE TABLE categorias_videogames CASCADE;`);
-    await queryRunner.query(`TRUNCATE TABLE descuentos CASCADE;`);
+    await queryRunner.query(`TRUNCATE TABLE users IDENTITY CASCADE;`);
+    await queryRunner.query(`TRUNCATE TABLE categorias IDENTITY CASCADE;`);
+    await queryRunner.query(`TRUNCATE TABLE assets IDENTITY CASCADE;`);
+    await queryRunner.query(`TRUNCATE TABLE videogames IDENTITY CASCADE;`);
+    await queryRunner.query(
+      `TRUNCATE TABLE categorias_videogames IDENTITY CASCADE;`,
+    );
+    await queryRunner.query(`TRUNCATE TABLE descuentos IDENTITY CASCADE;`);
   }
 }
