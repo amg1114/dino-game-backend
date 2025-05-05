@@ -48,6 +48,8 @@ export class AssetsService {
     const asset = this.assetsRepository.create({
       url,
       title: file.originalname,
+      mimeType: file.mimetype,
+      size: file.size,
     });
 
     if (field === 'thumb') {
@@ -80,10 +82,51 @@ export class AssetsService {
     const url = await this.firebaseService.uploadNoticiaImage(file, noticia);
     const asset = this.assetsRepository.create({
       url,
-
       title: file.originalname,
+      mimeType: file.mimetype,
+      size: file.size,
     });
     return this.assetsRepository.save(asset);
+  }
+
+  /**
+   * Crear un asset para una versión de videojuego
+   * @param versionId ID de la versión
+   * @param file Archivo subido
+   * @returns El asset creado
+   */
+  async createVersionAsset(
+    versionId: number,
+    file: Express.Multer.File,
+  ): Promise<Asset> {
+    const version = await this.videoGamesService.getVersionById(versionId);
+
+    if (!version) {
+      throw new HttpException('Version not found', HttpStatus.NOT_FOUND);
+    }
+
+    if (version.asset) {
+      await this.deleteAsset(version.asset.id);
+    }
+
+    const url = await this.firebaseService.uploadGameImage(
+      file,
+      version.videoGame,
+    );
+
+    const asset = this.assetsRepository.create({
+      url,
+      title: file.originalname,
+      mimeType: file.mimetype,
+      size: file.size,
+    });
+
+    await this.assetsRepository.save(asset);
+
+    version.asset = asset;
+    await this.videoGamesService.updateVersion(version);
+
+    return asset;
   }
 
   /**

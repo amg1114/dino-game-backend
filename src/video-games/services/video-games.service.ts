@@ -385,6 +385,14 @@ export class VideoGamesService {
       );
     }
 
+    const finalResultado = await this.videoGameRepository.delete(id);
+    if (finalResultado.affected === 0) {
+      throw new HttpException(
+        'Videogame could not deleted',
+        HttpStatus.CONFLICT,
+      );
+    }
+
     return resultado;
   }
 
@@ -418,7 +426,34 @@ export class VideoGamesService {
       });
     }
 
-    return videoGame;
+    return version;
+  }
+
+  /**
+   * Obtiene una versión por su ID
+   * @param id ID de la versión
+   * @returns Versión encontrada
+   */
+  async getVersionById(id: number): Promise<Version> {
+    const version = await this.versionRepository.findOne({
+      where: { id },
+      relations: ['asset', 'videoGame'],
+    });
+
+    if (!version) {
+      throw new HttpException('Version not found', HttpStatus.NOT_FOUND);
+    }
+
+    return version;
+  }
+
+  /**
+   * Actualiza una versión
+   * @param version Versión a actualizar
+   * @returns Versión actualizada
+   */
+  async updateVersion(version: Version): Promise<Version> {
+    return this.versionRepository.save(version);
   }
 
   /**

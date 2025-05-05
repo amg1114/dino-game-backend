@@ -8,20 +8,32 @@ import {
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-
 import { AssetsService } from './assets.service';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ImageNotFoundResponseDto } from './dto/responses-dto';
+import {
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+  ApiConsumes,
+  ApiBody,
+} from '@nestjs/swagger';
+import {
+  ImageNotFoundResponseDto,
+  VersionNotFoundResponseDto,
+} from './dto/responses-dto';
 import { DeleteResultResponseDto } from 'src/config/responses-dto';
 import { Asset } from './asset.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileTypeValidator } from './validators/filte-type.validator';
 import { FileRatioValidator } from './validators/file-ratio.validator';
+import { VideoGamesService } from '../video-games/services/video-games.service';
 
 @ApiTags('Assets')
 @Controller('assets')
 export class AssetsController {
-  constructor(private readonly assetsService: AssetsService) {}
+  constructor(
+    private readonly assetsService: AssetsService,
+    private readonly videoGamesService: VideoGamesService,
+  ) {}
 
   /**
    * EndPoint para crear el asset para un videojuego
@@ -44,7 +56,6 @@ export class AssetsController {
   createVideoGameAsset(
     @Param('videogame', ParseIntPipe) id: number,
     @Param('field') field: string,
-
     @UploadedFile(
       new ParseFilePipe({
         validators: [new FileTypeValidator(), new FileRatioValidator()],
@@ -73,7 +84,7 @@ export class AssetsController {
   @UseInterceptors(FileInterceptor('file'))
   @Post('noticias/:noticia')
   createNoticiaAsset(
-    @Param('noticia') id: number,
+    @Param('noticia', ParseIntPipe) id: number,
     @UploadedFile(
       new ParseFilePipe({
         validators: [new FileTypeValidator(), new FileRatioValidator()],
@@ -82,6 +93,53 @@ export class AssetsController {
     file: Express.Multer.File,
   ) {
     return this.assetsService.createNoticiaAsset(id, file);
+  }
+
+  /**
+   * EndPoint para crear el asset para una versión de videojuego
+   * @param versionId id de la versión
+   * @param file archivo que se va a subir
+   * @returns el asset de la versión creado
+   */
+  @ApiOperation({
+    summary: 'Crear un asset para una versión de videojuego',
+    description:
+      'Crea un asset para una versión de videojuego en la base de datos',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'El asset fue creado exitosamente',
+    type: Asset,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'La versión no fue encontrada',
+    type: VersionNotFoundResponseDto,
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @UseInterceptors(FileInterceptor('file'))
+  @Post('versions/:versionId')
+  createVersionAsset(
+    @Param('versionId', ParseIntPipe) versionId: number,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [new FileTypeValidator(), new FileRatioValidator()],
+      }),
+    )
+    file: Express.Multer.File,
+  ) {
+    return this.assetsService.createVersionAsset(versionId, file);
   }
 
   /**
@@ -104,7 +162,7 @@ export class AssetsController {
     type: ImageNotFoundResponseDto,
   })
   @Delete(':id')
-  deleteAsset(@Param('id') id: number) {
+  deleteAsset(@Param('id', ParseIntPipe) id: number) {
     return this.assetsService.deleteAsset(id);
   }
 }

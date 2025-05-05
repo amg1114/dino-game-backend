@@ -3,9 +3,12 @@ import {
   Entity,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
+  JoinColumn,
 } from 'typeorm';
 import { VideoGame } from './video-game.entity';
+import { Asset } from '../../assets/asset.entity';
 
 @Entity('versions')
 export class Version {
@@ -34,8 +37,9 @@ export class Version {
   })
   requisitos: Requisito[];
 
-  @Column()
-  url: string;
+  @OneToOne(() => Asset, { cascade: true })
+  @JoinColumn()
+  asset: Asset;
 }
 
 @Entity('requisitos')

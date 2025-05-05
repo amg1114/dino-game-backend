@@ -13,10 +13,6 @@ export class CreateVersionDto {
   @IsNotEmpty()
   size: string;
 
-  @IsString()
-  @IsNotEmpty()
-  url: string;
-
   @IsDate()
   @IsNotEmpty()
   releaseDate: Date;
