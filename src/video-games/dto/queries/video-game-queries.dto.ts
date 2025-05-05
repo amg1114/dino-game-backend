@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import {
   IsBoolean,
   IsEnum,
@@ -24,8 +25,14 @@ export class VideoGameQueries {
   categoria?: number;
 
   @IsOptional()
+  @Transform(({ key, obj }) => obj[key] === 'true' || obj[key] === '1')
   @IsBoolean()
   descuentos?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ key, obj }) => obj[key] === 'true' || obj[key] === '1')
+  onlyPaidGames?: boolean;
 
   @IsNumber()
   @IsOptional()

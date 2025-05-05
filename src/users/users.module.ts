@@ -6,9 +6,12 @@ import { UsersController } from './controllers/users.controller';
 import { SolicitudDesarrollador } from './entities/solicitud-desarrollador.entity';
 import { DevelopersController } from './controllers/developers.controller';
 import { DevelopersService } from './services/developers.service';
+import { VideoGame } from 'src/video-games/entities/video-game.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, SolicitudDesarrollador])],
+  imports: [
+    TypeOrmModule.forFeature([User, SolicitudDesarrollador, VideoGame]),
+  ],
   providers: [UsersService, DevelopersService],
   controllers: [DevelopersController, UsersController],
   exports: [UsersModule, TypeOrmModule],

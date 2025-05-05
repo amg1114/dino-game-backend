@@ -31,6 +31,12 @@ import {
 } from 'src/config/responses-dto';
 import { User } from '../entities/user.entity';
 import { SolicitudDesarrolladorQueries } from '../dto/SolicitudDesarrollador-queries.dto';
+import { DesarrolladorQueries } from '../dto/desarrollador-queries.dto';
+import {
+  LimitBadRequestResponseDto,
+  OffsetBadRequestResponseDto,
+  OrderBadRequestResponseDto,
+} from 'src/categorias/dto/responses-dto';
 
 @ApiTags('Desarrolladores')
 @Controller('users/developers')
@@ -57,8 +63,25 @@ export class DevelopersController {
     description: 'No se encontraron desarrolladores',
     type: DesarrolladoresNotFoundResponseDto,
   })
-  getDevelopers() {
-    return this.developersService.getDevelopers();
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid limit value',
+    type: LimitBadRequestResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid offset value',
+    type: OffsetBadRequestResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid order value',
+    type: OrderBadRequestResponseDto,
+  })
+  @Get('desarrolladores')
+  @Roles(Role.ADMINISTRATOR)
+  findAllDevelopers(@Query() queries: DesarrolladorQueries) {
+    return this.developersService.getDevelopers(queries);
   }
 
   /**
@@ -79,6 +102,26 @@ export class DevelopersController {
     status: 404,
     description: 'No se encontraron solicitudes de desarrolladores',
     type: SolicitudNotFoundResponseDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'No se encontraron desarrolladores',
+    type: DesarrolladoresNotFoundResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid limit value',
+    type: LimitBadRequestResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid offset value',
+    type: OffsetBadRequestResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid order value',
+    type: OrderBadRequestResponseDto,
   })
   @Get('solicitudes')
   @Roles(Role.ADMINISTRATOR)

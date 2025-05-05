@@ -14,4 +14,5 @@ export enum GameOrderBy {
   TITLE = 'titulo',
   PRICE = 'precio',
   DATE = 'fechaLanzamiento',
+  FEATURED = 'featured',
 }

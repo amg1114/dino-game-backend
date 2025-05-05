@@ -12,7 +12,7 @@ export class CategoriasNotFoundResponseDto {
   message: string;
 }
 
-export class CategoriasLimitBadRequestResponseDto {
+export class LimitBadRequestResponseDto {
   @ApiProperty({
     example: 400,
   })
@@ -23,7 +23,7 @@ export class CategoriasLimitBadRequestResponseDto {
   message: string;
 }
 
-export class CategoriasOffsetBadRequestResponseDto {
+export class OffsetBadRequestResponseDto {
   @ApiProperty({
     example: 400,
   })
@@ -34,7 +34,7 @@ export class CategoriasOffsetBadRequestResponseDto {
   message: string;
 }
 
-export class CategoriasOrderBadRequestResponseDto {
+export class OrderBadRequestResponseDto {
   @ApiProperty({
     example: 400,
   })

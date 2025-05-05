@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { Sexo } from '../../config/enums/sexo.enum';
 import { Exclude } from 'class-transformer';
 import { UserVideoGame } from '../../video-games/entities/user-videogames.entity';
@@ -10,12 +10,11 @@ import {
 } from '../../video-games/entities/calificacion.entity';
 import { Report } from '../../reports/entities/report.entity';
 import { Like } from '../../noticias/entities/like.entity';
+import { BaseEntity } from '../../config/models/base-entity.entity';
+import { VideoGame } from '../../video-games/entities/video-game.entity';
 
 @Entity('users')
-export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class User extends BaseEntity {
   @Column()
   nombre: string;
 
@@ -37,6 +36,9 @@ export class User {
   @Exclude()
   @Column()
   password: string;
+
+  @OneToMany(() => VideoGame, (videoGame) => videoGame.developer)
+  userDevelopedVideoGames: VideoGame[];
 
   @OneToMany(() => UserVideoGame, (userVideoGame) => userVideoGame.user)
   userVideoGames: UserVideoGame[];

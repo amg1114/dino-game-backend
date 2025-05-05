@@ -5,6 +5,8 @@ import {
   Post,
   UseGuards,
   Request,
+  Query,
+  Req,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
@@ -16,11 +18,17 @@ import {
   InternalServerErrorResponseDto,
   UnauthorizedResponseDto,
 } from './dto/responses-dto';
+import { MailerService } from '@nestjs-modules/mailer';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Controller('auth')
 @ApiTags('Auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly mailerService: MailerService,
+  ) {}
 
   /**
    * Loguea a un usuario
@@ -90,5 +98,90 @@ export class AuthController {
   @UseGuards(AuthGuard)
   async profile(@Request() req: any) {
     return this.authService.profile(req.user.id);
+  }
+
+  /**
+   * Solicita el restablecimiento de contraseña para un usuario.
+   * @param email Correo del usuario que solicita el restablecimiento.
+   * @returns Mensaje indicando el resultado de la operación.
+   */
+  @ApiOperation({
+    summary: 'Solicitar restablecimiento de contraseña',
+    description:
+      'Envía un correo con un enlace para restablecer la contraseña.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Correo enviado exitosamente.',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Error al enviar el correo de recuperación.',
+  })
+  @Post('request-password-reset')
+  async requestPasswordReset(@Query('email') email: string) {
+    return await this.authService.requestPasswordReset(email);
+  }
+
+  /**
+   * Restablece la contraseña de un usuario utilizando un token.
+   * @param body Contiene el token y la nueva contraseña.
+   * @returns Mensaje indicando el resultado de la operación.
+   */
+  @ApiOperation({
+    summary: 'Restablecer contraseña',
+    description: 'Permite restablecer la contraseña utilizando un token.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Contraseña restablecida correctamente.',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Token inválido o expirado.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Usuario no encontrado.',
+  })
+  @Post('reset-password')
+  async resetPassword(@Body() body: ResetPasswordDto) {
+    return await this.authService.resetPassword(body.token, body.newPassword);
+  }
+
+  /**
+   * Cambia la contraseña de un usuario autenticado.
+   * @param req Request con la información del usuario autenticado.
+   * @param body Contiene la contraseña actual y la nueva contraseña.
+   * @returns Mensaje indicando el resultado de la operación.
+   */
+  @ApiOperation({
+    summary: 'Cambiar contraseña',
+    description: 'Permite a un usuario autenticado cambiar su contraseña.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Contraseña actualizada correctamente.',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Contraseña actual incorrecta.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Usuario no encontrado.',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Error al actualizar la contraseña.',
+  })
+  @Post('change-password')
+  @UseGuards(AuthGuard)
+  async changePassword(@Req() req, @Body() body: ChangePasswordDto) {
+    return await this.authService.changePassword(
+      req.user.id,
+      body.currentPassword,
+      body.newPassword,
+    );
   }
 }

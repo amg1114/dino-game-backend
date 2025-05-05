@@ -37,13 +37,19 @@ export class VideoGame {
   @Column({ unique: true })
   slug: string;
 
-  @OneToOne(() => Asset, (asset) => asset.id, { onDelete: 'CASCADE' })
+  @OneToOne(() => Asset, (asset) => asset.videoGameThumb, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   thumb: Asset;
 
-  @OneToOne(() => Asset, (asset) => asset.id, { onDelete: 'CASCADE' })
+  @OneToOne(() => Asset, (asset) => asset.videoGameHero, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   hero: Asset;
+
+  puntaje?: number;
 
   @OneToMany(() => VideoGameAsset, (asset) => asset.videoGame, {
     cascade: true,
@@ -56,8 +62,10 @@ export class VideoGame {
   })
   categorias: Categoria[];
 
-  @ManyToOne(() => User, (User) => User.id, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'developerId' })
+  @ManyToOne(() => User, (user) => user.userDevelopedVideoGames, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'developer_id' })
   developer: User;
 
   @OneToMany(() => Version, (version) => version.videoGame)

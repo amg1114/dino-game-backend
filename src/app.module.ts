@@ -14,6 +14,7 @@ import { CategoriasModule } from './categorias/categorias.module';
 import { NoticiasModule } from './noticias/noticias.module';
 import { AuthModule } from './auth/auth.module';
 import { ReportsModule } from './reports/reports.module';
+import { StatisticsModule } from './statistics/statistics.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { ReportsModule } from './reports/reports.module';
     NoticiasModule,
     AuthModule,
     ReportsModule,
+    StatisticsModule,
   ],
   controllers: [],
   providers: [AppService],

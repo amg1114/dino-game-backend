@@ -154,4 +154,21 @@ export class UsersService {
 
     return solicitud;
   }
+
+  /**
+   * Actualiza la contraseña de un usuario con el ID proporcionado.
+   *
+   * @param id - El ID del usuario cuya contraseña se va a actualizar.
+   * @param newPassword - La nueva contraseña del usuario. Este método espera que la contraseña
+   * se proporcione en texto plano (sin hashear). La contraseña será hasheada internamente
+   * utilizando bcrypt antes de guardarse en la base de datos.
+   * @returns Una promesa que se resuelve cuando la contraseña ha sido actualizada exitosamente.
+   * @throws Lanzará un error si no se encuentra un usuario con el ID proporcionado.
+   */
+  async updatePassword(id: number, newPassword: string): Promise<void> {
+    const user = await this.findById(id);
+
+    user.password = bcrypt.hashSync(newPassword, SALT_ROUNDS);
+    await this.userRepository.save(user);
+  }
 }

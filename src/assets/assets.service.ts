@@ -37,7 +37,7 @@ export class AssetsService {
       );
     }
 
-    const videoGame = await this.videoGamesService.softFindById(owner);
+    const videoGame = await this.videoGamesService.softFindById(+owner);
 
     if (!videoGame) {
       throw new HttpException('Video game not found', HttpStatus.NOT_FOUND);
@@ -82,6 +82,9 @@ export class AssetsService {
     const url = await this.firebaseService.uploadNoticiaImage(file, noticia);
     const asset = this.assetsRepository.create({
       url,
+
+      noticiaThumb: noticia,
+
       title: file.originalname,
       mimeType: file.mimetype,
       size: file.size,
