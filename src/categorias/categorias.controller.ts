@@ -98,9 +98,9 @@ export class CategoriasController {
     description: 'Categoria no encontrada',
     type: CategoriaNotFoundResponseDto,
   })
-  @Get(':id')
-  getOne(@Param('id') id: number): Promise<Categoria> {
-    return this.categoriasService.findCategoriaById(id);
+  @Get(':slug')
+  getOne(@Param('slug') slug: string): Promise<Categoria> {
+    return this.categoriasService.findCategoriaById(slug);
   }
 
   /**

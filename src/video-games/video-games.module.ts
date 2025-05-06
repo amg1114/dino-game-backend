@@ -23,6 +23,7 @@ import { Calificacion, Comentario } from './entities/calificacion.entity';
 import { CalificacionesService } from './services/calificaciones.service';
 import {
   CalificacionesController,
+  CalificacionesVideogameController,
   ComentariosController,
 } from './controllers/calificaciones.controller';
 
@@ -55,6 +56,7 @@ import {
     CalificacionesController,
     ComentariosController,
     VideoGamesController,
+    CalificacionesVideogameController,
   ],
   exports: [
     TypeOrmModule,

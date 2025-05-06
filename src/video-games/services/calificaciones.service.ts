@@ -224,4 +224,50 @@ export class CalificacionesService {
 
     return result;
   }
+
+  /**
+   * Calculates the average rating (puntaje) for a specific video game.
+   *
+   * @param videoGameId - The ID of the video game for which the average rating is to be calculated.
+   * @returns An object containing the average rating (`promedio`) as a float.
+   *          If no ratings are found, the average will default to 0.
+   */
+  async ratingVideoGame(videoGameId: number) {
+    const result = await this.calificacionRepository
+      .createQueryBuilder('calificacion')
+      .select('AVG(calificacion.puntaje)', 'promedio')
+      .where('calificacion.videoGame = :videoGameId', { videoGameId })
+      .getRawOne();
+
+    return { promedio: parseFloat(result.promedio) || 0 };
+  }
+
+  /**
+   * Retrieves the video game with the highest average rating.
+   *
+   * This method fetches all video games and calculates their average ratings
+   * by calling the `ratingVideoGame` method for each video game. It then
+   * determines which video game has the highest average rating and returns it.
+   *
+   * @returns {Promise<any>} A promise that resolves to the video game object
+   * with the highest average rating, or `null` if no video games are found.
+   *
+   * @throws {Error} If there is an issue fetching video games or calculating ratings.
+   */
+  async bestRatedVideoGame() {
+    const response = await this.videoGameService.findAll({});
+    const videoGames = response.data;
+
+    let bestVideoGame = null;
+    let bestRating = 0;
+
+    for (const videoGame of videoGames) {
+      const calificacion = await this.ratingVideoGame(videoGame.id);
+      if (calificacion.promedio > bestRating) {
+        bestRating = calificacion.promedio;
+        bestVideoGame = videoGame;
+      }
+    }
+    return [bestVideoGame, 'promedio: ' + bestRating];
+  }
 }
