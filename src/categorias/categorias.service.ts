@@ -120,7 +120,7 @@ export class CategoriasService {
 
   /**
    * Encuentra una categoria por su ID
-   * @param id ID de la categoria
+   * @param slug Slug de la categoria
    * @returns Categoria encontrada
    */
   async findCategoriaById(slug: string) {

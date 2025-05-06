@@ -80,8 +80,8 @@ export class CategoriasController {
   }
 
   /**
-   * EndPoint para obtener una categoria por el parámetro ID
-   * @param id ID de la categoria a buscar
+   * EndPoint para obtener una categoria por el parámetro slug
+   * @param slug slug de la categoria a buscar
    * @returns {Promise<Categoria>} categoria buscada
    */
   @ApiOperation({
