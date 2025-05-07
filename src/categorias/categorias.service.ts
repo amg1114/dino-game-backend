@@ -123,7 +123,7 @@ export class CategoriasService {
    * @param slug Slug de la categoria
    * @returns Categoria encontrada
    */
-  async findCategoriaById(slug: string) {
+  async findCategoriaBySlug(slug: string) {
     const categoria = await this.categoriasRepository
       .createQueryBuilder('categoria')
       .leftJoinAndSelect('categoria.videoGames', 'videoGames')

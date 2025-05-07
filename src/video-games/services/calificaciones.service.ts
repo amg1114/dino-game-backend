@@ -9,8 +9,8 @@ import { Repository } from 'typeorm';
 import { CreateCalificacionDto } from '../dto/calificaciones/create-calificacion.dto';
 import { VideoGamesService } from './video-games.service';
 import { UsersService } from 'src/users/services/users.service';
+import { CategoriasService } from 'src/categorias/categorias.service';
 import { CreateComentarioDto } from '../dto/calificaciones/create-comentario.dto';
-
 @Injectable()
 export class CalificacionesService {
   constructor(
@@ -20,6 +20,7 @@ export class CalificacionesService {
     private readonly comentarioRepository: Repository<Comentario>,
     private readonly videoGameService: VideoGamesService,
     private readonly userService: UsersService,
+    private readonly categoriasService: CategoriasService,
   ) {}
 
   /**
@@ -254,10 +255,13 @@ export class CalificacionesService {
    *
    * @throws {Error} If there is an issue fetching video games or calculating ratings.
    */
-  async bestRatedVideoGame() {
-    const response = await this.videoGameService.findAll({});
-    const videoGames = response.data;
+  async bestRatedVideoGameByCategory(slug: string) {
+    const category = await this.categoriasService.findCategoriaBySlug(slug);
+    if (!category) {
+      throw new Error(`No se encontró la categoría con slug: ${slug}`);
+    }
 
+    const videoGames = category.videoGames;
     let bestVideoGame = null;
     let bestRating = 0;
 

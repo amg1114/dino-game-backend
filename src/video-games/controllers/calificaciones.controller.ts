@@ -23,7 +23,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 export class CalificacionesController {
   constructor(private readonly calificacionesService: CalificacionesService) {}
 
-  @Get('/best-rated-video-game')
+  @Get('/best-rated-video-game/:slug')
   @ApiOperation({
     summary: 'Calificaciones',
     description: 'Obtiene el videojuego mejor calificado',
@@ -36,8 +36,8 @@ export class CalificacionesController {
     status: 404,
     description: 'No se encontraron calificaciones',
   })
-  async bestRatedVideoGame() {
-    return this.calificacionesService.bestRatedVideoGame();
+  async bestRatedVideoGameByCategory(@Param('slug') slug: string) {
+    return this.calificacionesService.bestRatedVideoGameByCategory(slug);
   }
 }
 

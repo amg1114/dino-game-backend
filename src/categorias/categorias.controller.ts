@@ -100,7 +100,7 @@ export class CategoriasController {
   })
   @Get(':slug')
   getOne(@Param('slug') slug: string): Promise<Categoria> {
-    return this.categoriasService.findCategoriaById(slug);
+    return this.categoriasService.findCategoriaBySlug(slug);
   }
 
   /**
