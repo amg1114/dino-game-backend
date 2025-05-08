@@ -272,6 +272,6 @@ export class CalificacionesService {
         bestVideoGame = videoGame;
       }
     }
-    return [bestVideoGame, 'promedio: ' + bestRating];
+    return bestVideoGame;
   }
 }
