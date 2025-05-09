@@ -227,33 +227,16 @@ export class CalificacionesService {
   }
 
   /**
-   * Calculates the average rating (puntaje) for a specific video game.
+   * Retrieves the video game with the highest average rating in a specific category.
    *
-   * @param videoGameId - The ID of the video game for which the average rating is to be calculated.
-   * @returns An object containing the average rating (`promedio`) as a float.
-   *          If no ratings are found, the average will default to 0.
-   */
-  async ratingVideoGame(videoGameId: number) {
-    const result = await this.calificacionRepository
-      .createQueryBuilder('calificacion')
-      .select('AVG(calificacion.puntaje)', 'promedio')
-      .where('calificacion.videoGame = :videoGameId', { videoGameId })
-      .getRawOne();
-
-    return { promedio: parseFloat(result.promedio) || 0 };
-  }
-
-  /**
-   * Retrieves the video game with the highest average rating.
+   * This method calculates the average ratings of video games within a category
+   * and retrieves the video game with the highest average rating.
    *
-   * This method fetches all video games and calculates their average ratings
-   * by calling the `ratingVideoGame` method for each video game. It then
-   * determines which video game has the highest average rating and returns it.
+   * @param slug - The slug of the category to filter video games by.
+   * @returns A promise that resolves to the video game object with the highest average rating,
+   *          or `null` if no video games are found in the category.
    *
-   * @returns {Promise<any>} A promise that resolves to the video game object
-   * with the highest average rating, or `null` if no video games are found.
-   *
-   * @throws {Error} If there is an issue fetching video games or calculating ratings.
+   * @throws {Error} If the category is not found.
    */
   async bestRatedVideoGameByCategory(slug: string) {
     const category = await this.categoriasService.findCategoriaBySlug(slug);
@@ -261,17 +244,20 @@ export class CalificacionesService {
       throw new Error(`No se encontró la categoría con slug: ${slug}`);
     }
 
-    const videoGames = category.videoGames;
-    let bestVideoGame = null;
-    let bestRating = 0;
+    const bestVideoGame = await this.calificacionRepository
+      .createQueryBuilder('calificacion')
+      .select('calificacion.videoGame', 'videoGameId')
+      .addSelect('AVG(calificacion.puntaje)', 'promedio')
+      .innerJoin('calificacion.videoGame', 'videoGame')
+      .where('videoGame.category = :categoryId', { categoryId: category.id })
+      .groupBy('calificacion.videoGame')
+      .orderBy('promedio', 'DESC')
+      .getRawOne();
 
-    for (const videoGame of videoGames) {
-      const calificacion = await this.ratingVideoGame(videoGame.id);
-      if (calificacion.promedio > bestRating) {
-        bestRating = calificacion.promedio;
-        bestVideoGame = videoGame;
-      }
+    if (!bestVideoGame) {
+      return null;
     }
-    return bestVideoGame;
+
+    return this.videoGameService.findById(bestVideoGame.videoGameId);
   }
 }
