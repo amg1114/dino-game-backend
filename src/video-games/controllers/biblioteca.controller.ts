@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -18,6 +19,7 @@ import {
   VideoGamesNotFoundResponseDto,
 } from '../dto/video-games/responses-dto';
 import { DeleteResultResponseDto } from 'src/config/responses-dto';
+import { UserVideoGameQueries } from 'src/video-games/dto/queries/video-game-queries.dto';
 
 @ApiTags('VideoGames')
 @Controller('video-games/biblioteca')
@@ -44,9 +46,12 @@ export class BibliotecaController {
     description: 'Los videos juegos no fueron encontrados',
     type: VideoGamesNotFoundResponseDto,
   })
-  getVideoGamesByUser(@Request() req: any) {
+  getVideoGamesByUser(
+    @Request() req: any,
+    @Query() queries: UserVideoGameQueries,
+  ) {
     const user = req.user.id;
-    return this.videoGamesService.findUserVideoGames(user);
+    return this.videoGamesService.findUserVideoGames(user, queries);
   }
 
   /**
