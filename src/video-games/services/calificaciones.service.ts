@@ -246,16 +246,21 @@ export class CalificacionesService {
 
     const bestVideoGame = await this.calificacionRepository
       .createQueryBuilder('calificacion')
-      .select('calificacion.videoGame', 'videoGameId')
+      .select('videoGame.id', 'videoGameId')
       .addSelect('AVG(calificacion.puntaje)', 'promedio')
       .innerJoin('calificacion.videoGame', 'videoGame')
-      .where('videoGame.category = :categoryId', { categoryId: category.id })
-      .groupBy('calificacion.videoGame')
+      .innerJoin('videoGame.categorias', 'category')
+      .where('category.id = :categoryId', { categoryId: category.id })
+      .groupBy('videoGame.id')
       .orderBy('promedio', 'DESC')
       .getRawOne();
 
     if (!bestVideoGame) {
-      return null;
+      const videoGameRecent = category.videoGames[0];
+      if (!videoGameRecent) {
+        throw new Error('No se encontraron videojuegos en esta categoría');
+      }
+      return this.videoGameService.findById(videoGameRecent.id);
     }
 
     return this.videoGameService.findById(bestVideoGame.videoGameId);

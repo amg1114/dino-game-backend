@@ -23,7 +23,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 export class CalificacionesController {
   constructor(private readonly calificacionesService: CalificacionesService) {}
 
-  @Get('/best-rated-video-game/:slug')
+  @Get('/best-video-game/:slug')
   @ApiOperation({
     summary: 'Calificaciones',
     description: 'Obtiene el videojuego mejor calificado',
@@ -41,7 +41,7 @@ export class CalificacionesController {
   }
 }
 
-@Controller('video-games/:videogame/calificaciones')
+@Controller('video-games/:videogame')
 @UseGuards(AuthGuard, RolesGuard)
 @ApiTags('Calificaciones Videogame')
 export class CalificacionesVideogameController {

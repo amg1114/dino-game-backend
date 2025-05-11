@@ -127,10 +127,8 @@ export class CategoriasService {
     const categoria = await this.categoriasRepository
       .createQueryBuilder('categoria')
       .leftJoinAndSelect('categoria.videoGames', 'videoGames')
-      .leftJoinAndSelect('videoGames.thumb', 'thumb')
-      .leftJoinAndSelect('videoGames.hero', 'hero')
-      .leftJoinAndSelect('videoGames.descuentos', 'descuentos')
       .where('categoria.slug = :slug', { slug })
+      .orderBy('videoGames.fecha_lanzamiento', 'DESC')
       .getOne();
 
     if (!categoria) {

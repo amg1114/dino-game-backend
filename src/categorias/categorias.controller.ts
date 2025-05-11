@@ -137,7 +137,6 @@ export class CategoriasController {
     summary: 'Actualizar una categoria',
     description: 'Actualiza la categoria de un videojuego',
   })
-  //Para revisar
   @ApiResponse({
     status: 200,
     description: 'La categoria fue actualizada exitosamente',
