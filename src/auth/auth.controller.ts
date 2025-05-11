@@ -14,11 +14,6 @@ import { LoginDto } from './dto/login.dto';
 import { AuthGuard } from './guards/auth.guard';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { User } from 'src/users/entities/user.entity';
-import {
-  InternalServerErrorResponseDto,
-  UnauthorizedResponseDto,
-} from './dto/responses-dto';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
@@ -44,12 +39,10 @@ export class AuthController {
   @ApiResponse({
     status: 200,
     description: 'Logueo completado exitosamente',
-    type: LoginDto,
   })
   @ApiResponse({
     status: 401,
     description: 'Credenciales invalidas',
-    type: UnauthorizedResponseDto,
   })
   @Post('login')
   async login(@Body() loginFields: LoginDto) {
@@ -68,12 +61,10 @@ export class AuthController {
   @ApiResponse({
     status: 200,
     description: 'El usuario fue registrado exitosamente',
-    type: CreateUserDto,
   })
   @ApiResponse({
     status: 500,
     description: 'EL usuario no fue creado',
-    type: InternalServerErrorResponseDto,
   })
   @Post('register')
   async register(@Body() registerFields: CreateUserDto) {
@@ -93,7 +84,6 @@ export class AuthController {
   @ApiResponse({
     status: 200,
     description: 'El perfil fue encontrado exitosamente',
-    type: User,
   })
   @Get('profile')
   @UseGuards(AuthGuard)

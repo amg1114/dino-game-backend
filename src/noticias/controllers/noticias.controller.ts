@@ -19,16 +19,6 @@ import { RolesGuard } from '../../auth/guards/roles.guard';
 import { Public } from '../../auth/decorators/public.decorator';
 import { Roles } from '../../auth/decorators/roles.decorator';
 import { Role } from '../../config/enums/roles.enum';
-import { Noticia } from '../entities/noticia.entity';
-import {
-  NoticiaFoundResponseDto,
-  NoticiaNotFoundResponseDto,
-  NoticiasNotFoundResponseDto,
-} from '../dto/responses-dto';
-import {
-  DeleteResultResponseDto,
-  UpdateResultResponseDto,
-} from 'src/config/responses-dto';
 import { QueriesNoticesDto } from '../dto/queries-notices.dto';
 
 @ApiTags('Noticias')
@@ -53,7 +43,6 @@ export class NoticiasController {
   @ApiResponse({
     status: 200,
     description: 'Lista de noticias',
-    type: NoticiaFoundResponseDto,
   })
   @ApiResponse({
     status: 400,
@@ -66,7 +55,6 @@ export class NoticiasController {
   @ApiResponse({
     status: 404,
     description: 'No se encontraron noticias',
-    type: NoticiasNotFoundResponseDto,
   })
   findAll(@Query() queries: QueriesNoticesDto) {
     if (queries.offset) {
@@ -90,7 +78,6 @@ export class NoticiasController {
   @ApiResponse({
     status: 200,
     description: 'La noticia fue creada exitosamente',
-    type: Noticia,
   })
   @Post()
   @Roles(Role.ADMINISTRATOR, Role.DEVELOPER)
@@ -111,12 +98,10 @@ export class NoticiasController {
   @ApiResponse({
     status: 200,
     description: 'La noticia fue encontrada exitosamente',
-    type: Noticia,
   })
   @ApiResponse({
     status: 404,
     description: 'La noticia no fue encontrada',
-    type: NoticiaNotFoundResponseDto,
   })
   @Get(':id')
   @Public()
@@ -136,12 +121,10 @@ export class NoticiasController {
   @ApiResponse({
     status: 200,
     description: 'La noticia fue encontrada exitosamente',
-    type: Noticia,
   })
   @ApiResponse({
     status: 404,
     description: 'La noticia no fue encontrada',
-    type: NoticiaNotFoundResponseDto,
   })
   @Get('noticia/:slug')
   @Public()
@@ -163,12 +146,10 @@ export class NoticiasController {
     status: 200,
     description: 'Noticia actualizada',
     //Para revisar
-    type: UpdateResultResponseDto,
   })
   @ApiResponse({
     status: 404,
     description: 'No se encontro la noticia',
-    type: NoticiaNotFoundResponseDto,
   })
   @Patch(':id')
   @Roles(Role.ADMINISTRATOR, Role.DEVELOPER)
@@ -188,12 +169,10 @@ export class NoticiasController {
   @ApiResponse({
     status: 200,
     description: 'Noticia eliminada',
-    type: DeleteResultResponseDto,
   })
   @ApiResponse({
     status: 404,
     description: 'No se encontro la noticia',
-    type: NoticiaNotFoundResponseDto,
   })
   @Delete(':id')
   @Roles(Role.ADMINISTRATOR, Role.DEVELOPER)

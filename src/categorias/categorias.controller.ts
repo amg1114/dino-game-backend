@@ -15,21 +15,6 @@ import { Categoria } from './categoria.entity';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { CategoriaQueries } from './dto/categoria-queries.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import {
-  CategoriaConflictResponseDto,
-  CategoriaNotFoundResponseDto,
-  CategoriasNotFoundResponseDto,
-  CategoriasTitleBadRequestResponseDto,
-  DeleteCategoriaResponseDto,
-  LimitBadRequestResponseDto,
-  OffsetBadRequestResponseDto,
-  OrderBadRequestResponseDto,
-  ResponseCategoriasDto,
-} from './dto/responses-dto';
-import {
-  DeleteResultResponseDto,
-  UpdateResultResponseDto,
-} from 'src/config/responses-dto';
 
 @ApiTags('Categorias')
 @Controller('categorias')
@@ -47,32 +32,26 @@ export class CategoriasController {
   @ApiResponse({
     status: 200,
     description: 'Las categorias fueron encontradas exitosamente',
-    type: ResponseCategoriasDto,
   })
   @ApiResponse({
     status: 404,
     description: 'Categorias no encontradas',
-    type: CategoriasNotFoundResponseDto,
   })
   @ApiResponse({
     status: 400,
     description: 'Invalid limit value',
-    type: LimitBadRequestResponseDto,
   })
   @ApiResponse({
     status: 400,
     description: 'Invalid offset value',
-    type: OffsetBadRequestResponseDto,
   })
   @ApiResponse({
     status: 400,
     description: 'Invalid order value',
-    type: OrderBadRequestResponseDto,
   })
   @ApiResponse({
     status: 400,
     description: 'Invalid title value',
-    type: CategoriasTitleBadRequestResponseDto,
   })
   @Get()
   getAll(@Query() queries: CategoriaQueries) {
@@ -91,12 +70,10 @@ export class CategoriasController {
   @ApiResponse({
     status: 200,
     description: 'La categoria fue encontrada exitosamente',
-    type: Categoria,
   })
   @ApiResponse({
     status: 404,
     description: 'Categoria no encontrada',
-    type: CategoriaNotFoundResponseDto,
   })
   @Get(':id')
   getOne(@Param('id') id: number): Promise<Categoria> {
@@ -115,12 +92,10 @@ export class CategoriasController {
   @ApiResponse({
     status: 200,
     description: 'La categoria fue creada exitosamente',
-    type: Categoria,
   })
   @ApiResponse({
     status: 409,
     description: 'La categoria existe actualmente',
-    type: CategoriaConflictResponseDto,
   })
   @Post()
   create(@Body() categoriaFields: CreateCategoriaDto): Promise<Categoria> {
@@ -141,12 +116,10 @@ export class CategoriasController {
   @ApiResponse({
     status: 200,
     description: 'La categoria fue actualizada exitosamente',
-    type: UpdateResultResponseDto,
   })
   @ApiResponse({
     status: 404,
     description: 'Categoria no encontrada',
-    type: CategoriaNotFoundResponseDto,
   })
   @Patch(':id')
   update(
@@ -169,12 +142,10 @@ export class CategoriasController {
   @ApiResponse({
     status: 200,
     description: 'La categoria fue eliminada exitosamente',
-    type: DeleteResultResponseDto,
   })
   @ApiResponse({
     status: 409,
     description: 'Categoria no eliminada correctamente',
-    type: DeleteCategoriaResponseDto,
   })
   @Delete(':id')
   delete(@Param('id') id: number): Promise<DeleteResult> {
