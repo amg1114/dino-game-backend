@@ -7,7 +7,6 @@ import {
   ManyToOne,
   OneToMany,
   OneToOne,
-  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Descuento } from './descuento.entity';
 import { Version } from './version.entity';
@@ -16,12 +15,10 @@ import { User } from '../../users/entities/user.entity';
 import { Asset, VideoGameAsset } from '../../assets/asset.entity';
 import { Calificacion, Comentario } from './calificacion.entity';
 import { Report } from '../../reports/entities/report.entity';
+import { BaseEntity } from '../../config/models/base-entity.entity';
 
 @Entity('videogames')
-export class VideoGame {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class VideoGame extends BaseEntity {
   @Column({ type: 'float' })
   precio: number;
 

@@ -1,20 +1,10 @@
 import { BaseEntity } from '../config/models/base-entity.entity';
 import { Noticia } from '../noticias/entities/noticia.entity';
 import { VideoGame } from '../video-games/entities/video-game.entity';
-import {
-  Column,
-  Entity,
-  ManyToOne,
-  OneToMany,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 
 @Entity('assets')
-export class Asset {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class Asset extends BaseEntity {
   @Column()
   title: string;
 

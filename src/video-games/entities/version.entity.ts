@@ -1,17 +1,9 @@
-import {
-  Column,
-  Entity,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { VideoGame } from './video-game.entity';
+import { BaseEntity } from '../../config/models/base-entity.entity';
 
 @Entity('versions')
-export class Version {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class Version extends BaseEntity {
   @Column()
   version: string;
 
@@ -39,10 +31,7 @@ export class Version {
 }
 
 @Entity('requisitos')
-export class Requisito {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class Requisito extends BaseEntity {
   @Column()
   requisito: string;
 
