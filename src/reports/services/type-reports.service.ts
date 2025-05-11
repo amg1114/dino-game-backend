@@ -50,7 +50,7 @@ export class TypeReportsService {
   }
 
   async delete(id: number) {
-    const result = await this.typeReportRepository.delete(id);
+    const result = await this.typeReportRepository.softDelete(id);
 
     if (result.affected === 0) {
       throw new NotFoundException(`Report with ID ${id} not found`);

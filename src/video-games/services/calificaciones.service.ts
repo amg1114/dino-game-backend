@@ -121,7 +121,7 @@ export class CalificacionesService {
       throw new NotFoundException('No se encontró la calificación');
     }
 
-    const result = await this.calificacionRepository.delete(id);
+    const result = await this.calificacionRepository.softDelete(id);
 
     if (result.affected === 0) {
       throw new ConflictException('No se pudo eliminar la calificación');
@@ -216,7 +216,7 @@ export class CalificacionesService {
       throw new NotFoundException('No se encontró el comentario');
     }
 
-    const result = await this.comentarioRepository.delete(id);
+    const result = await this.comentarioRepository.softDelete(id);
 
     if (result.affected === 0) {
       throw new ConflictException('No se pudo eliminar el comentario');

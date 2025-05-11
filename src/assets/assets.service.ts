@@ -95,7 +95,7 @@ export class AssetsService {
     const asset = await this.assetsRepository.findOne({
       where: { id },
     });
-    const result = await this.assetsRepository.delete(id);
+    const result = await this.assetsRepository.softDelete(id);
 
     if (result.affected === 0) {
       throw new HttpException('Asset was not found', HttpStatus.NOT_FOUND);
