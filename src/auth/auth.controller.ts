@@ -7,6 +7,7 @@ import {
   Request,
   Query,
   Req,
+  Delete,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
@@ -98,6 +99,28 @@ export class AuthController {
   @UseGuards(AuthGuard)
   async profile(@Request() req: any) {
     return this.authService.profile(req.user.id);
+  }
+
+  @Delete('delete-account')
+  @UseGuards(AuthGuard)
+  @ApiOperation({
+    summary: 'Eliminar cuenta de usuario',
+    description: 'Elimina la cuenta del usuario autenticado.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Cuenta eliminada exitosamente.',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Error al eliminar la cuenta.',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'No autorizado.',
+  })
+  async deleteAccount(@Request() req: any) {
+    return this.authService.deleteAccount(req.user.id);
   }
 
   /**

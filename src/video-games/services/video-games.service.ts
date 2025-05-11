@@ -310,7 +310,7 @@ export class VideoGamesService {
       throw new HttpException('Videogame was not found', HttpStatus.NOT_FOUND);
     }
 
-    return this.userVideoGameRepository.delete(userVideoGame);
+    return this.userVideoGameRepository.softDelete(userVideoGame);
   }
 
   /**
@@ -409,7 +409,7 @@ export class VideoGamesService {
    * @returns Resultado de la Eliminación
    */
   async deleteVideoGame(id: number) {
-    const resultado = await this.videoGameRepository.delete(id);
+    const resultado = await this.videoGameRepository.softDelete(id);
     if (resultado.affected === 0) {
       throw new HttpException(
         'Videogame could not deleted',

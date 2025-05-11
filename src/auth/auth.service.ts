@@ -100,6 +100,10 @@ export class AuthService {
     return { ...user, role, videogames, calificacion, likes };
   }
 
+  async deleteAccount(id: number) {
+    return this.usersService.deleteUser(id);
+  }
+
   /**
    * Envía un correo electrónico para restablecer la contraseña al usuario con el correo especificado.
    * Si el usuario no es encontrado, devuelve un mensaje indicando que no se encontró el usuario.

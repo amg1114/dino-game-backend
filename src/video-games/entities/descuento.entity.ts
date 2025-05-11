@@ -1,11 +1,9 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne } from 'typeorm';
 import { VideoGame } from './video-game.entity';
+import { BaseEntity } from '../../config/models/base-entity.entity';
 
 @Entity('descuentos')
-export class Descuento {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class Descuento extends BaseEntity {
   @Column({ type: 'float' })
   porcentaje: number;
 

@@ -1,17 +1,9 @@
+import { BaseEntity } from '../config/models/base-entity.entity';
 import { VideoGame } from '../video-games/entities/video-game.entity';
-import {
-  Column,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 
 @Entity('categorias')
-export class Categoria {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class Categoria extends BaseEntity {
   @Column()
   titulo: string;
 

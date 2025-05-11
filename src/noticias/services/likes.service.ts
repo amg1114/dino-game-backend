@@ -67,7 +67,7 @@ export class LikesService {
     if (!like) {
       throw new HttpException('Like not found', HttpStatus.NOT_FOUND);
     } else {
-      const likedeleted = await this.likeRepository.delete(like.id);
+      const likedeleted = await this.likeRepository.softDelete(like.id);
       return likedeleted;
     }
   }
