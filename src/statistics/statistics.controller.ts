@@ -1,5 +1,5 @@
 import { Controller, Param, Req, Sse, UseGuards } from '@nestjs/common';
-import { interval, switchMap } from 'rxjs';
+import { from, interval, map, mergeMap, startWith } from 'rxjs';
 import { StatisticsService } from './statistics.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
@@ -13,7 +13,6 @@ import { Role } from 'src/config/enums/roles.enum';
 export class StatisticsController {
   constructor(private readonly statisticsService: StatisticsService) {}
 
-  @Sse(':month/:year')
   @Roles(Role.ADMINISTRATOR, Role.DEVELOPER)
   @ApiOperation({
     summary: 'Get statistics for a specific month and year',
@@ -32,21 +31,24 @@ export class StatisticsController {
     status: 500,
     description: 'Internal Server Error',
   })
+  @Sse(':month/:year')
   async getAdminStatistics(
     @Param('month')
     month: string,
     @Param('year') year: string,
     @Req() req: any,
   ) {
-    return interval(1000 * 5).pipe(
-      switchMap(async () => {
-        const statistics = await this.statisticsService.getStatistics(
-          month,
-          year,
-          req.user.tipo === Role.DEVELOPER ? req.user.id : undefined,
-        );
-        return { data: statistics };
-      }),
+    return interval(1000).pipe(
+      startWith(0), // 🔥 Emite inmediatamente un primer valor
+      mergeMap(() =>
+        from(
+          this.statisticsService.getStatistics(
+            month,
+            year,
+            req.user.tipo === Role.DEVELOPER ? req.user.id : undefined,
+          ),
+        ).pipe(map((statistics) => ({ data: statistics }))),
+      ),
     );
   }
 }
