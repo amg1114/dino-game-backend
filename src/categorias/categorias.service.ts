@@ -239,7 +239,7 @@ export class CategoriasService {
    * @returns Resultado de la eliminación
    */
   async deleteCategoria(id: number) {
-    const result = await this.categoriasRepository.delete(id);
+    const result = await this.categoriasRepository.softDelete(id);
 
     if (result.affected === 0) {
       throw new HttpException('Categoria was not deleted', HttpStatus.CONFLICT);

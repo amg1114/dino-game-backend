@@ -2,7 +2,6 @@ import { Body, Controller, Param, Post } from '@nestjs/common';
 import { CreateVersionDto } from '../dto/versions/create-version.dto';
 import { VideoGamesService } from '../services/video-games.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { VideoGame } from '../entities/video-game.entity';
 
 @ApiTags('Versions')
 @Controller('video-games/:videogame/versions')
@@ -22,7 +21,6 @@ export class VersionsController {
   @ApiResponse({
     status: 200,
     description: 'La nueva version fue agregada exitosamente',
-    type: VideoGame,
   })
   @Post()
   create(

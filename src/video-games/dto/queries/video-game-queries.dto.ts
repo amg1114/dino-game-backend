@@ -55,3 +55,18 @@ export class VideoGameQueries {
   @IsOptional()
   order?: Order;
 }
+
+export class UserVideoGameQueries {
+  @IsNumber()
+  @IsOptional()
+  limit?: number;
+
+  @IsNumber()
+  @IsOptional()
+  @Min(0)
+  offset?: number;
+
+  @IsString()
+  @IsOptional()
+  search?: string;
+}

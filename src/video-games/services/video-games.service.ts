@@ -1,11 +1,19 @@
 import { Repository, UpdateResult } from 'typeorm';
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { VideoGame } from '../entities/video-game.entity';
 import { CreateVideoGameDto } from '../dto/video-games/create-video-game.dto';
 import { UpdateVideoGameDto } from '../dto/video-games/update-video-game.dto';
-import { VideoGameQueries } from '../dto/queries/video-game-queries.dto';
+import {
+  UserVideoGameQueries,
+  VideoGameQueries,
+} from '../dto/queries/video-game-queries.dto';
 import { UsersService } from '../../users/services/users.service';
 import { UserVideoGame } from '../entities/user-videogames.entity';
 
@@ -244,17 +252,48 @@ export class VideoGamesService {
    * @param userId ID del usuario
    * @returns Videojuegos del usuario
    */
-  async findUserVideoGames(userId: number) {
+  async findUserVideoGames(
+    userId: number,
+    queries: UserVideoGameQueries,
+  ): Promise<PaginatedDataResponse<UserVideoGame>> {
+    const { search, limit, offset } = queries;
     const user = await this.usersService.findById(userId);
-    const userVideoGames = await this.userVideoGameRepository
+    let userVideoGames = this.userVideoGameRepository
       .createQueryBuilder('userVideoGame')
       .leftJoinAndSelect('userVideoGame.videoGame', 'videoGame')
       .leftJoinAndSelect('videoGame.thumb', 'thumb')
-      .where('userVideoGame.user = :user', { user: user.id })
-      .addOrderBy('videoGame.titulo', 'ASC')
-      .getMany();
+      .leftJoinAndSelect('videoGame.categorias', 'categorias')
+      .where('userVideoGame.user = :user', { user: user.id });
 
-    return userVideoGames;
+    if (search) {
+      userVideoGames = userVideoGames.andWhere(
+        'videoGame.titulo ILIKE :search OR videoGame.descripcion ILIKE :search',
+        {
+          search: `%${search}%`,
+        },
+      );
+    }
+
+    if (limit) {
+      userVideoGames = userVideoGames.take(limit);
+    }
+
+    if (offset && limit) {
+      userVideoGames = userVideoGames.skip(offset * limit);
+    } else if (offset) {
+      throw new ConflictException('You must provide limit when using offset');
+    }
+
+    const [data, count] = await userVideoGames
+      .orderBy('userVideoGame.fechaCompra', 'DESC')
+      .addOrderBy('videoGame.titulo', 'ASC')
+      .getManyAndCount();
+
+    return {
+      data: data,
+      offset: queries.offset,
+      total: count,
+    };
   }
 
   /**
@@ -310,7 +349,7 @@ export class VideoGamesService {
       throw new HttpException('Videogame was not found', HttpStatus.NOT_FOUND);
     }
 
-    return this.userVideoGameRepository.delete(userVideoGame);
+    return this.userVideoGameRepository.softDelete(userVideoGame);
   }
 
   /**
@@ -409,7 +448,7 @@ export class VideoGamesService {
    * @returns Resultado de la Eliminación
    */
   async deleteVideoGame(id: number) {
-    const resultado = await this.videoGameRepository.delete(id);
+    const resultado = await this.videoGameRepository.softDelete(id);
     if (resultado.affected === 0) {
       throw new HttpException(
         'Videogame could not deleted',

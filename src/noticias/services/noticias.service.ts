@@ -198,7 +198,7 @@ export class NoticiasService {
    * @throws {HttpException} if the noticia is not found
    */
   async remove(id: number) {
-    const result = await this.noticiasRepository.delete(id);
+    const result = await this.noticiasRepository.softDelete(id);
     if (result.affected === 0) {
       throw new HttpException('Noticia not found', HttpStatus.NOT_FOUND);
     }

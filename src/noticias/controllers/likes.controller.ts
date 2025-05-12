@@ -10,7 +10,6 @@ import { LikesService } from '../services/likes.service';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Like } from '../entities/like.entity';
 
 @ApiTags('Likes')
 @Controller('likes')
@@ -25,7 +24,6 @@ export class LikesController {
   @ApiResponse({
     status: 200,
     description: 'Se creó un like en la noticia',
-    type: Like,
   })
   @Post(':noticiaId')
   async createLikes(
@@ -43,7 +41,6 @@ export class LikesController {
   @ApiResponse({
     status: 200,
     description: 'Se eliminó el like de la noticia',
-    type: Like,
   })
   @Delete(':noticiaId')
   async deleteLike(@Param('noticiaId') noticiaId: number, @Request() req: any) {

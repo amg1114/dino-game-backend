@@ -3,7 +3,6 @@ import { Like } from './like.entity';
 import { Asset } from '../../assets/asset.entity';
 import { User } from '../../users/entities/user.entity';
 import {
-  PrimaryGeneratedColumn,
   Column,
   Entity,
   ManyToOne,
@@ -11,12 +10,10 @@ import {
   OneToOne,
   OneToMany,
 } from 'typeorm';
+import { BaseEntity } from '../../config/models/base-entity.entity';
 
 @Entity('noticias')
-export class Noticia {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class Noticia extends BaseEntity {
   @Column()
   titulo: string;
 

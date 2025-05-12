@@ -1,12 +1,10 @@
 import { User } from '../../users/entities/user.entity';
-import { PrimaryGeneratedColumn, Column, ManyToOne, Entity } from 'typeorm';
+import { Column, ManyToOne, Entity } from 'typeorm';
 import { VideoGame } from './video-game.entity';
+import { BaseEntity } from '../../config/models/base-entity.entity';
 
 @Entity('user_videogames')
-export class UserVideoGame {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class UserVideoGame extends BaseEntity {
   @Column({ type: 'date' })
   fechaCompra: Date;
 
