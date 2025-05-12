@@ -21,15 +21,6 @@ import { Roles } from '../../auth/decorators/roles.decorator';
 import { CreateDescuentoDto } from '../dto/descuentos/create-descuento.dto';
 import { UpdateDescuentoDto } from '../dto/descuentos/update-descuento.dto';
 import { DescuentosService } from '../services/descuentos.service';
-import { Descuento } from '../entities/descuento.entity';
-import {
-  DeleteDescuentoResponseDto,
-  DescuentosNotFoundResponseDto,
-} from '../dto/descuentos/responses-dto';
-import {
-  DeleteResultResponseDto,
-  UpdateResultResponseDto,
-} from 'src/config/responses-dto';
 
 @ApiTags('Descuentos')
 @Controller('video-games/:videogame/descuentos')
@@ -50,12 +41,10 @@ export class DescuentosController {
   @ApiResponse({
     status: 200,
     description: 'Los descuentos fueron encontrados exitosamente',
-    type: [Descuento],
   })
   @ApiResponse({
     status: 404,
     description: 'Los descuentos no fueron encontrados',
-    type: DescuentosNotFoundResponseDto,
   })
   @Get()
   @Public()
@@ -75,7 +64,6 @@ export class DescuentosController {
   @ApiResponse({
     status: 200,
     description: 'Los descuentos fueron encontrados exitosamente',
-    type: Descuento,
   })
   @Post()
   @Roles(Role.ADMINISTRATOR)
@@ -102,12 +90,10 @@ export class DescuentosController {
   @ApiResponse({
     status: 200,
     description: 'Los descuentos fueron encontrados exitosamente',
-    type: UpdateResultResponseDto,
   })
   @ApiResponse({
     status: 404,
     description: 'Los descuentos no fueron encontrados',
-    type: DescuentosNotFoundResponseDto,
   })
   @Patch(':descuento')
   @Roles(Role.ADMINISTRATOR)
@@ -133,12 +119,10 @@ export class DescuentosController {
   @ApiResponse({
     status: 200,
     description: 'El descuento fue eliminados exitosamente',
-    type: DeleteResultResponseDto,
   })
   @ApiResponse({
     status: 409,
     description: 'El descuento no fue eliminado correctamente',
-    type: DeleteDescuentoResponseDto,
   })
   @Delete(':descuento')
   @Roles(Role.ADMINISTRATOR)

@@ -79,9 +79,8 @@ export class AuthService {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...user } = await this.usersService.findById(id);
     const role = await this.usersService.getRole(id);
-    const videogames = await this.videoGameService.findUserVideoGames(id);
 
-    const calificacion = await this.calficacionRepository
+    const calificaciones = await this.calficacionRepository
       .createQueryBuilder('calificacion')
       .leftJoin('calificacion.user', 'user')
       .leftJoin('calificacion.videoGame', 'videoGame')
@@ -97,7 +96,7 @@ export class AuthService {
       .select('likes.noticia_id AS "noticiaID"')
       .getRawMany();
 
-    return { ...user, role, videogames, calificacion, likes };
+    return { ...user, role, calificaciones, likes };
   }
 
   async deleteAccount(id: number) {

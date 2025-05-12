@@ -6,7 +6,6 @@ import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/config/enums/roles.enum';
-import { SalesReportResponseDto } from './dto/get-sales.dto';
 
 @Controller('statistics')
 @ApiTags('Statistics')
@@ -24,7 +23,6 @@ export class StatisticsController {
   @ApiResponse({
     status: 200,
     description: 'Real-time statistics data',
-    type: SalesReportResponseDto,
   })
   @ApiResponse({
     status: 403,

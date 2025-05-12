@@ -11,17 +11,6 @@ import { UsersService } from '../services/users.service';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { User } from '../entities/user.entity';
-import {
-  DeleteUserConflictResponseDto,
-  UserConflictResponseDto,
-  UserNotFoundResponseDto,
-} from '../dto/responses-dto';
-import {
-  DeleteResultResponseDto,
-  GetRoleResponseDto,
-  UpdateResultResponseDto,
-} from 'src/config/responses-dto';
 
 @Controller('users')
 @ApiTags('Users')
@@ -41,12 +30,10 @@ export class UsersController {
   @ApiResponse({
     status: 200,
     description: 'El usuario fue creado correctamente',
-    type: CreateUserDto,
   })
   @ApiResponse({
     status: 409,
     description: 'El usuario ya existe',
-    type: UserConflictResponseDto,
   })
   @Post()
   createUser(@Body() userFields: CreateUserDto) {
@@ -65,12 +52,10 @@ export class UsersController {
   @ApiResponse({
     status: 200,
     description: 'El usuario fue encontrado exitosamente',
-    type: User,
   })
   @ApiResponse({
     status: 404,
     description: 'El usuario no fue encontrado',
-    type: UserNotFoundResponseDto,
   })
   @Get(':id')
   findOne(@Param('id') id: number) {
@@ -91,12 +76,10 @@ export class UsersController {
   @ApiResponse({
     status: 200,
     description: 'El usuario fue actualizado exitosamente',
-    type: UpdateResultResponseDto,
   })
   @ApiResponse({
     status: 409,
     description: 'El usuario no fue actualizado correctamente',
-    type: UpdateUserDto,
   })
   @Patch(':id')
   updateUser(@Param('id') id: number, @Body() userFields: UpdateUserDto) {
@@ -115,12 +98,10 @@ export class UsersController {
   @ApiResponse({
     status: 200,
     description: 'El usuario fue eliminado exitosamente',
-    type: DeleteResultResponseDto,
   })
   @ApiResponse({
     status: 409,
     description: 'El usuario no fue eliminado correctamente',
-    type: DeleteUserConflictResponseDto,
   })
   @Delete(':id')
   deleteUser(@Param('id') id: number) {
@@ -140,12 +121,10 @@ export class UsersController {
     status: 200,
     //Para revisar
     description: 'Retorna el rol del un usuario',
-    type: GetRoleResponseDto,
   })
   @ApiResponse({
     status: 404,
     description: 'El usuario no fue encontrado',
-    type: UserNotFoundResponseDto,
   })
   @Get(':id/role')
   getRole(@Param('id') id: number) {

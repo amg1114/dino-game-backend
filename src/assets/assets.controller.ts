@@ -11,9 +11,6 @@ import {
 
 import { AssetsService } from './assets.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ImageNotFoundResponseDto } from './dto/responses-dto';
-import { DeleteResultResponseDto } from 'src/config/responses-dto';
-import { Asset } from './asset.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileTypeValidator } from './validators/filte-type.validator';
 import { FileRatioValidator } from './validators/file-ratio.validator';
@@ -37,7 +34,6 @@ export class AssetsController {
   @ApiResponse({
     status: 200,
     description: 'La imagen fue creada exitosamente',
-    type: Asset,
   })
   @UseInterceptors(FileInterceptor('file'))
   @Post('video-games/:videogame/:field')
@@ -68,7 +64,6 @@ export class AssetsController {
   @ApiResponse({
     status: 200,
     description: 'La imagen fue creada exitosamente',
-    type: Asset,
   })
   @UseInterceptors(FileInterceptor('file'))
   @Post('noticias/:noticia')
@@ -96,12 +91,10 @@ export class AssetsController {
   @ApiResponse({
     status: 200,
     description: 'La imagen fue eliminada exitosamente',
-    type: DeleteResultResponseDto,
   })
   @ApiResponse({
     status: 404,
     description: 'La imagen no fue encontrada',
-    type: ImageNotFoundResponseDto,
   })
   @Delete(':id')
   deleteAsset(@Param('id') id: number) {
