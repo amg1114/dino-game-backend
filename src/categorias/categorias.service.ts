@@ -120,20 +120,15 @@ export class CategoriasService {
 
   /**
    * Encuentra una categoria por su ID
-   * @param id ID de la categoria
+   * @param slug Slug de la categoria
    * @returns Categoria encontrada
    */
-  async findCategoriaById(id: number) {
+  async findCategoriaBySlug(slug: string) {
     const categoria = await this.categoriasRepository
       .createQueryBuilder('categoria')
       .leftJoinAndSelect('categoria.videoGames', 'videoGames')
-      .leftJoinAndSelect('videoGames.thumb', 'thumb')
-      .leftJoinAndSelect('videoGames.hero', 'hero')
-      .leftJoinAndSelect('videoGames.descuentos', 'descuentos')
-      .where('categoria.id = :id', { id })
-      .addOrderBy('descuentos.fechaInicio', 'ASC')
-      .addOrderBy('descuentos.fechaFin', 'ASC')
-      .addOrderBy('asset.index', 'ASC')
+      .where('categoria.slug = :slug', { slug })
+      .orderBy('videoGames.fecha_lanzamiento', 'DESC')
       .getOne();
 
     if (!categoria) {

@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   Param,
   Patch,
   Post,
@@ -17,10 +18,33 @@ import { Role } from 'src/config/enums/roles.enum';
 import { CreateComentarioDto } from '../dto/calificaciones/create-comentario.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-@Controller('video-games/:videogame/calificaciones')
-@UseGuards(AuthGuard, RolesGuard)
+@Controller('calificaciones')
 @ApiTags('Calificaciones')
 export class CalificacionesController {
+  constructor(private readonly calificacionesService: CalificacionesService) {}
+
+  @Get('/best-video-game/:slug')
+  @ApiOperation({
+    summary: 'Calificaciones',
+    description: 'Obtiene el videojuego mejor calificado',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'El videojuego mejor calificado',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'No se encontraron calificaciones',
+  })
+  async bestRatedVideoGameByCategory(@Param('slug') slug: string) {
+    return this.calificacionesService.bestRatedVideoGameByCategory(slug);
+  }
+}
+
+@Controller('video-games/:videogame')
+@UseGuards(AuthGuard, RolesGuard)
+@ApiTags('Calificaciones Videogame')
+export class CalificacionesVideogameController {
   constructor(private readonly calificacionesService: CalificacionesService) {}
 
   @Post()

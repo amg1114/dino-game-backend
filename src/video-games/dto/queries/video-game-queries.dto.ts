@@ -20,9 +20,9 @@ export class VideoGameQueries {
   @Min(0)
   offset?: number;
 
-  @IsNumber()
+  @IsString()
   @IsOptional()
-  categoria?: number;
+  categoria?: string;
 
   @IsOptional()
   @Transform(({ key, obj }) => obj[key] === 'true' || obj[key] === '1')

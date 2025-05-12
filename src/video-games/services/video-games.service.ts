@@ -131,7 +131,7 @@ export class VideoGamesService {
     }
 
     if (queries.categoria) {
-      videoGames = videoGames.andWhere('categorias.id = :categoria', {
+      videoGames = videoGames.andWhere('categorias.slug = :categoria', {
         categoria: queries.categoria,
       });
     }

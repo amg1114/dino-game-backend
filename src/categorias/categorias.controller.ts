@@ -59,8 +59,8 @@ export class CategoriasController {
   }
 
   /**
-   * EndPoint para obtener una categoria por el parámetro ID
-   * @param id ID de la categoria a buscar
+   * EndPoint para obtener una categoria por el parámetro slug
+   * @param slug slug de la categoria a buscar
    * @returns {Promise<Categoria>} categoria buscada
    */
   @ApiOperation({
@@ -75,9 +75,9 @@ export class CategoriasController {
     status: 404,
     description: 'Categoria no encontrada',
   })
-  @Get(':id')
-  getOne(@Param('id') id: number): Promise<Categoria> {
-    return this.categoriasService.findCategoriaById(id);
+  @Get(':slug')
+  getOne(@Param('slug') slug: string): Promise<Categoria> {
+    return this.categoriasService.findCategoriaBySlug(slug);
   }
 
   /**
@@ -112,7 +112,6 @@ export class CategoriasController {
     summary: 'Actualizar una categoria',
     description: 'Actualiza la categoria de un videojuego',
   })
-  //Para revisar
   @ApiResponse({
     status: 200,
     description: 'La categoria fue actualizada exitosamente',
