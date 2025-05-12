@@ -260,12 +260,7 @@ export class VideoGamesService {
     const user = await this.usersService.findById(userId);
     let userVideoGames = this.userVideoGameRepository
       .createQueryBuilder('userVideoGame')
-      .leftJoinAndMapMany(
-        'userVideoGame.videoGame',
-        VideoGame,
-        'videoGame',
-        'userVideoGame.videoGame = videoGame.id',
-      )
+      .leftJoinAndSelect('userVideoGame.videoGame', 'videoGame')
       .leftJoinAndSelect('videoGame.thumb', 'thumb')
       .leftJoinAndSelect('videoGame.categorias', 'categorias')
       .where('userVideoGame.user = :user', { user: user.id });

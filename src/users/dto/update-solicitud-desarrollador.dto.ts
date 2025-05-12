@@ -1,8 +1,8 @@
 import { IsEnum, IsNotEmpty } from 'class-validator';
-import { EstadoSolicitud } from '../entities/solicitud-desarrollador.entity';
+import { State } from 'src/config/enums/state';
 
 export class UpdateSolicitudDesarrolladorDto {
   @IsNotEmpty()
-  @IsEnum(EstadoSolicitud)
-  estado: EstadoSolicitud;
+  @IsEnum(State)
+  estado: State;
 }

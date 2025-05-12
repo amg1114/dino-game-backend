@@ -1,12 +1,7 @@
 import { Entity, Column, OneToOne, JoinColumn } from 'typeorm';
 import { User } from './user.entity';
 import { BaseEntity } from '../../config/models/base-entity.entity';
-
-export enum EstadoSolicitud {
-  Pendiente = 0,
-  Aceptada = 1,
-  Rechazada = 2,
-}
+import { State } from '../../config/enums/state';
 
 @Entity('solicitudes-desarrollador')
 export class SolicitudDesarrollador extends BaseEntity {
@@ -22,8 +17,8 @@ export class SolicitudDesarrollador extends BaseEntity {
 
   @Column({
     type: 'enum',
-    enum: EstadoSolicitud,
-    default: EstadoSolicitud.Pendiente,
+    enum: State,
+    default: State.PENDING,
   })
-  estado: EstadoSolicitud;
+  estado: State;
 }
