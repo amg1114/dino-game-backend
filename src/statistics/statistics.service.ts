@@ -22,9 +22,13 @@ export class StatisticsService {
 
   async getStatistics(month: string, year: string, developerId?: number) {
     return {
+      season: {
+        month,
+        year,
+      },
       yearSales: {
-        currentYearSales: await this.getAllSales(year, undefined, developerId),
-        prevYearSales: await this.getAllSales(
+        currentSales: await this.getAllSales(year, undefined, developerId),
+        prevSales: await this.getAllSales(
           String(Number(year) - 1),
           undefined,
           developerId,
@@ -36,8 +40,8 @@ export class StatisticsService {
         ),
       },
       monthSales: {
-        currentMonthSales: await this.getAllSales(year, month, developerId),
-        prevMonthSales: await this.getAllSales(
+        currentSales: await this.getAllSales(year, month, developerId),
+        prevSales: await this.getAllSales(
           year,
           String(Number(month) - 1),
           developerId,
