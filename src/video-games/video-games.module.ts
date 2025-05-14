@@ -26,6 +26,7 @@ import {
   CalificacionesVideogameController,
   ComentariosController,
 } from './controllers/calificaciones.controller';
+import { VersionService } from './services/version.service';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import {
     DescuentosService,
     CategoriasService,
     CalificacionesService,
+    VersionService,
   ],
   controllers: [
     VersionsController,
@@ -64,6 +66,7 @@ import {
     UsersService,
     DevelopersService,
     CategoriasModule,
+    VersionService,
   ],
 })
 export class VideoGamesModule {}
