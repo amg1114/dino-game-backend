@@ -260,9 +260,9 @@ export class CalificacionesService {
       if (!videoGameRecent) {
         throw new Error('No se encontraron videojuegos en esta categoría');
       }
-      return this.videoGameService.findById(videoGameRecent.id);
+      return this.videoGameService.findBySlug(videoGameRecent.slug);
     }
 
-    return this.videoGameService.findById(bestVideoGame.videoGameId);
+    return this.videoGameService.findBySlug(bestVideoGame.videoGame.slug);
   }
 }

@@ -49,17 +49,17 @@ export class ReportsController {
     status: 404,
     description: 'Usuario, Videojuego o Tipo de Reporte no encontrado',
   })
-  @Post(':videoGameId')
+  @Post(':videoGameSlug')
   @Roles(Role.ESTANDAR)
   create(
     @Body() createReportDto: CreateReportDto,
     @Request() req: any,
-    @Param('videoGameId') videoGameId: number,
+    @Param('videoGameSlug') videoGameSlug: string,
   ) {
     return this.reportsService.create(
       createReportDto,
       req.user.id,
-      videoGameId,
+      videoGameSlug,
     );
   }
 
@@ -111,14 +111,14 @@ export class ReportsController {
     description: 'Usuario o Videojuego no encontrado',
   })
   @Roles(Role.ADMINISTRATOR, Role.DEVELOPER)
-  @Get('video-game/:videoGameId')
+  @Get('video-game/:videoGameSlug')
   findByVideoGame(
-    @Param('videoGameId') videoGameId: string,
+    @Param('videoGameSlug') videoGameSlug: string,
     @Query() query: ReportQueries,
     @Request() req: any,
   ) {
     return this.reportsService.findByVideoGame(
-      +videoGameId,
+      videoGameSlug,
       query,
       req.user.id,
     );

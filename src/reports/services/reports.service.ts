@@ -29,15 +29,15 @@ export class ReportsService {
   async create(
     createReportDto: CreateReportDto,
     userId: number,
-    videoGameId: number,
+    videoGameSlug: string,
   ) {
     const user = await this.userService.findById(userId);
-    const videoGame = await this.videoGameService.findById(videoGameId);
+    const videoGame = await this.videoGameService.findBySlug(videoGameSlug);
     const typeReport = await this.typeReportService.findById(
       createReportDto.typeReportId,
     );
 
-    const usersReports = await this.findByVideoGame(videoGameId, {}, userId);
+    const usersReports = await this.findByVideoGame(videoGameSlug, {}, userId);
 
     const existingReport = usersReports.data.find(
       (report) => report.user.id === userId,
@@ -77,13 +77,13 @@ export class ReportsService {
   }
 
   async findByVideoGame(
-    videoGameId: number,
+    videoGameSlug: string,
     query: ReportQueries,
     userId: number,
   ): Promise<PaginatedDataResponse<Report>> {
     const { offset = 0, limit = null, search = '', order = 'ASC' } = query;
     const user = await this.userService.findById(userId);
-    const videoGame = await this.videoGameService.findById(videoGameId);
+    const videoGame = await this.videoGameService.findBySlug(videoGameSlug);
     if (!user || !videoGame) {
       throw new NotFoundException('User or VideoGame not found');
     }
@@ -94,7 +94,7 @@ export class ReportsService {
     }
     const [data, total] = await this.reportRepository.findAndCount({
       where: {
-        videoGame: { id: videoGameId },
+        videoGame: { slug: videoGameSlug },
         ...(search ? { typeReport: { title: search } } : {}),
       },
       relations: ['user', 'videoGame', 'typeReport'],

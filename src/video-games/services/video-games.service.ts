@@ -24,7 +24,6 @@ import { CreateVersionDto } from '../dto/versions/create-version.dto';
 import { DevelopersService } from 'src/users/services/developers.service';
 import slugify from 'slugify';
 import { PaginatedDataResponse } from 'src/config/models/paginatedData-response.interface';
-import { VideoGameAsset } from 'src/assets/asset.entity';
 import { GameOrderBy } from 'src/config/enums/orderby.enum';
 
 @Injectable()
@@ -48,17 +47,13 @@ export class VideoGamesService {
    * @param id ID del videojuego a buscar
    * @returns VideoJuego encontrado
    */
-  async findById(id: number) {
+  async findBySlug(slug: string) {
     const videogame = await this.videoGameRepository
       .createQueryBuilder('videoGame')
       .leftJoinAndSelect('videoGame.thumb', 'thumb')
       .leftJoinAndSelect('videoGame.hero', 'hero')
-      .leftJoinAndMapMany(
-        'videoGame.assets',
-        VideoGameAsset,
-        'assets',
-        'assets.videoGame = videoGame.id',
-      )
+      .leftJoinAndSelect('videoGame.assets', 'assets')
+      .leftJoinAndSelect('assets.asset', 'asset')
       .leftJoinAndSelect('videoGame.versions', 'versions')
       .leftJoinAndSelect('versions.requisitos', 'requisitos')
       .leftJoinAndSelect('videoGame.descuentos', 'descuentos')
@@ -66,7 +61,7 @@ export class VideoGamesService {
       .leftJoinAndSelect('videoGame.developer', 'developer')
       .leftJoinAndSelect('videoGame.comentarios', 'comentarios')
       .leftJoinAndSelect('comentarios.user', 'userComentario')
-      .where('videoGame.id = :id', { id })
+      .where('videoGame.slug = :slug', { slug })
       .addOrderBy('versions.releaseDate', 'DESC')
       .addOrderBy('descuentos.fechaInicio', 'ASC')
       .addOrderBy('descuentos.fechaFin', 'ASC')
@@ -81,7 +76,7 @@ export class VideoGamesService {
     const calificaciones = await this.videoGameRepository
       .createQueryBuilder('videoGame')
       .leftJoinAndSelect('videoGame.calificaciones', 'calificaciones')
-      .where('videoGame.id = :id', { id })
+      .where('videoGame.slug = :slug', { slug })
       .select('ROUND(AVG(calificaciones.puntaje)::numeric, 1)', 'promedio')
       .addSelect('COUNT(calificaciones.id)', 'cantidad')
       .groupBy('videoGame.id')
