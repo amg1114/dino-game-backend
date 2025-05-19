@@ -1,3 +1,4 @@
+import { Version } from '../video-games/entities/version.entity';
 import { BaseEntity } from '../config/models/base-entity.entity';
 import { Noticia } from '../noticias/entities/noticia.entity';
 import { VideoGame } from '../video-games/entities/video-game.entity';
@@ -22,6 +23,9 @@ export class Asset extends BaseEntity {
 
   @OneToMany(() => VideoGameAsset, (videoGameAsset) => videoGameAsset.asset)
   videoGameAssets: VideoGameAsset[];
+
+  @OneToOne(() => Version, (version) => version.file)
+  videoGameFile: Version;
 }
 
 @Entity('video_game_assets')

@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { VideoGamesService } from '../video-games/services/video-games.service';
 import { NoticiasService } from '../noticias/services/noticias.service';
 import { FirebaseService } from './services/firebase.service';
+import { VersionService } from 'src/video-games/services/version.service';
 
 @Injectable()
 export class AssetsService {
@@ -13,6 +14,7 @@ export class AssetsService {
     private readonly assetsRepository: Repository<Asset>,
     @InjectRepository(VideoGameAsset)
     private readonly videoGameAssetsRepository: Repository<VideoGameAsset>,
+    private readonly versionsService: VersionService,
     private readonly videoGamesService: VideoGamesService,
     private readonly noticiasService: NoticiasService,
     private readonly firebaseService: FirebaseService,
@@ -81,6 +83,22 @@ export class AssetsService {
     const asset = this.assetsRepository.create({
       url,
       noticiaThumb: noticia,
+      title: file.originalname,
+    });
+    return this.assetsRepository.save(asset);
+  }
+
+  async createVersionAsset(owner: number, file: Express.Multer.File) {
+    const version = await this.versionsService.findById(owner);
+
+    if (!version) {
+      throw new HttpException('Version not found', HttpStatus.NOT_FOUND);
+    }
+
+    const url = await this.firebaseService.uploadVersionFile(file, version);
+    const asset = this.assetsRepository.create({
+      url,
+      videoGameFile: version,
       title: file.originalname,
     });
     return this.assetsRepository.save(asset);
