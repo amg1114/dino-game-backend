@@ -54,7 +54,7 @@ export class FileRatioValidator extends FileValidator<
 
     try {
       const metadata = await sharp(file.buffer).metadata();
-      return width / height === metadata.width / metadata.height;
+      return Math.abs(metadata.width / metadata.height - width / height) < 0.01;
     } catch (error) {
       return false;
     }
