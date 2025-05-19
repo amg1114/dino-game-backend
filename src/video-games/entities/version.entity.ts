@@ -18,12 +18,6 @@ export class Version extends BaseEntity {
   @Column()
   descripcion: string;
 
-  @Column()
-  size: string;
-
-  @Column()
-  releaseDate: Date;
-
   @ManyToOne(() => VideoGame, (videoGame) => videoGame.versions, {
     onDelete: 'CASCADE',
   })
