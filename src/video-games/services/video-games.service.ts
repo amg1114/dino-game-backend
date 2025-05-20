@@ -67,7 +67,7 @@ export class VideoGamesService {
       .leftJoinAndSelect('videoGame.comentarios', 'comentarios')
       .leftJoinAndSelect('comentarios.user', 'userComentario')
       .where('videoGame.id = :id', { id })
-      .addOrderBy('versions.releaseDate', 'DESC')
+      .addOrderBy('versions.createdAt', 'DESC')
       .addOrderBy('descuentos.fechaInicio', 'ASC')
       .addOrderBy('descuentos.fechaFin', 'ASC')
       .addOrderBy('categorias.titulo', 'ASC')
@@ -88,6 +88,56 @@ export class VideoGamesService {
       .getRawOne();
 
     return { ...videogame, calificaciones };
+  }
+
+  /**
+   *
+   * @param slug Slug del videojuego a buscar
+   * @returns
+   */
+  async findBySlug(slug: string) {
+    const videogame = await this.videoGameRepository
+      .createQueryBuilder('videoGame')
+      .leftJoinAndSelect('videoGame.thumb', 'thumb')
+      .leftJoinAndSelect('videoGame.hero', 'hero')
+      .leftJoinAndSelect('videoGame.assets', 'assets')
+      .leftJoinAndSelect('assets.asset', 'asset')
+      .leftJoinAndSelect('videoGame.versions', 'versions')
+      .leftJoinAndSelect('versions.requisitos', 'requisitos')
+      .leftJoinAndSelect('videoGame.descuentos', 'descuentos')
+      .leftJoinAndSelect('videoGame.categorias', 'categorias')
+      .leftJoinAndSelect('videoGame.developer', 'developer')
+      .leftJoinAndSelect('videoGame.comentarios', 'comentarios')
+      .leftJoinAndSelect('comentarios.user', 'userComentario')
+      .where('videoGame.slug = :slug', { slug })
+      .addOrderBy('versions.createdAt', 'DESC')
+      .addOrderBy('descuentos.fechaInicio', 'ASC')
+      .addOrderBy('descuentos.fechaFin', 'ASC')
+      .addOrderBy('categorias.titulo', 'ASC')
+      .addOrderBy('comentarios.createdAt', 'DESC')
+      .getOne();
+
+    if (videogame === null) {
+      throw new HttpException('Videogame was not found', HttpStatus.NOT_FOUND);
+    }
+
+    let assetsDestructured = [];
+    if (videogame.assets && Array.isArray(videogame.assets)) {
+      assetsDestructured = videogame.assets.map(
+        (videoGameAsset) => videoGameAsset.asset,
+      );
+    }
+
+    const calificaciones = await this.videoGameRepository
+      .createQueryBuilder('videoGame')
+      .leftJoinAndSelect('videoGame.calificaciones', 'calificaciones')
+      .where('videoGame.slug = :slug', { slug })
+      .select('ROUND(AVG(calificaciones.puntaje)::numeric, 1)', 'promedio')
+      .addSelect('COUNT(calificaciones.id)', 'cantidad')
+      .groupBy('videoGame.id')
+      .getRawOne();
+
+    return { ...videogame, assets: [assetsDestructured], calificaciones };
   }
 
   /**

@@ -105,7 +105,7 @@ export class VideoGamesController {
    */
   @ApiOperation({
     summary: 'Obtener un videojuego',
-    description: 'Obtiene un videojuego basado en el id recibido',
+    description: 'Obtiene un videojuego basado en el slug recibido',
   })
   @ApiResponse({
     status: 200,
@@ -115,10 +115,10 @@ export class VideoGamesController {
     status: 404,
     description: 'El videojuego no fue encontrado',
   })
-  @Get(':videogame')
+  @Get(':slug')
   @Public()
-  findOne(@Param('videogame') videogame: number) {
-    return this.videoGamesService.findById(videogame);
+  findOne(@Param('slug') slug: string) {
+    return this.videoGamesService.findBySlug(slug);
   }
 
   /**
