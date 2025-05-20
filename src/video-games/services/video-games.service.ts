@@ -73,6 +73,13 @@ export class VideoGamesService {
       throw new HttpException('Videogame was not found', HttpStatus.NOT_FOUND);
     }
 
+    let assetsDestructured = [];
+    if (videogame.assets && Array.isArray(videogame.assets)) {
+      assetsDestructured = videogame.assets.map(
+        (videoGameAsset) => videoGameAsset.asset,
+      );
+    }
+
     const calificaciones = await this.videoGameRepository
       .createQueryBuilder('videoGame')
       .leftJoinAndSelect('videoGame.calificaciones', 'calificaciones')
@@ -82,7 +89,7 @@ export class VideoGamesService {
       .groupBy('videoGame.id')
       .getRawOne();
 
-    return { ...videogame, calificaciones };
+    return { ...videogame, assets: [assetsDestructured], calificaciones };
   }
 
   /**
