@@ -8,6 +8,7 @@ import { VideoGamesService } from '../video-games/services/video-games.service';
 import { NoticiasModule } from '../noticias/noticias.module';
 import { NoticiasService } from '../noticias/services/noticias.service';
 import { FirebaseService } from './services/firebase.service';
+import { VersionService } from 'src/video-games/services/version.service';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { FirebaseService } from './services/firebase.service';
   providers: [
     AssetsService,
     VideoGamesService,
+    VersionService,
     NoticiasService,
     FirebaseService,
   ],

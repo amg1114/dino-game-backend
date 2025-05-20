@@ -14,13 +14,14 @@ import {
 import { VideoGame } from 'src/video-games/entities/video-game.entity';
 import { Noticia } from 'src/noticias/entities/noticia.entity';
 import { Response } from 'express';
+import { Version } from 'src/video-games/entities/version.entity';
 
 @Injectable()
 export class FirebaseService {
   private async uploadFile(
     file: Express.Multer.File,
     folder: FirebaseFilePath,
-    ownerId: number,
+    ownerId: number | string,
   ) {
     const fileRef = ref(
       storage,
@@ -47,6 +48,12 @@ export class FirebaseService {
     noticia: Noticia,
   ): Promise<string> {
     return this.uploadFile(file, NOTICIAS_FILE_PATH, noticia.id);
+  }
+
+  async uploadVersionFile(file: Express.Multer.File, version: Version) {
+    const path = `${version.videoGame.id}/versiones/${version.id}`;
+
+    return this.uploadFile(file, VIDEO_GAMES_FILE_PATH, path);
   }
 
   async deleteFile(path: string) {

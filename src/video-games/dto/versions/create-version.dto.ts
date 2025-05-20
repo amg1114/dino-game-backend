@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsDate, IsArray } from 'class-validator';
+import { IsString, IsNotEmpty, IsArray } from 'class-validator';
 
 export class CreateVersionDto {
   @IsString()
@@ -8,18 +8,6 @@ export class CreateVersionDto {
   @IsString()
   @IsNotEmpty()
   descripcion: string;
-
-  @IsString()
-  @IsNotEmpty()
-  size: string;
-
-  @IsString()
-  @IsNotEmpty()
-  url: string;
-
-  @IsDate()
-  @IsNotEmpty()
-  releaseDate: Date;
 
   @IsArray()
   @IsNotEmpty()

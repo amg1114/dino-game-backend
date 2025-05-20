@@ -6,6 +6,7 @@ import {
   ParseIntPipe,
   Post,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 
@@ -14,9 +15,12 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileTypeValidator } from './validators/filte-type.validator';
 import { FileRatioValidator } from './validators/file-ratio.validator';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 @ApiTags('Assets')
 @Controller('assets')
+@UseGuards(AuthGuard, RolesGuard)
 export class AssetsController {
   constructor(private readonly assetsService: AssetsService) {}
 
@@ -77,6 +81,28 @@ export class AssetsController {
     file: Express.Multer.File,
   ) {
     return this.assetsService.createNoticiaAsset(id, file);
+  }
+
+  @Post('versions/:version')
+  @UseInterceptors(FileInterceptor('file'))
+  createVersionFile(
+    @Param('version', ParseIntPipe) id: number,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new FileTypeValidator({
+            allowedTypes: [
+              'application/zip',
+              'application/x-zip-compressed',
+              'application/x-zip',
+            ],
+          }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+  ) {
+    return this.assetsService.createVersionAsset(id, file);
   }
 
   /**

@@ -120,16 +120,28 @@ export class VideoGamesService {
       .leftJoinAndSelect('videoGame.hero', 'hero')
       .leftJoinAndSelect('videoGame.categorias', 'categorias')
       .leftJoinAndSelect('videoGame.descuentos', 'descuentos')
-      .leftJoin('videoGame.developer', 'developer');
+      .leftJoinAndSelect('videoGame.developer', 'developer'); // Use leftJoinAndSelect for developer
 
-    if (queries.search) {
-      videoGames = videoGames
-        .where('videoGame.titulo ILIKE :search', {
+    // Grouped search and developer filter
+    if (queries.search && queries.developer) {
+      videoGames = videoGames.andWhere(
+        '(developer.id = :developer AND (videoGame.titulo ILIKE :search OR videoGame.descripcion ILIKE :search))',
+        {
+          developer: queries.developer,
           search: `%${queries.search}%`,
-        })
-        .orWhere('videoGame.descripcion ILIKE :search', {
+        },
+      );
+    } else if (queries.developer) {
+      videoGames = videoGames.andWhere('developer.id = :developer', {
+        developer: queries.developer,
+      });
+    } else if (queries.search) {
+      videoGames = videoGames.andWhere(
+        '(videoGame.titulo ILIKE :search OR videoGame.descripcion ILIKE :search)',
+        {
           search: `%${queries.search}%`,
-        });
+        },
+      );
     }
 
     if (queries.categoria) {
@@ -138,7 +150,6 @@ export class VideoGamesService {
       });
     }
 
-    console.log('Descuentos', queries.descuentos);
     if (queries.descuentos) {
       videoGames = videoGames.andWhere('descuentos.fechaFin >= :now', {
         now: new Date(),
@@ -152,12 +163,6 @@ export class VideoGamesService {
     if (queries.precio) {
       videoGames = videoGames.andWhere('videoGame.precio <= :precio', {
         precio: queries.precio,
-      });
-    }
-
-    if (queries.developer) {
-      videoGames = videoGames.andWhere('developer.id = :developer', {
-        developer: queries.developer,
       });
     }
 
@@ -175,6 +180,7 @@ export class VideoGamesService {
         .addGroupBy('hero.id')
         .addGroupBy('categorias.id')
         .addGroupBy('descuentos.id')
+        .addGroupBy('developer.id')
         .addOrderBy(`puntaje`, queries.order || 'ASC');
     } else {
       videoGames = videoGames.addOrderBy(
@@ -195,21 +201,17 @@ export class VideoGamesService {
       throw new HttpException('Videogames was not found', HttpStatus.NOT_FOUND);
     }
 
-    // Usamos getRawAndEntities() para obtener los datos crudos y las entidades
     let data: VideoGame[];
     let total: number;
 
     if (queries.orderBy === GameOrderBy.FEATURED) {
       const { raw, entities } = await videoGames.getRawAndEntities();
-
-      // Fusionamos las entidades con el puntaje calculado
       data = entities.map((entity, index) => {
         const puntaje = parseFloat(raw[index]['puntaje']);
-        entity.puntaje = puntaje; // Asignamos el puntaje al videojuego
+        entity.puntaje = puntaje;
         return entity;
       });
-
-      total = data.length; // O puedes usar entities.length o hacer otro count si lo prefieres
+      total = data.length;
     } else {
       const result = await videoGames.getManyAndCount();
       data = result[0];
@@ -491,7 +493,7 @@ export class VideoGamesService {
       });
     }
 
-    return videoGame;
+    return version;
   }
 
   /**
