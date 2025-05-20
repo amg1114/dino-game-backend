@@ -137,7 +137,7 @@ export class VideoGamesService {
       .groupBy('videoGame.id')
       .getRawOne();
 
-    return { ...videogame, assets: [assetsDestructured], calificaciones };
+    return { ...videogame, assets: assetsDestructured, calificaciones };
   }
 
   /**
