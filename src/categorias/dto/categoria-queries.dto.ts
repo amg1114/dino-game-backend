@@ -6,6 +6,7 @@ import {
   IsString,
   Min,
 } from 'class-validator';
+import { Transform } from 'class-transformer';
 import { FindOperator } from 'typeorm';
 
 export class CategoriaQueries {
@@ -29,6 +30,7 @@ export class CategoriaQueries {
   offset?: number;
 
   @IsOptional()
+  @Transform(({ key, obj }) => obj[key] === 'true' || obj[key] === '1')
   @IsBoolean()
   withGames?: boolean;
 
