@@ -30,8 +30,9 @@ export class DescuentosService {
     }
 
     const descuentos = await this.descuentoRepository.find({
-      where: { videoGame },
+      where: { videoGame: { id: videoGame.id } },
       order: { fechaInicio: 'ASC', fechaFin: 'ASC' },
+      relations: ['videoGame'],
     });
 
     if (descuentos.length === 0) {
