@@ -93,7 +93,7 @@ export class VideoGamesController {
     description: 'El videojuego no fue encontrado',
   })
   @Get('developer/:developer/video-games')
-  @Roles(Role.DEVELOPER)
+  @Roles(Role.ADMINISTRATOR, Role.DEVELOPER)
   getDeveloperVideoGames(@Param('developer') developer: number) {
     return this.videoGamesService.findDeveloperVideoGames(developer);
   }

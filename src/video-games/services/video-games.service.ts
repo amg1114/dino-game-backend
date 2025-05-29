@@ -287,7 +287,6 @@ export class VideoGamesService {
       .addOrderBy('descuentos.fechaInicio', 'ASC')
       .addOrderBy('descuentos.fechaFin', 'ASC')
       .leftJoinAndSelect('videoGame.developer', 'developer')
-      .leftJoinAndSelect('developer.user', 'user')
       .where('developer.id = :developer', { developer: developerId })
       .addOrderBy('videoGame.titulo', 'ASC')
       .getMany();
