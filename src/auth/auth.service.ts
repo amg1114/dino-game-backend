@@ -85,7 +85,11 @@ export class AuthService {
       .leftJoin('calificacion.user', 'user')
       .leftJoin('calificacion.videoGame', 'videoGame')
       .where('user_id = :id', { id })
-      .select(['video_game_id AS "videoGameID"', 'puntaje AS calificacion'])
+      .select([
+        'calificacion.video_game_id AS "videoGameID"',
+        'calificacion.puntaje AS calificacion',
+        'calificacion.id AS "calificacionID"',
+      ])
       .getRawMany();
 
     const likes = await this.likesRepository
