@@ -48,7 +48,7 @@ export class DescuentosController {
   })
   @Get()
   @Public()
-  getDescuentos(@Param('videogame') videogame: number) {
+  getDescuentos(@Param('videogame') videogame: string) {
     return this.descuentosService.getDescuentosByVideoGame(videogame);
   }
 
@@ -66,9 +66,9 @@ export class DescuentosController {
     description: 'Los descuentos fueron encontrados exitosamente',
   })
   @Post()
-  @Roles(Role.ADMINISTRATOR)
+  @Roles(Role.DEVELOPER)
   createDescuento(
-    @Param('videogame') videogame: number,
+    @Param('videogame') videogame: string,
     @Body() descuentoFields: CreateDescuentoDto,
   ) {
     return this.descuentosService.addDescuentoToVideoGame(
@@ -96,7 +96,7 @@ export class DescuentosController {
     description: 'Los descuentos no fueron encontrados',
   })
   @Patch(':descuento')
-  @Roles(Role.ADMINISTRATOR)
+  @Roles(Role.DEVELOPER)
   updateDescuento(
     @Param('descuento') descuento: number,
     @Body() descuentoFields: UpdateDescuentoDto,
@@ -125,7 +125,7 @@ export class DescuentosController {
     description: 'El descuento no fue eliminado correctamente',
   })
   @Delete(':descuento')
-  @Roles(Role.ADMINISTRATOR)
+  @Roles(Role.DEVELOPER)
   deleteDescuento(@Param('descuento') descuento: number) {
     return this.descuentosService.deleteDescuento(descuento);
   }
