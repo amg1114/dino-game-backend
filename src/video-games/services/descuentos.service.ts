@@ -22,8 +22,8 @@ export class DescuentosService {
    * @param id ID del videojuego
    * @returns Descuentos del videojuego
    */
-  async getDescuentosByVideoGame(id: number) {
-    const videoGame = await this.videoGameService.softFindById(+id);
+  async getDescuentosByVideoGame(slug: string) {
+    const videoGame = await this.videoGameService.softFindById(slug);
 
     if (!videoGame) {
       throw new HttpException('Video game not found', HttpStatus.NOT_FOUND);
@@ -48,8 +48,8 @@ export class DescuentosService {
    * @param descuento Descuento a agregar
    * @returns Descuento agregado
    */
-  async addDescuentoToVideoGame(id: number, descuento: CreateDescuentoDto) {
-    const videoGame = await this.videoGameService.softFindById(+id);
+  async addDescuentoToVideoGame(slug: string, descuento: CreateDescuentoDto) {
+    const videoGame = await this.videoGameService.softFindById(slug);
     if (!videoGame) {
       throw new HttpException('Video game not found', HttpStatus.NOT_FOUND);
     }
