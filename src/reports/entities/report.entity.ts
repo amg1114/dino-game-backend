@@ -10,10 +10,12 @@ export class Report extends BaseEntity {
   @Column({ type: 'enum', enum: State, default: State.PENDING })
   state: State;
 
-  @ManyToOne(() => User, (user) => user.reports)
+  @ManyToOne(() => User, (user) => user.reports, { onDelete: 'CASCADE' })
   user: User;
 
-  @ManyToOne(() => VideoGame, (videoGame) => videoGame.reports)
+  @ManyToOne(() => VideoGame, (videoGame) => videoGame.reports, {
+    onDelete: 'CASCADE',
+  })
   videoGame: VideoGame;
 
   @ManyToOne(() => TypeReport, (typeReport) => typeReport.reports, {

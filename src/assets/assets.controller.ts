@@ -1,10 +1,12 @@
 import {
+  Body,
   Controller,
   Delete,
   Param,
   ParseFilePipe,
   ParseIntPipe,
   Post,
+  Put,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -44,7 +46,7 @@ export class AssetsController {
   createVideoGameAsset(
     @Param('videogame', ParseIntPipe) id: number,
     @Param('field') field: string,
-
+    @Body('index') index: number,
     @UploadedFile(
       new ParseFilePipe({
         validators: [new FileTypeValidator(), new FileRatioValidator()],
@@ -52,7 +54,32 @@ export class AssetsController {
     )
     file: Express.Multer.File,
   ) {
-    return this.assetsService.createVideoGameAsset(id, file, field);
+    return this.assetsService.createVideoGameAsset(id, file, field, index);
+  }
+
+  @ApiOperation({
+    summary: 'Actualizar un asset de un videojuego',
+    description:
+      'Actualiza un asset existente de un videojuego en la base de datos',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'El asset fue actualizado exitosamente',
+  })
+  @ApiTags('Assets')
+  @Put('video-games/:videogame/:id')
+  @UseInterceptors(FileInterceptor('file'))
+  updateVideoGameAsset(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('videogame', ParseIntPipe) videogame: number,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [new FileTypeValidator(), new FileRatioValidator()],
+      }),
+    )
+    file: Express.Multer.File,
+  ) {
+    return this.assetsService.updateVideoGameAsset(id, videogame, file);
   }
 
   /**

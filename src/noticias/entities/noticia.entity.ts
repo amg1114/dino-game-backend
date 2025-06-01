@@ -32,7 +32,7 @@ export class Noticia extends BaseEntity {
   @JoinColumn({ name: 'noticiaThumb' })
   thumb: Asset;
 
-  @ManyToOne(() => User, (user) => user.noticias)
+  @ManyToOne(() => User, (user) => user.noticias, { onDelete: 'CASCADE' })
   autor: User;
 
   @OneToMany(() => Like, (like) => like.noticia)

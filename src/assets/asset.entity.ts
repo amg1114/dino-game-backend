@@ -30,9 +30,16 @@ export class Asset extends BaseEntity {
 
 @Entity('video_game_assets')
 export class VideoGameAsset extends BaseEntity {
-  @ManyToOne(() => VideoGame, (videoGame) => videoGame.assets)
+  @ManyToOne(() => VideoGame, (videoGame) => videoGame.assets, {
+    onDelete: 'CASCADE',
+  })
   videoGame: VideoGame;
 
-  @ManyToOne(() => Asset, (asset) => asset.id)
+  @Column({ type: 'int', default: 0 })
+  index: number;
+
+  @ManyToOne(() => Asset, (asset) => asset.id, {
+    onDelete: 'CASCADE',
+  })
   asset: Asset;
 }

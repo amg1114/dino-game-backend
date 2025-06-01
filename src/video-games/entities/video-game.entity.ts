@@ -48,10 +48,7 @@ export class VideoGame extends BaseEntity {
 
   puntaje?: number;
 
-  @OneToMany(() => VideoGameAsset, (asset) => asset.videoGame, {
-    cascade: true,
-    onDelete: 'CASCADE',
-  })
+  @OneToMany(() => VideoGameAsset, (asset) => asset.videoGame)
   assets: VideoGameAsset[];
 
   @ManyToMany(() => Categoria, (categoria) => categoria.videoGames, {
