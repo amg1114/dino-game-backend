@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Asset, VideoGameAsset } from './asset.entity';
 import { Repository } from 'typeorm';
@@ -30,6 +35,7 @@ export class AssetsService {
     owner: number,
     file: Express.Multer.File,
     field: string,
+    index: number,
   ) {
     const availableFields = ['thumb', 'hero', 'asset'];
     if (availableFields.indexOf(field) === -1) {
@@ -65,10 +71,38 @@ export class AssetsService {
         videoGame,
         asset,
       });
+
+      if (index) {
+        videoGameAsset.index = index;
+      }
+
       return await this.videoGameAssetsRepository.save(videoGameAsset);
     }
 
     return asset;
+  }
+
+  async updateVideoGameAsset(
+    assetID: number,
+    gameID: number,
+    file: Express.Multer.File,
+  ) {
+    const asset = await this.assetsRepository.findOne({
+      where: { id: assetID },
+      relations: ['videoGameThumb'],
+    });
+
+    if (!asset) {
+      throw new NotFoundException('Asset not found');
+    }
+    const videoGame = await this.videoGamesService.softFindById(gameID);
+    await this.firebaseService.deleteFile(asset.url);
+
+    const url = await this.firebaseService.uploadGameImage(file, videoGame);
+    asset.url = url;
+    asset.title = file.originalname;
+
+    return this.assetsRepository.save(asset);
   }
 
   /**
