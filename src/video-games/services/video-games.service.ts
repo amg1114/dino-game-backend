@@ -24,7 +24,6 @@ import { CreateVersionDto } from '../dto/versions/create-version.dto';
 import { DevelopersService } from 'src/users/services/developers.service';
 import slugify from 'slugify';
 import { PaginatedDataResponse } from 'src/config/models/paginatedData-response.interface';
-import { Asset } from 'src/assets/asset.entity';
 import { GameOrderBy } from 'src/config/enums/orderby.enum';
 
 @Injectable()
@@ -53,12 +52,7 @@ export class VideoGamesService {
       .createQueryBuilder('videoGame')
       .leftJoinAndSelect('videoGame.thumb', 'thumb')
       .leftJoinAndSelect('videoGame.hero', 'hero')
-      .leftJoinAndMapMany(
-        'videoGame.assets',
-        Asset,
-        'assets',
-        'assets.videoGame = videoGame.id',
-      )
+      .leftJoinAndSelect('videoGame.assets', 'assets')
       .leftJoinAndSelect('videoGame.versions', 'versions')
       .leftJoinAndSelect('versions.requisitos', 'requisitos')
       .leftJoinAndSelect('videoGame.descuentos', 'descuentos')
