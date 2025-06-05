@@ -9,8 +9,8 @@ import { Repository } from 'typeorm';
 import { CreateCalificacionDto } from '../dto/calificaciones/create-calificacion.dto';
 import { VideoGamesService } from './video-games.service';
 import { UsersService } from 'src/users/services/users.service';
+import { CategoriasService } from 'src/categorias/categorias.service';
 import { CreateComentarioDto } from '../dto/calificaciones/create-comentario.dto';
-
 @Injectable()
 export class CalificacionesService {
   constructor(
@@ -20,6 +20,7 @@ export class CalificacionesService {
     private readonly comentarioRepository: Repository<Comentario>,
     private readonly videoGameService: VideoGamesService,
     private readonly userService: UsersService,
+    private readonly categoriasService: CategoriasService,
   ) {}
 
   /**
@@ -121,7 +122,7 @@ export class CalificacionesService {
       throw new NotFoundException('No se encontró la calificación');
     }
 
-    const result = await this.calificacionRepository.delete(id);
+    const result = await this.calificacionRepository.softDelete(id);
 
     if (result.affected === 0) {
       throw new ConflictException('No se pudo eliminar la calificación');
@@ -216,12 +217,52 @@ export class CalificacionesService {
       throw new NotFoundException('No se encontró el comentario');
     }
 
-    const result = await this.comentarioRepository.delete(id);
+    const result = await this.comentarioRepository.softDelete(id);
 
     if (result.affected === 0) {
       throw new ConflictException('No se pudo eliminar el comentario');
     }
 
     return result;
+  }
+
+  /**
+   * Retrieves the video game with the highest average rating in a specific category.
+   *
+   * This method calculates the average ratings of video games within a category
+   * and retrieves the video game with the highest average rating.
+   *
+   * @param slug - The slug of the category to filter video games by.
+   * @returns A promise that resolves to the video game object with the highest average rating,
+   *          or `null` if no video games are found in the category.
+   *
+   * @throws {Error} If the category is not found.
+   */
+  async bestRatedVideoGameByCategory(slug: string) {
+    const category = await this.categoriasService.findCategoriaBySlug(slug);
+    if (!category) {
+      throw new Error(`No se encontró la categoría con slug: ${slug}`);
+    }
+
+    const bestVideoGame = await this.calificacionRepository
+      .createQueryBuilder('calificacion')
+      .select('videoGame.id', 'videoGameId')
+      .addSelect('AVG(calificacion.puntaje)', 'promedio')
+      .innerJoin('calificacion.videoGame', 'videoGame')
+      .innerJoin('videoGame.categorias', 'category')
+      .where('category.id = :categoryId', { categoryId: category.id })
+      .groupBy('videoGame.id')
+      .orderBy('promedio', 'DESC')
+      .getRawOne();
+
+    if (!bestVideoGame) {
+      const videoGameRecent = category.videoGames[0];
+      if (!videoGameRecent) {
+        throw new Error('No se encontraron videojuegos en esta categoría');
+      }
+      return this.videoGameService.findById(videoGameRecent.id);
+    }
+
+    return this.videoGameService.findById(bestVideoGame.videoGameId);
   }
 }

@@ -21,15 +21,6 @@ import { Roles } from '../../auth/decorators/roles.decorator';
 import { CreateDescuentoDto } from '../dto/descuentos/create-descuento.dto';
 import { UpdateDescuentoDto } from '../dto/descuentos/update-descuento.dto';
 import { DescuentosService } from '../services/descuentos.service';
-import { Descuento } from '../entities/descuento.entity';
-import {
-  DeleteDescuentoResponseDto,
-  DescuentosNotFoundResponseDto,
-} from '../dto/descuentos/responses-dto';
-import {
-  DeleteResultResponseDto,
-  UpdateResultResponseDto,
-} from 'src/config/responses-dto';
 
 @ApiTags('Descuentos')
 @Controller('video-games/:videogame/descuentos')
@@ -50,16 +41,14 @@ export class DescuentosController {
   @ApiResponse({
     status: 200,
     description: 'Los descuentos fueron encontrados exitosamente',
-    type: [Descuento],
   })
   @ApiResponse({
     status: 404,
     description: 'Los descuentos no fueron encontrados',
-    type: DescuentosNotFoundResponseDto,
   })
   @Get()
   @Public()
-  getDescuentos(@Param('videogame') videogame: number) {
+  getDescuentos(@Param('videogame') videogame: string) {
     return this.descuentosService.getDescuentosByVideoGame(videogame);
   }
 
@@ -75,12 +64,11 @@ export class DescuentosController {
   @ApiResponse({
     status: 200,
     description: 'Los descuentos fueron encontrados exitosamente',
-    type: Descuento,
   })
   @Post()
-  @Roles(Role.ADMINISTRATOR)
+  @Roles(Role.DEVELOPER)
   createDescuento(
-    @Param('videogame') videogame: number,
+    @Param('videogame') videogame: string,
     @Body() descuentoFields: CreateDescuentoDto,
   ) {
     return this.descuentosService.addDescuentoToVideoGame(
@@ -102,15 +90,13 @@ export class DescuentosController {
   @ApiResponse({
     status: 200,
     description: 'Los descuentos fueron encontrados exitosamente',
-    type: UpdateResultResponseDto,
   })
   @ApiResponse({
     status: 404,
     description: 'Los descuentos no fueron encontrados',
-    type: DescuentosNotFoundResponseDto,
   })
   @Patch(':descuento')
-  @Roles(Role.ADMINISTRATOR)
+  @Roles(Role.DEVELOPER)
   updateDescuento(
     @Param('descuento') descuento: number,
     @Body() descuentoFields: UpdateDescuentoDto,
@@ -133,15 +119,13 @@ export class DescuentosController {
   @ApiResponse({
     status: 200,
     description: 'El descuento fue eliminados exitosamente',
-    type: DeleteResultResponseDto,
   })
   @ApiResponse({
     status: 409,
     description: 'El descuento no fue eliminado correctamente',
-    type: DeleteDescuentoResponseDto,
   })
   @Delete(':descuento')
-  @Roles(Role.ADMINISTRATOR)
+  @Roles(Role.DEVELOPER)
   deleteDescuento(@Param('descuento') descuento: number) {
     return this.descuentosService.deleteDescuento(descuento);
   }

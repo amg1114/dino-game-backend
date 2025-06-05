@@ -19,7 +19,6 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Role } from 'src/config/enums/roles.enum';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { ReportsFoundDto } from '../dto/responses/found.dto';
 
 @ApiTags('Reportes')
 @Controller('reports')
@@ -102,7 +101,6 @@ export class ReportsController {
   @ApiResponse({
     status: 200,
     description: 'Lista de reportes obtenida exitosamente',
-    type: ReportsFoundDto,
   })
   @ApiResponse({
     status: 403,
@@ -139,7 +137,6 @@ export class ReportsController {
   @ApiResponse({
     status: 200,
     description: 'El reporte fue actualizado exitosamente',
-    type: UpdateReportDto,
   })
   @ApiResponse({
     status: 404,

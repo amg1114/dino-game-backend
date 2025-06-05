@@ -1,20 +1,11 @@
+import { Version } from '../video-games/entities/version.entity';
 import { BaseEntity } from '../config/models/base-entity.entity';
 import { Noticia } from '../noticias/entities/noticia.entity';
 import { VideoGame } from '../video-games/entities/video-game.entity';
-import {
-  Column,
-  Entity,
-  ManyToOne,
-  OneToMany,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 
 @Entity('assets')
-export class Asset {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class Asset extends BaseEntity {
   @Column()
   title: string;
 
@@ -32,13 +23,23 @@ export class Asset {
 
   @OneToMany(() => VideoGameAsset, (videoGameAsset) => videoGameAsset.asset)
   videoGameAssets: VideoGameAsset[];
+
+  @OneToOne(() => Version, (version) => version.file)
+  videoGameFile: Version;
 }
 
 @Entity('video_game_assets')
 export class VideoGameAsset extends BaseEntity {
-  @ManyToOne(() => VideoGame, (videoGame) => videoGame.assets)
+  @ManyToOne(() => VideoGame, (videoGame) => videoGame.assets, {
+    onDelete: 'CASCADE',
+  })
   videoGame: VideoGame;
 
-  @ManyToOne(() => Asset, (asset) => asset.id)
+  @Column({ type: 'int', default: 0 })
+  index: number;
+
+  @ManyToOne(() => Asset, (asset) => asset.id, {
+    onDelete: 'CASCADE',
+  })
   asset: Asset;
 }

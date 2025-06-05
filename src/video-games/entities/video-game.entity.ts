@@ -7,7 +7,6 @@ import {
   ManyToOne,
   OneToMany,
   OneToOne,
-  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Descuento } from './descuento.entity';
 import { Version } from './version.entity';
@@ -16,12 +15,10 @@ import { User } from '../../users/entities/user.entity';
 import { Asset, VideoGameAsset } from '../../assets/asset.entity';
 import { Calificacion, Comentario } from './calificacion.entity';
 import { Report } from '../../reports/entities/report.entity';
+import { BaseEntity } from '../../config/models/base-entity.entity';
 
 @Entity('videogames')
-export class VideoGame {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class VideoGame extends BaseEntity {
   @Column({ type: 'float' })
   precio: number;
 
@@ -51,10 +48,7 @@ export class VideoGame {
 
   puntaje?: number;
 
-  @OneToMany(() => VideoGameAsset, (asset) => asset.videoGame, {
-    cascade: true,
-    onDelete: 'CASCADE',
-  })
+  @OneToMany(() => VideoGameAsset, (asset) => asset.videoGame)
   assets: VideoGameAsset[];
 
   @ManyToMany(() => Categoria, (categoria) => categoria.videoGames, {
@@ -65,7 +59,7 @@ export class VideoGame {
   @ManyToOne(() => User, (user) => user.userDevelopedVideoGames, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'developerId' })
+  @JoinColumn({ name: 'developer_id' })
   developer: User;
 
   @OneToMany(() => Version, (version) => version.videoGame)

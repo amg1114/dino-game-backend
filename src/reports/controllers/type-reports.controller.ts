@@ -17,7 +17,6 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/config/enums/roles.enum';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { TypeReport } from '../entities/type-report.entity';
 import { ReportQueries } from '../dto/report-queries.dto';
 
 @ApiTags('Tipos de Reportes')
@@ -61,7 +60,6 @@ export class TypeReportsController {
   @ApiResponse({
     status: 201,
     description: 'El tipo de reporte fue creado exitosamente',
-    type: TypeReport,
   })
   @ApiResponse({
     status: 400,
@@ -85,7 +83,6 @@ export class TypeReportsController {
   @ApiResponse({
     status: 200,
     description: 'El tipo de reporte fue actualizado exitosamente',
-    type: TypeReport,
   })
   @ApiResponse({
     status: 404,

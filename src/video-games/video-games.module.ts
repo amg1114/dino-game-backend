@@ -23,8 +23,10 @@ import { Calificacion, Comentario } from './entities/calificacion.entity';
 import { CalificacionesService } from './services/calificaciones.service';
 import {
   CalificacionesController,
+  CalificacionesVideogameController,
   ComentariosController,
 } from './controllers/calificaciones.controller';
+import { VersionService } from './services/version.service';
 
 @Module({
   imports: [
@@ -47,6 +49,7 @@ import {
     DescuentosService,
     CategoriasService,
     CalificacionesService,
+    VersionService,
   ],
   controllers: [
     VersionsController,
@@ -55,6 +58,7 @@ import {
     CalificacionesController,
     ComentariosController,
     VideoGamesController,
+    CalificacionesVideogameController,
   ],
   exports: [
     TypeOrmModule,
@@ -62,6 +66,7 @@ import {
     UsersService,
     DevelopersService,
     CategoriasModule,
+    VersionService,
   ],
 })
 export class VideoGamesModule {}

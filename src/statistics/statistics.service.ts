@@ -22,9 +22,13 @@ export class StatisticsService {
 
   async getStatistics(month: string, year: string, developerId?: number) {
     return {
+      season: {
+        month,
+        year,
+      },
       yearSales: {
-        currentYearSales: await this.getAllSales(year, undefined, developerId),
-        prevYearSales: await this.getAllSales(
+        currentSales: await this.getAllSales(year, undefined, developerId),
+        prevSales: await this.getAllSales(
           String(Number(year) - 1),
           undefined,
           developerId,
@@ -36,8 +40,8 @@ export class StatisticsService {
         ),
       },
       monthSales: {
-        currentMonthSales: await this.getAllSales(year, month, developerId),
-        prevMonthSales: await this.getAllSales(
+        currentSales: await this.getAllSales(year, month, developerId),
+        prevSales: await this.getAllSales(
           year,
           String(Number(month) - 1),
           developerId,
@@ -131,10 +135,10 @@ export class StatisticsService {
   ): Promise<YearSalesData> {
     const { startDate, endDate } = buildStartEndDate(year, month);
     const profitMultiplier = developerId ? 0.9 : 0.1;
-
+    const salesBy = month ? 'day' : 'month';
     const salesDataQuery = this.userVideoGameRepository
       .createQueryBuilder('userVideoGame')
-      .select('EXTRACT(MONTH FROM userVideoGame.fechaCompra)', 'month')
+      .select('EXTRACT(' + salesBy + ' FROM userVideoGame.fechaCompra)', 'unit')
       .addSelect(
         `ROUND(SUM(userVideoGame.precio * ${profitMultiplier})::numeric, 2)::int`,
         'profit',
@@ -174,8 +178,8 @@ export class StatisticsService {
     }
     try {
       const data = await salesDataQuery
-        .orderBy('month', 'ASC')
-        .groupBy('month')
+        .orderBy('unit', 'ASC')
+        .groupBy('unit')
         .getRawMany();
 
       const profit = await profitQuery.getRawOne();

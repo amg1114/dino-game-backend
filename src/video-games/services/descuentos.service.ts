@@ -22,16 +22,17 @@ export class DescuentosService {
    * @param id ID del videojuego
    * @returns Descuentos del videojuego
    */
-  async getDescuentosByVideoGame(id: number) {
-    const videoGame = await this.videoGameService.softFindById(id);
+  async getDescuentosByVideoGame(slug: string) {
+    const videoGame = await this.videoGameService.softFindById(slug);
 
     if (!videoGame) {
       throw new HttpException('Video game not found', HttpStatus.NOT_FOUND);
     }
 
     const descuentos = await this.descuentoRepository.find({
-      where: { videoGame },
+      where: { videoGame: { id: videoGame.id } },
       order: { fechaInicio: 'ASC', fechaFin: 'ASC' },
+      relations: ['videoGame'],
     });
 
     if (descuentos.length === 0) {
@@ -47,9 +48,8 @@ export class DescuentosService {
    * @param descuento Descuento a agregar
    * @returns Descuento agregado
    */
-  async addDescuentoToVideoGame(id: number, descuento: CreateDescuentoDto) {
-    const videoGame = await this.videoGameService.softFindById(id);
-
+  async addDescuentoToVideoGame(slug: string, descuento: CreateDescuentoDto) {
+    const videoGame = await this.videoGameService.softFindById(slug);
     if (!videoGame) {
       throw new HttpException('Video game not found', HttpStatus.NOT_FOUND);
     }
@@ -85,7 +85,7 @@ export class DescuentosService {
    * @returns Resultado de la eliminación
    */
   async deleteDescuento(id: number) {
-    const resultado = await this.descuentoRepository.delete(id);
+    const resultado = await this.descuentoRepository.softDelete(id);
     if (resultado.affected === 0) {
       throw new HttpException(
         'Discount could not deleted',

@@ -149,6 +149,6 @@ export class ReportsService {
     if (!report) {
       throw new NotFoundException(`Report with ID ${id} not found`);
     }
-    return await this.reportRepository.delete(id);
+    return await this.reportRepository.softDelete(id);
   }
 }

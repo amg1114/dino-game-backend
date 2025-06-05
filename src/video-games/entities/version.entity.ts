@@ -1,28 +1,22 @@
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
-  PrimaryGeneratedColumn,
+  OneToOne,
 } from 'typeorm';
 import { VideoGame } from './video-game.entity';
+import { BaseEntity } from '../../config/models/base-entity.entity';
+import { Asset } from '../../assets/asset.entity';
 
 @Entity('versions')
-export class Version {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class Version extends BaseEntity {
   @Column()
   version: string;
 
   @Column()
   descripcion: string;
-
-  @Column()
-  size: string;
-
-  @Column()
-  releaseDate: Date;
 
   @ManyToOne(() => VideoGame, (videoGame) => videoGame.versions, {
     onDelete: 'CASCADE',
@@ -34,15 +28,15 @@ export class Version {
   })
   requisitos: Requisito[];
 
-  @Column()
-  url: string;
+  @OneToOne(() => Asset, (asset) => asset.videoGameFile, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn()
+  file: string;
 }
 
 @Entity('requisitos')
-export class Requisito {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class Requisito extends BaseEntity {
   @Column()
   requisito: string;
 

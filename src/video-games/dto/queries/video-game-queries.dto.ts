@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import {
   IsBoolean,
   IsEnum,
@@ -19,13 +20,19 @@ export class VideoGameQueries {
   @Min(0)
   offset?: number;
 
-  @IsNumber()
+  @IsString()
   @IsOptional()
-  categoria?: number;
+  categoria?: string;
+
+  @IsOptional()
+  @Transform(({ key, obj }) => obj[key] === 'true' || obj[key] === '1')
+  @IsBoolean()
+  descuentos?: boolean;
 
   @IsOptional()
   @IsBoolean()
-  descuentos?: boolean;
+  @Transform(({ key, obj }) => obj[key] === 'true' || obj[key] === '1')
+  onlyPaidGames?: boolean;
 
   @IsNumber()
   @IsOptional()
@@ -47,4 +54,19 @@ export class VideoGameQueries {
   @IsEnum(Order)
   @IsOptional()
   order?: Order;
+}
+
+export class UserVideoGameQueries {
+  @IsNumber()
+  @IsOptional()
+  limit?: number;
+
+  @IsNumber()
+  @IsOptional()
+  @Min(0)
+  offset?: number;
+
+  @IsString()
+  @IsOptional()
+  search?: string;
 }

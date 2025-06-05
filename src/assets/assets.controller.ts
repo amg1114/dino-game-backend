@@ -1,25 +1,28 @@
 import {
+  Body,
   Controller,
   Delete,
   Param,
   ParseFilePipe,
   ParseIntPipe,
   Post,
+  Put,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 
 import { AssetsService } from './assets.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ImageNotFoundResponseDto } from './dto/responses-dto';
-import { DeleteResultResponseDto } from 'src/config/responses-dto';
-import { Asset } from './asset.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileTypeValidator } from './validators/filte-type.validator';
 import { FileRatioValidator } from './validators/file-ratio.validator';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 @ApiTags('Assets')
 @Controller('assets')
+@UseGuards(AuthGuard, RolesGuard)
 export class AssetsController {
   constructor(private readonly assetsService: AssetsService) {}
 
@@ -37,14 +40,13 @@ export class AssetsController {
   @ApiResponse({
     status: 200,
     description: 'La imagen fue creada exitosamente',
-    type: Asset,
   })
   @UseInterceptors(FileInterceptor('file'))
   @Post('video-games/:videogame/:field')
   createVideoGameAsset(
     @Param('videogame', ParseIntPipe) id: number,
     @Param('field') field: string,
-
+    @Body('index') index: number,
     @UploadedFile(
       new ParseFilePipe({
         validators: [new FileTypeValidator(), new FileRatioValidator()],
@@ -52,7 +54,32 @@ export class AssetsController {
     )
     file: Express.Multer.File,
   ) {
-    return this.assetsService.createVideoGameAsset(id, file, field);
+    return this.assetsService.createVideoGameAsset(id, file, field, index);
+  }
+
+  @ApiOperation({
+    summary: 'Actualizar un asset de un videojuego',
+    description:
+      'Actualiza un asset existente de un videojuego en la base de datos',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'El asset fue actualizado exitosamente',
+  })
+  @ApiTags('Assets')
+  @Put('video-games/:videogame/:id')
+  @UseInterceptors(FileInterceptor('file'))
+  updateVideoGameAsset(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('videogame', ParseIntPipe) videogame: number,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [new FileTypeValidator(), new FileRatioValidator()],
+      }),
+    )
+    file: Express.Multer.File,
+  ) {
+    return this.assetsService.updateVideoGameAsset(id, videogame, file);
   }
 
   /**
@@ -68,7 +95,6 @@ export class AssetsController {
   @ApiResponse({
     status: 200,
     description: 'La imagen fue creada exitosamente',
-    type: Asset,
   })
   @UseInterceptors(FileInterceptor('file'))
   @Post('noticias/:noticia')
@@ -84,6 +110,28 @@ export class AssetsController {
     return this.assetsService.createNoticiaAsset(id, file);
   }
 
+  @Post('versions/:version')
+  @UseInterceptors(FileInterceptor('file'))
+  createVersionFile(
+    @Param('version', ParseIntPipe) id: number,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new FileTypeValidator({
+            allowedTypes: [
+              'application/zip',
+              'application/x-zip-compressed',
+              'application/x-zip',
+            ],
+          }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+  ) {
+    return this.assetsService.createVersionAsset(id, file);
+  }
+
   /**
    * EndPoint para eliminar un asset
    * @param id id del asset
@@ -96,12 +144,10 @@ export class AssetsController {
   @ApiResponse({
     status: 200,
     description: 'La imagen fue eliminada exitosamente',
-    type: DeleteResultResponseDto,
   })
   @ApiResponse({
     status: 404,
     description: 'La imagen no fue encontrada',
-    type: ImageNotFoundResponseDto,
   })
   @Delete(':id')
   deleteAsset(@Param('id') id: number) {

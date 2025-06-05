@@ -17,21 +17,10 @@ import { Roles } from '../../auth/decorators/roles.decorator';
 import { AuthGuard } from '../../auth/guards/auth.guard';
 import { RolesGuard } from '../../auth/guards/roles.guard';
 import { Role } from '../../config/enums/roles.enum';
-import {
-  DeleteResultResponseDto,
-  UpdateResultResponseDto,
-} from 'src/config/responses-dto';
 
 import { VideoGameQueries } from '../dto/queries/video-game-queries.dto';
 import { CreateVideoGameDto } from '../dto/video-games/create-video-game.dto';
-import {
-  DeleteVideoGameResponseDto,
-  UpdateVideoGameResponseDto,
-  VideoGameNotFoundResponseDto,
-  VideoGamesNotFoundResponseDto,
-} from '../dto/video-games/responses-dto';
 import { UpdateVideoGameDto } from '../dto/video-games/update-video-game.dto';
-import { VideoGame } from '../entities/video-game.entity';
 import { VideoGamesService } from '../services/video-games.service';
 
 @ApiTags('VideoGames')
@@ -52,12 +41,10 @@ export class VideoGamesController {
   @ApiResponse({
     status: 200,
     description: 'Los videojuegos fueron encontrados exitosamente',
-    type: [VideoGame],
   })
   @ApiResponse({
     status: 404,
     description: 'Los videojuegos no fueron encontrados',
-    type: VideoGamesNotFoundResponseDto,
   })
   @Get()
   @Public()
@@ -78,11 +65,13 @@ export class VideoGamesController {
   @ApiResponse({
     status: 200,
     description: 'El video juego fue añadido exitosamente',
-    type: [VideoGame],
   })
   @Post()
   @Roles(Role.ADMINISTRATOR, Role.DEVELOPER)
-  createVideoGame(videoGameFields: CreateVideoGameDto, @Request() req: any) {
+  createVideoGame(
+    @Body() videoGameFields: CreateVideoGameDto,
+    @Request() req: any,
+  ) {
     return this.videoGamesService.createVideoGame(req.user.id, videoGameFields);
   }
 
@@ -98,15 +87,13 @@ export class VideoGamesController {
   @ApiResponse({
     status: 200,
     description: 'el video juego fue encontrado exitosamente',
-    type: [VideoGame],
   })
   @ApiResponse({
     status: 404,
     description: 'El videojuego no fue encontrado',
-    type: VideoGameNotFoundResponseDto,
   })
   @Get('developer/:developer/video-games')
-  @Roles(Role.DEVELOPER)
+  @Roles(Role.ADMINISTRATOR, Role.DEVELOPER)
   getDeveloperVideoGames(@Param('developer') developer: number) {
     return this.videoGamesService.findDeveloperVideoGames(developer);
   }
@@ -118,22 +105,20 @@ export class VideoGamesController {
    */
   @ApiOperation({
     summary: 'Obtener un videojuego',
-    description: 'Obtiene un videojuego basado en el id recibido',
+    description: 'Obtiene un videojuego basado en el slug recibido',
   })
   @ApiResponse({
     status: 200,
     description: 'el video juego fue encontrado exitosamente',
-    type: [VideoGame],
   })
   @ApiResponse({
     status: 404,
     description: 'El videojuego no fue encontrado',
-    type: VideoGameNotFoundResponseDto,
   })
-  @Get(':videogame')
+  @Get(':slug')
   @Public()
-  findOne(@Param('videogame') videogame: number) {
-    return this.videoGamesService.findById(videogame);
+  findOne(@Param('slug') slug: string) {
+    return this.videoGamesService.findBySlug(slug);
   }
 
   /**
@@ -150,12 +135,10 @@ export class VideoGamesController {
   @ApiResponse({
     status: 200,
     description: 'el video juego fue actualizado exitosamente',
-    type: UpdateResultResponseDto,
   })
   @ApiResponse({
     status: 409,
     description: 'El videojuego no fue actualizado exitosamente',
-    type: UpdateVideoGameResponseDto,
   })
   @Patch(':videogame')
   @Roles(Role.ADMINISTRATOR, Role.DEVELOPER)
@@ -178,12 +161,10 @@ export class VideoGamesController {
   @ApiResponse({
     status: 200,
     description: 'el video juego fue eliminado exitosamente',
-    type: DeleteResultResponseDto,
   })
   @ApiResponse({
     status: 409,
     description: 'El videojuego no fue eliminado exitosamente',
-    type: DeleteVideoGameResponseDto,
   })
   @Delete(':videogame')
   @Roles(Role.ADMINISTRATOR, Role.DEVELOPER)
@@ -204,7 +185,6 @@ export class VideoGamesController {
   @ApiResponse({
     status: 200,
     description: 'las ventas del videojuego fueron encontradas exitosamente',
-    type: DeleteResultResponseDto,
   })
   @Get(':videogame/ventas/:mes')
   @Roles(Role.DEVELOPER)

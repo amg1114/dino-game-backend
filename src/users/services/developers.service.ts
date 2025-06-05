@@ -2,10 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 
-import {
-  EstadoSolicitud,
-  SolicitudDesarrollador,
-} from '../entities/solicitud-desarrollador.entity';
+import { SolicitudDesarrollador } from '../entities/solicitud-desarrollador.entity';
 
 import { UsersService } from '../services/users.service';
 
@@ -17,6 +14,7 @@ import { SolicitudDesarrolladorQueries } from '../dto/SolicitudDesarrollador-que
 import { PaginatedDataResponse } from 'src/config/models/paginatedData-response.interface';
 import { DesarrolladorQueries } from '../dto/desarrollador-queries.dto';
 import { VideoGame } from 'src/video-games/entities/video-game.entity';
+import { State } from 'src/config/enums/state';
 
 @Injectable()
 export class DevelopersService {
@@ -173,7 +171,7 @@ export class DevelopersService {
       throw new HttpException('Solicitud no actualizada', HttpStatus.CONFLICT);
     }
 
-    if (solicitudFields.estado === EstadoSolicitud.Aceptada) {
+    if (solicitudFields.estado === State.APPROVED) {
       await this.createDeveloper(solicitud.user.id);
     }
 
