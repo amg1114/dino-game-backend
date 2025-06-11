@@ -15,6 +15,7 @@ import { UpdateUserDto } from '../dto/update-user.dto';
 import { SolicitudDesarrollador } from '../entities/solicitud-desarrollador.entity';
 import { CreateSolicitudDesarrolladorDto } from '../dto/create-solicitud-desarrollador.dto';
 import { User } from '../entities/user.entity';
+import { AccountDeletedException } from '../exceptions/account-deleted.exception';
 
 @Injectable()
 export class UsersService {
@@ -41,10 +42,13 @@ export class UsersService {
   }
 
   async findByCorreo(correo: string) {
-    const user = await this.userRepository.findOne({ where: { correo } });
+    const user = await this.userRepository.findOne({
+      where: { correo },
+      withDeleted: true,
+    });
 
     if (!user) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('User not founddd', HttpStatus.NOT_FOUND);
     }
 
     return user;
@@ -59,10 +63,15 @@ export class UsersService {
     userFields.password = bcrypt.hashSync(userFields.password, SALT_ROUNDS);
     const exists = await this.userRepository.findOne({
       where: { correo: userFields.correo },
+      withDeleted: true,
     });
 
     if (exists) {
-      throw new HttpException('User already exists', HttpStatus.CONFLICT);
+      if (exists.deletedAt !== null) {
+        throw new AccountDeletedException();
+      } else {
+        throw new HttpException('User already exists', HttpStatus.CONFLICT);
+      }
     }
 
     const user = await this.userRepository.save(userFields);
