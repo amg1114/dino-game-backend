@@ -308,6 +308,8 @@ export class VideoGamesService {
       .leftJoinAndSelect('userVideoGame.videoGame', 'videoGame')
       .leftJoinAndSelect('videoGame.thumb', 'thumb')
       .leftJoinAndSelect('videoGame.categorias', 'categorias')
+      .leftJoinAndSelect('videoGame.versions', 'versions')
+      .leftJoinAndSelect('versions.file', 'file')
       .where('userVideoGame.user = :user', { user: user.id });
 
     if (search) {
@@ -332,6 +334,7 @@ export class VideoGamesService {
     const [data, count] = await userVideoGames
       .orderBy('userVideoGame.fechaCompra', 'DESC')
       .addOrderBy('videoGame.titulo', 'ASC')
+      .addOrderBy('versions.createdAt', 'DESC')
       .getManyAndCount();
 
     return {
@@ -339,6 +342,14 @@ export class VideoGamesService {
       offset: queries.offset,
       total: count,
     };
+  }
+
+  userVideoGames(userId: number) {
+    return this.userVideoGameRepository
+      .createQueryBuilder('userVideoGame')
+      .leftJoinAndSelect('userVideoGame.videoGame', 'videoGame')
+      .where('userVideoGame.user = :user', { user: userId })
+      .getMany();
   }
 
   /**
@@ -387,14 +398,17 @@ export class VideoGamesService {
     }
 
     const userVideoGame = await this.userVideoGameRepository.findOne({
-      where: { user, videoGame },
+      where: { user: { id: user.id }, videoGame: { id: videoGame.id } },
     });
 
     if (userVideoGame === null) {
-      throw new HttpException('Videogame was not found', HttpStatus.NOT_FOUND);
+      throw new HttpException(
+        'User Videogame was not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
 
-    return this.userVideoGameRepository.softDelete(userVideoGame);
+    return this.userVideoGameRepository.softDelete(userVideoGame.id);
   }
 
   /**
