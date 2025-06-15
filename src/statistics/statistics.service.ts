@@ -2,7 +2,7 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserVideoGame } from 'src/video-games/entities/user-videogames.entity';
 import { VideoGame } from 'src/video-games/entities/video-game.entity';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 import { buildStartEndDate } from 'src/utils/date.utils';
 
 export interface YearSalesData {
@@ -54,6 +54,36 @@ export class StatisticsService {
       },
       totalVideoGames: await this.getTotalVideoGames(developerId),
     };
+  }
+
+  async salesList(month: string, year: string, developerId?: number) {
+    const startEndDate = buildStartEndDate(year, month);
+    const sales = await this.userVideoGameRepository.find({
+      where: {
+        videoGame: {
+          developer: {
+            id: developerId || null,
+          },
+        },
+        fechaCompra: Between(startEndDate.startDate, startEndDate.endDate),
+      },
+      order: {
+        fechaCompra: 'DESC',
+      },
+      relations: {
+        videoGame: true,
+      },
+    });
+
+    return sales.map((sale) => ({
+      id: sale.id,
+      fechaCompra: sale.fechaCompra,
+      precio: sale.precio,
+      videoGame: {
+        titulo: sale.videoGame.titulo,
+        slug: sale.videoGame.slug,
+      },
+    }));
   }
 
   /**

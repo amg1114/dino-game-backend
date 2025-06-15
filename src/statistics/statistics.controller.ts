@@ -1,4 +1,12 @@
-import { Controller, Get, Param, Req, Sse, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Query,
+  Req,
+  Sse,
+  UseGuards,
+} from '@nestjs/common';
 import { from, interval, map, mergeMap, startWith } from 'rxjs';
 import { StatisticsService } from './statistics.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -76,6 +84,20 @@ export class StatisticsController {
     @Req() req: any,
   ) {
     return this.statisticsService.getStatistics(
+      month,
+      year,
+      req.user.tipo === Role.DEVELOPER ? req.user.id : undefined,
+    );
+  }
+
+  @Get('sales')
+  @Roles(Role.ADMINISTRATOR, Role.DEVELOPER)
+  async getSalesList(
+    @Req() req: any,
+    @Query('month') month: string,
+    @Query('year') year: string,
+  ) {
+    return this.statisticsService.salesList(
       month,
       year,
       req.user.tipo === Role.DEVELOPER ? req.user.id : undefined,
