@@ -103,7 +103,9 @@ export class AuthService {
       .select('likes.noticia_id AS "noticiaID"')
       .getRawMany();
 
-    return { ...user, role, calificaciones, likes };
+    const videoGames = await this.videoGameService.userVideoGames(id);
+
+    return { ...user, role, calificaciones, likes, videoGames };
   }
 
   async deleteAccount(id: number) {
