@@ -4,6 +4,8 @@ import { UserVideoGame } from 'src/video-games/entities/user-videogames.entity';
 import { VideoGame } from 'src/video-games/entities/video-game.entity';
 import { Between, Repository } from 'typeorm';
 import { buildStartEndDate } from 'src/utils/date.utils';
+import { MailerService } from '@nestjs-modules/mailer';
+import * as path from 'path';
 
 export interface YearSalesData {
   sales: UserVideoGame[];
@@ -18,6 +20,7 @@ export class StatisticsService {
     private readonly videoGameRepository: Repository<VideoGame>,
     @InjectRepository(UserVideoGame)
     private readonly userVideoGameRepository: Repository<UserVideoGame>,
+    private readonly mailerService: MailerService,
   ) {}
 
   async getStatistics(month: string, year: string, developerId?: number) {
@@ -223,6 +226,34 @@ export class StatisticsService {
       console.error('Error fetching sales data:', error);
       throw new InternalServerErrorException(
         'Error fetching sales data. Please try again later.',
+      );
+    }
+  }
+
+  async shareSalesFile(file: Express.Multer.File, to: string) {
+    try {
+      await this.mailerService.sendMail({
+        to,
+        subject: 'Sales Data File',
+        text: 'Please find the attached sales data file.',
+        template: './share-file',
+        attachments: [
+          {
+            filename: file.originalname,
+            content: file.buffer,
+          },
+          {
+            filename: 'logo.png',
+            path: path.join(process.cwd(), 'src', 'mail', 'assets', 'logo.png'),
+            cid: 'logo',
+          },
+        ],
+      });
+      return { message: 'File shared successfully' };
+    } catch (error) {
+      console.error('Error sharing sales file:', error);
+      throw new InternalServerErrorException(
+        'Error sharing sales file. Please try again later.',
       );
     }
   }
