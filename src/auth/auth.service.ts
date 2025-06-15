@@ -143,7 +143,7 @@ export class AuthService {
         attachments: [
           {
             filename: 'logo.png',
-            path: path.join(process.cwd(), 'src', 'auth', 'assets', 'logo.png'),
+            path: path.join(process.cwd(), 'src', 'mail', 'assets', 'logo.png'),
             cid: 'logo',
           },
         ],
@@ -293,7 +293,7 @@ export class AuthService {
         attachments: [
           {
             filename: 'logo.png',
-            path: path.join(process.cwd(), 'src', 'auth', 'assets', 'logo.png'),
+            path: path.join(process.cwd(), 'src', 'mail', 'assets', 'logo.png'),
             cid: 'logo',
           },
         ],
