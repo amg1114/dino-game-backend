@@ -122,6 +122,29 @@ export class AssetsService {
     return this.assetsRepository.save(asset);
   }
 
+  async updateNoticiaAsset(
+    assetID: number,
+    noticiaID: number,
+    file: Express.Multer.File,
+  ) {
+    const asset = await this.assetsRepository.findOne({
+      where: { id: assetID },
+      relations: ['noticiaThumb'],
+    });
+
+    if (!asset) {
+      throw new NotFoundException('Asset not found');
+    }
+    const noticia = await this.noticiasService.findOne(noticiaID);
+    await this.firebaseService.deleteFile(asset.url);
+
+    const url = await this.firebaseService.uploadNoticiaImage(file, noticia);
+    asset.url = url;
+    asset.title = file.originalname;
+
+    return this.assetsRepository.save(asset);
+  }
+
   async createVersionAsset(owner: number, file: Express.Multer.File) {
     const version = await this.versionsService.findById(owner);
 

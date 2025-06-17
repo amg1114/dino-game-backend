@@ -1,4 +1,16 @@
-import { Controller, Get, Param, Req, Sse, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  Req,
+  Sse,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { from, interval, map, mergeMap, startWith } from 'rxjs';
 import { StatisticsService } from './statistics.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -6,6 +18,7 @@ import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/config/enums/roles.enum';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('statistics')
 @ApiTags('Statistics')
@@ -80,5 +93,29 @@ export class StatisticsController {
       year,
       req.user.tipo === Role.DEVELOPER ? req.user.id : undefined,
     );
+  }
+
+  @Get('sales')
+  @Roles(Role.ADMINISTRATOR, Role.DEVELOPER)
+  async getSalesList(
+    @Req() req: any,
+    @Query('month') month: string,
+    @Query('year') year: string,
+  ) {
+    return this.statisticsService.salesList(
+      month,
+      year,
+      req.user.tipo === Role.DEVELOPER ? req.user.id : undefined,
+    );
+  }
+
+  @Post('share')
+  @UseInterceptors(FileInterceptor('file'))
+  @Roles(Role.ADMINISTRATOR, Role.DEVELOPER)
+  async shareStatistics(
+    @UploadedFile() file: Express.Multer.File,
+    @Body('email') to: string,
+  ) {
+    return this.statisticsService.shareSalesFile(file, to);
   }
 }

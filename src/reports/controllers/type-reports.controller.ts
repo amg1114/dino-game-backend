@@ -18,11 +18,11 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/config/enums/roles.enum';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ReportQueries } from '../dto/report-queries.dto';
+import { Public } from 'src/auth/decorators/public.decorator';
 
 @ApiTags('Tipos de Reportes')
 @Controller('type-reports')
 @UseGuards(AuthGuard, RolesGuard)
-@Roles(Role.ADMINISTRATOR)
 export class TypeReportsController {
   constructor(private readonly typeReportsService: TypeReportsService) {}
 
@@ -43,6 +43,7 @@ export class TypeReportsController {
     status: 404,
     description: 'ningun tipo de reporte fue encontrado',
   })
+  @Public()
   @Get()
   async findAll(@Query() query: ReportQueries) {
     return await this.typeReportsService.findAll(query);
@@ -65,6 +66,7 @@ export class TypeReportsController {
     status: 400,
     description: 'Datos inválidos o faltantes',
   })
+  @Roles(Role.ADMINISTRATOR)
   @Post()
   async create(@Body() typeReportData: CreateTypeReportDto) {
     return await this.typeReportsService.create(typeReportData);
@@ -89,6 +91,7 @@ export class TypeReportsController {
     description: 'El tipo de reporte no fue encontrado',
   })
   @Patch(':id')
+  @Roles(Role.ADMINISTRATOR)
   async update(
     @Param('id') id: number,
     @Body() updateData: UpdateTypeReportDto,
@@ -113,6 +116,7 @@ export class TypeReportsController {
     status: 404,
     description: 'El tipo de reporte no fue encontrado',
   })
+  @Roles(Role.ADMINISTRATOR)
   @Delete(':id')
   async delete(@Param('id') id: number) {
     return await this.typeReportsService.delete(id);

@@ -11,6 +11,7 @@ import { Calificacion } from 'src/video-games/entities/calificacion.entity';
 import { Like } from 'src/noticias/entities/like.entity';
 import { MailerService } from '@nestjs-modules/mailer';
 import * as path from 'path';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -19,6 +20,8 @@ export class AuthService {
     private readonly calficacionRepository: Repository<Calificacion>,
     @InjectRepository(Like)
     private readonly likesRepository: Repository<Like>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private readonly videoGameService: VideoGamesService,
@@ -100,7 +103,9 @@ export class AuthService {
       .select('likes.noticia_id AS "noticiaID"')
       .getRawMany();
 
-    return { ...user, role, calificaciones, likes };
+    const videoGames = await this.videoGameService.userVideoGames(id);
+
+    return { ...user, role, calificaciones, likes, videoGames };
   }
 
   async deleteAccount(id: number) {
@@ -140,7 +145,7 @@ export class AuthService {
         attachments: [
           {
             filename: 'logo.png',
-            path: path.join(process.cwd(), 'src', 'auth', 'assets', 'logo.png'),
+            path: path.join(process.cwd(), 'src', 'mail', 'assets', 'logo.png'),
             cid: 'logo',
           },
         ],
@@ -256,6 +261,103 @@ export class AuthService {
       throw new HttpException(
         'Error al actualizar la contraseña',
         HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async requestAccountRecovery(email: string): Promise<{ message: string }> {
+    const user = await this.userRepository.findOne({
+      where: { correo: email },
+      withDeleted: true,
+    });
+
+    if (!user) {
+      return { message: 'Usuario no encontrado' };
+    }
+
+    const payload = { sub: user.id };
+    const token = await this.jwtService.signAsync(payload, {
+      expiresIn: '24h',
+    });
+
+    const recoverUrl = `${process.env.FRONTEND_URL}/recuperar-cuenta/${token}`;
+
+    try {
+      await this.mailerService.sendMail({
+        to: email,
+        subject: 'DINOGAME - Recuperación de Cuenta',
+        template: './recovery-account',
+        context: {
+          name: user.nombre,
+          recoverUrl,
+          logoUrl: 'cid:logo',
+        },
+        attachments: [
+          {
+            filename: 'logo.png',
+            path: path.join(process.cwd(), 'src', 'mail', 'assets', 'logo.png'),
+            cid: 'logo',
+          },
+        ],
+      });
+      return { message: `Correo enviado al email ${email}` };
+    } catch (error) {
+      throw new HttpException(
+        'Error al enviar el correo de recuperación',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async recoverAccount(token: string): Promise<{ message: string }> {
+    try {
+      if (!token) {
+        throw new HttpException(
+          'Token no proporcionado',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      const payload = this.jwtService.verify(token);
+      if (!payload || !payload.sub) {
+        throw new HttpException('Token inválido', HttpStatus.BAD_REQUEST);
+      }
+
+      const user = await this.userRepository.findOne({
+        where: { id: payload.sub },
+        withDeleted: true,
+      });
+
+      if (!user) {
+        throw new HttpException('Usuario no encontrado', HttpStatus.NOT_FOUND);
+      }
+
+      if (user.deletedAt === null) {
+        throw new HttpException(
+          'La cuenta ya está activa',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      user.deletedAt = null;
+      await this.userRepository.save(user);
+
+      return { message: 'Cuenta recuperada exitosamente' };
+    } catch (error) {
+      if (error.name === 'TokenExpiredError') {
+        throw new HttpException(
+          'El token ha expirado',
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
+
+      if (error.name === 'JsonWebTokenError') {
+        throw new HttpException('Token inválido', HttpStatus.BAD_REQUEST);
+      }
+
+      throw new HttpException(
+        error.message || 'Error al recuperar la cuenta',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }

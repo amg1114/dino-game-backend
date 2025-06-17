@@ -110,6 +110,21 @@ export class AssetsController {
     return this.assetsService.createNoticiaAsset(id, file);
   }
 
+  @Put('noticias/:noticia/:id')
+  @UseInterceptors(FileInterceptor('file'))
+  updateNoticiaAsset(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('noticia', ParseIntPipe) noticia: number,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [new FileTypeValidator(), new FileRatioValidator()],
+      }),
+    )
+    file: Express.Multer.File,
+  ) {
+    return this.assetsService.updateNoticiaAsset(id, noticia, file);
+  }
+
   @Post('versions/:version')
   @UseInterceptors(FileInterceptor('file'))
   createVersionFile(

@@ -197,4 +197,52 @@ export class AuthController {
       body.newPassword,
     );
   }
+
+  /**
+   * Recupera la cuenta de un usuario utilizando un token.
+   * @param token Token de recuperación de cuenta.
+   * @returns Mensaje indicando el resultado de la operación.
+   */
+  @ApiOperation({
+    summary: 'Recuperar cuenta',
+    description: 'Permite recuperar una cuenta de usuario utilizando un token.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Cuenta recuperada exitosamente.',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Token inválido o expirado.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Usuario no encontrado.',
+  })
+  @Post('recover-account')
+  async recoverAccount(@Query('token') token: string) {
+    return await this.authService.recoverAccount(token);
+  }
+
+  /**
+   * Solicita la recuperación de una cuenta de usuario.
+   * @param email Correo del usuario que solicita la recuperación.
+   * @returns Mensaje indicando el resultado de la operación.
+   */
+  @ApiOperation({
+    summary: 'Solicitar recuperación de cuenta',
+    description: 'Envía un correo con un enlace para recuperar la cuenta.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Correo de recuperación enviado exitosamente.',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Error al enviar el correo de recuperación.',
+  })
+  @Post('request-account-recovery')
+  async requestAccountRecovery(@Query('email') email: string) {
+    return await this.authService.requestAccountRecovery(email);
+  }
 }
