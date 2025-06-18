@@ -18,7 +18,7 @@ import { DevelopersService } from '../services/developers.service';
 import { CreateSolicitudDesarrolladorDto } from '../dto/create-solicitud-desarrollador.dto';
 import { UpdateSolicitudDesarrolladorDto } from '../dto/update-solicitud-desarrollador.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { SolicitudDesarrolladorQueries } from '../dto/SolicitudDesarrollador-queries.dto';
+import { SolicitudDesarrolladorQueries } from '../dto/solicitudDesarrollador-queries.dto';
 import { DesarrolladorQueries } from '../dto/desarrollador-queries.dto';
 
 @ApiTags('Desarrolladores')

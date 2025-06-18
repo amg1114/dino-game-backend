@@ -8,7 +8,7 @@
   "scripts": {
     "typeorm": "typeorm",
     "build": "nest build",
-    "postbuild": "cp -r src/auth/templates dist/auth/templates",
+    "postbuild": "cp -r src/mail dist/mail",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "cross-env NODE_ENV=dev nest start --watch",
@@ -27,7 +27,7 @@
     "m:create": "cross-env NODE_ENV=dev npx typeorm-ts-node-esm migration:create",
     "m:run": "cross-env NODE_ENV=dev npm run orm:init migration:run",
     "m:revert": "cross-env NODE_ENV=dev npm run orm:init migration:revert",
-    "prepare": "lefthook install"
+    "prepare": "node -e \"if (process.env.SKIP_HOOKS !== 'true') require('child_process').execSync('lefthook install', {stdio: 'inherit'})\""
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^2.0.2",
