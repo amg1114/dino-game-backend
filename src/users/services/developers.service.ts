@@ -10,7 +10,7 @@ import { CreateSolicitudDesarrolladorDto } from '../dto/create-solicitud-desarro
 import { UpdateSolicitudDesarrolladorDto } from '../dto/update-solicitud-desarrollador.dto';
 import { Role } from '../../config/enums/roles.enum';
 import { User } from '../entities/user.entity';
-import { SolicitudDesarrolladorQueries } from '../dto/SolicitudDesarrollador-queries.dto';
+import { SolicitudDesarrolladorQueries } from '../dto/solicitudDesarrollador-queries.dto';
 import { PaginatedDataResponse } from 'src/config/models/paginatedData-response.interface';
 import { DesarrolladorQueries } from '../dto/desarrollador-queries.dto';
 import { VideoGame } from 'src/video-games/entities/video-game.entity';
